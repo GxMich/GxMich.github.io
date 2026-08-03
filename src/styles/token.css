@@ -1,0 +1,151 @@
+/* ============================================================================
+   TOKEN — unica fonte di verità del sistema visivo.
+   Qui dentro non c'è nessuna regola che disegni qualcosa: solo valori.
+   Se un colore o una misura compare altrove scritto a mano, è un errore.
+   ============================================================================ */
+
+:root {
+  /* --------------------------------------------------------------------------
+     COLORE — carta
+
+     I rapporti di contrasto sono misurati, non stimati (scripts/contrasti.mjs).
+     Tre valori sono già stati corretti una volta: --ink-3 era #8E9095 e sul
+     fondo incassato dava 2,83:1, cioè sotto la soglia; --signal come inchiostro
+     era #FF4A1C e dava 3,22:1. Non rimetterli come stavano.
+     -------------------------------------------------------------------------- */
+  --paper: #fafafa;
+  --paper-sunk: #f1f1f0;
+
+  --ink: #0a0a0b; /* 18,96:1 su carta — AAA */
+  --ink-2: #55565a; /*  7,02:1 su carta — AAA */
+  --ink-3: #686a70; /*  5,18:1 su carta · 4,78:1 su incassato — AA */
+
+  --rule: #e2e2e1; /* filetto: struttura, mai informazione */
+
+  /* L'arancio vive in due valori con due mestieri diversi e non si scambiano:
+     --signal è superficie (fondo bottone, anello di messa a fuoco),
+     --signal-ink è inchiostro (link, testo enfatizzato). */
+  --signal: #ff4a1c; /*  3,22:1 su carta — soglia grafica, non testuale */
+  --signal-ink: #ce320c; /*  4,92:1 su carta · 4,55:1 su incassato — AA */
+  --signal-on: var(--ink); /* testo sopra --signal: 5,89:1 — AA */
+
+  /* --------------------------------------------------------------------------
+     COLORE — palco (le sezioni scure che fanno brillare le schermate)
+     -------------------------------------------------------------------------- */
+  --stage: #08080a;
+  --stage-2: #101014;
+  --light: #f4f4f5; /* 18,21:1 sul palco — AAA */
+  --light-2: #a1a1a8; /*  7,79:1 sul palco — AAA */
+  --edge: #26262c;
+
+  /* Luce ambientale: segna il capitolo senza introdurre un secondo accento. */
+  --tint-warm: #2a1a12;
+  --tint-cold: #0c1a22;
+
+  /* --------------------------------------------------------------------------
+     SPAZIO — base 4px, ritmo verticale 8px
+     -------------------------------------------------------------------------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --sp-10: 128px;
+  --sp-11: 176px;
+
+  --section-sm: clamp(56px, 8vw, 88px);
+  --section: clamp(80px, 11vw, 144px);
+  --section-lg: clamp(112px, 15vw, 200px);
+
+  /* --------------------------------------------------------------------------
+     LAYOUT
+     -------------------------------------------------------------------------- */
+  --page-max: 1440px;
+  --text-max: 68ch;
+  --gutter: clamp(24px, 6vw, 96px);
+  --col-gap: 24px;
+  --header-h: 64px;
+
+  /* --------------------------------------------------------------------------
+     TIPOGRAFIA — famiglie
+
+     Geist e Geist Mono sono la stessa superfamiglia: nascono coerenti e hanno
+     cifre tabulari vere. Instrument Serif corsivo è riservato alle frasi di
+     Michele: se compare su un testo qualunque, la distinzione salta.
+     -------------------------------------------------------------------------- */
+  --font-ui: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'Cascadia Mono', monospace;
+  --font-voice: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+
+  /* TIPOGRAFIA — scala */
+  --t-display-xl: clamp(44px, 8vw, 104px);
+  --t-display: clamp(34px, 5.4vw, 68px);
+  --t-h2: clamp(26px, 3.4vw, 40px);
+  --t-h3: clamp(19px, 2vw, 24px);
+  --t-h4: 17px;
+  --t-lede: clamp(16.5px, 1.4vw, 19px);
+  --t-body: 16.5px;
+  --t-body-sm: 14.5px;
+  --t-quote: clamp(21px, 2.6vw, 32px);
+  --t-label: 10.5px;
+  --t-data: 12px;
+
+  /* --------------------------------------------------------------------------
+     FORMA — nessuna ombra su carta, nessun angolo oltre i 3px.
+     L'assenza è la firma: sono le due abitudini che rendono un'interfaccia
+     indistinguibile da mille altre.
+     -------------------------------------------------------------------------- */
+  --radius-0: 0;
+  --radius-1: 2px;
+  --radius-2: 3px;
+  --hairline: 1px solid var(--rule);
+  --shadow-stage: 0 30px 70px -30px rgba(0, 0, 0, 0.9);
+
+  /* --------------------------------------------------------------------------
+     MOVIMENTO
+
+     Zero rimbalzi e zero elastico su carta. La molla esiste in un punto solo di
+     tutto il sito: l'indicatore dei tab verticali, dove serve a far sentire il
+     movimento come diretto dal dito.
+     -------------------------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1); /* la curva del sistema */
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1); /* solo il menu a schermo intero */
+
+  --dur-1: 180ms; /* hover, focus, micro */
+  --dur-2: 400ms; /* cambio di stato, scambio di testo */
+  --dur-3: 700ms; /* comparsa di un paragrafo */
+  --dur-4: 1100ms; /* otturatore di un titolo */
+
+  --stagger-char: 18ms;
+  --stagger-word: 40ms;
+  --stagger-line: 90ms;
+
+  /* --------------------------------------------------------------------------
+     PIANI — un solo posto dove sapere chi sta sopra chi
+     -------------------------------------------------------------------------- */
+  --z-base: 0;
+  --z-sticky: 10;
+  --z-header: 100;
+  --z-menu: 200;
+  --z-skip: 300;
+}
+
+/* Il palco non è un tema: è una superficie. Applicando questa classe a una
+   sezione, i componenti dentro continuano a leggere gli stessi nomi di token e
+   si ricolorano da soli, senza una variante per ogni componente. */
+.su-palco {
+  --paper: var(--stage);
+  --paper-sunk: var(--stage-2);
+  --ink: var(--light);
+  --ink-2: var(--light-2);
+  --ink-3: var(--light-2);
+  --rule: var(--edge);
+  --signal-ink: var(--signal); /* 5,95:1 sul palco — AA */
+  color: var(--ink);
+  background: var(--paper);
+}

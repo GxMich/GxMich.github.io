@@ -1,0 +1,540 @@
+---
+/**
+ * Guida di stile viva.
+ *
+ * Non usa il layout Base di proposito: quello monta ancora l'intestazione, il
+ * preloader e il cursore della direzione vecchia. Questa pagina deve mostrare i
+ * token nuovi e nient'altro, così un difetto che si vede qui è un difetto dei
+ * token e non di un componente che gli sta sopra.
+ *
+ * Resta nel sito finché la Fase 8 non è chiusa: è il posto dove si verifica che
+ * una modifica ai token non abbia rotto qualcosa di lontano.
+ */
+import '../styles/base.css';
+
+const colori = [
+  { nome: '--paper', valore: '#FAFAFA', ruolo: 'fondo di tutto', misura: '—' },
+  { nome: '--paper-sunk', valore: '#F1F1F0', ruolo: 'tabelle, strisce', misura: '—' },
+  { nome: '--ink', valore: '#0A0A0B', ruolo: 'titoli, testo pieno', misura: '18,96:1 · AAA' },
+  { nome: '--ink-2', valore: '#55565A', ruolo: 'corpo secondario', misura: '7,02:1 · AAA' },
+  { nome: '--ink-3', valore: '#686A70', ruolo: 'etichette, meta', misura: '5,18:1 · AA' },
+  { nome: '--rule', valore: '#E2E2E1', ruolo: 'filetti', misura: 'decorativo' },
+  { nome: '--signal', valore: '#FF4A1C', ruolo: 'superficie, focus', misura: '3,22:1 · grafico' },
+  { nome: '--signal-ink', valore: '#CE320C', ruolo: 'link, enfasi', misura: '4,92:1 · AA' },
+];
+
+const palco = [
+  { nome: '--stage', valore: '#08080A', ruolo: 'fondo del palco', misura: '—' },
+  { nome: '--stage-2', valore: '#101014', ruolo: 'superficie sollevata', misura: '—' },
+  { nome: '--light', valore: '#F4F4F5', ruolo: 'testo sul palco', misura: '18,21:1 · AAA' },
+  { nome: '--light-2', valore: '#A1A1A8', ruolo: 'secondario', misura: '7,79:1 · AAA' },
+  { nome: '--edge', valore: '#26262C', ruolo: 'bordi', misura: 'decorativo' },
+  { nome: '--tint-warm', valore: '#2A1A12', ruolo: 'luce: magazzino', misura: '—' },
+  { nome: '--tint-cold', valore: '#0C1A22', ruolo: 'luce: software', misura: '—' },
+];
+
+const spazi = [
+  ['--sp-1', 4], ['--sp-2', 8], ['--sp-3', 12], ['--sp-4', 16],
+  ['--sp-5', 24], ['--sp-6', 32], ['--sp-7', 48], ['--sp-8', 64],
+  ['--sp-9', 96], ['--sp-10', 128], ['--sp-11', 176],
+];
+
+const stati = [
+  { segno: 'pieno', etichetta: 'In uso', nota: 'il lavoro finito è pieno' },
+  { segno: 'vuoto', etichetta: 'In corso', nota: 'il contorno c’è, il dentro no' },
+  { segno: 'tratto', etichetta: 'Beta · dati di prova', nota: 'esiste ma non regge peso' },
+];
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Guida di stile — Redesign v2</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <link rel="preload" href="/fonts/geist-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/geist-mono-var.woff2" as="font" type="font/woff2" crossorigin />
+
+    <script is:inline>
+      // Prima del primo disegno: il contenuto si nasconde solo se c'è qualcuno
+      // che può rivelarlo. Senza questa riga, un errore di JavaScript lascia la
+      // pagina vuota per sempre.
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('puo-animare');
+      }
+    </script>
+  </head>
+
+  <body>
+    <a class="salta" href="#contenuto">Salta al contenuto</a>
+
+    <main id="contenuto" class="contenitore pagina">
+      <header class="testata">
+        <p class="etichetta">Redesign v2 · Fase 8 · Passo 1</p>
+        <h1 class="display">Guida di stile</h1>
+        <p class="lede">
+          I token della Fase 4, vivi. Se qualcosa qui si rompe, si è rotto il sistema —
+          non il componente che lo usa.
+        </p>
+      </header>
+
+      <!-- ============================ COLORE ============================ -->
+      <section class="sezione" aria-labelledby="colore">
+        <h2 id="colore" class="h2">Colore</h2>
+        <p class="testo-sm nota">
+          I rapporti di contrasto sono misurati con <code>scripts/contrasti.mjs</code>,
+          non stimati.
+        </p>
+
+        <ul class="campioni">
+          {colori.map((c) => (
+            <li>
+              <span class="tinta" style={`background:${c.valore}`}></span>
+              <span class="dato nome">{c.nome}</span>
+              <span class="dato valore">{c.valore}</span>
+              <span class="testo-sm">{c.ruolo}</span>
+              <span class="dato misura">{c.misura}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div class="su-palco riquadro-palco">
+          <p class="etichetta">La superficie palco</p>
+          <p class="testo-sm">
+            Non è un tema: è una classe. I componenti dentro leggono gli stessi nomi di
+            token e si ricolorano da soli.
+          </p>
+          <ul class="campioni">
+            {palco.map((c) => (
+              <li>
+                <span class="tinta bordata" style={`background:${c.valore}`}></span>
+                <span class="dato nome">{c.nome}</span>
+                <span class="dato valore">{c.valore}</span>
+                <span class="testo-sm">{c.ruolo}</span>
+                <span class="dato misura">{c.misura}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <!-- ========================== TIPOGRAFIA ========================== -->
+      <section class="sezione" aria-labelledby="tipografia">
+        <h2 id="tipografia" class="h2">Tipografia</h2>
+        <p class="testo-sm nota">Geist · Geist Mono · Instrument Serif corsivo</p>
+
+        <div class="scala">
+          <p class="etichetta">display-xl</p>
+          <p class="display-xl">Il tuo locale ha una faccia.</p>
+
+          <p class="etichetta">display</p>
+          <p class="display">Cosa costa, cosa non costa.</p>
+
+          <p class="etichetta">h2</p>
+          <p class="h2">Come si lavora.</p>
+
+          <p class="etichetta">h3</p>
+          <p class="h3">Dominio e hosting intestati a te</p>
+
+          <p class="etichetta">lede</p>
+          <p class="lede">
+            Non un modello riempito con le tue foto. Vengo a vedere il posto, capisco
+            cosa ti fa perdere tempo, e costruisco una cosa sola: la tua.
+          </p>
+
+          <p class="etichetta">corpo</p>
+          <p class="testo">
+            Di giorno risolvo problemi in un magazzino: il mio lavoro è capire perché una
+            cosa si è inceppata e rimetterla in moto, di corsa, mentre tutto il resto
+            continua a muoversi. La sera scrivo il software che li risolve una seconda volta.
+          </p>
+
+          <p class="etichetta">citazione — solo per le frasi di Michele</p>
+          <p class="citazione">
+            Gli strumenti di monitoraggio non muoiono quando sbagliano: muoiono quando la
+            gente smette di crederci.
+          </p>
+
+          <p class="etichetta">dato — cifre tabulari</p>
+          <p class="dato">115 componenti · 0,40 · 0,52 · 1,8 MB · 10 pagine</p>
+        </div>
+      </section>
+
+      <!-- ============================ SPAZIO ============================ -->
+      <section class="sezione" aria-labelledby="spazio">
+        <h2 id="spazio" class="h2">Spazio</h2>
+        <p class="testo-sm nota">Base 4px, ritmo verticale 8px.</p>
+        <ul class="spazi">
+          {spazi.map(([nome, px]) => (
+            <li>
+              <span class="dato">{nome}</span>
+              <span class="barra" style={`width:${px}px`}></span>
+              <span class="dato">{px}px</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- ============================ STATI ============================= -->
+      <section class="sezione" aria-labelledby="stati">
+        <h2 id="stati" class="h2">Stati dei progetti</h2>
+        <p class="testo-sm nota">
+          Senza colore: l'accento resta uno solo e significa <em>azione</em>. La
+          distinzione regge anche in bianco e nero.
+        </p>
+        <ul class="stati">
+          {stati.map((s) => (
+            <li>
+              <span class={`stato ${s.segno}`}>{s.etichetta}</span>
+              <span class="testo-sm">{s.nota}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- =========================== MOVIMENTO =========================== -->
+      <section class="sezione" aria-labelledby="movimento">
+        <h2 id="movimento" class="h2">Movimento</h2>
+        <p class="testo-sm nota">
+          Scorri per farle partire. Con «riduci animazioni» attivo il contenuto è già
+          al suo posto e non si muove niente.
+        </p>
+
+        <div class="prova">
+          <p class="etichetta">otturatore — solo su H1 e H2, un colpo per sezione</p>
+          <h3 class="display otturatore" data-anima>
+            <span class="riga"><span>Qualcosa non funziona.</span></span>
+            <span class="riga"><span>Lo sistemo io.</span></span>
+          </h3>
+        </div>
+
+        <div class="prova">
+          <p class="etichetta">sfocatura in entrata — paragrafi, ovunque</p>
+          <p class="lede sfoca-entra" data-anima>
+            Le soluzioni che funzionano alle nove del mattino con un operatore riposato
+            non dicono niente. La prova vera è alla fine di un turno lungo.
+          </p>
+        </div>
+
+        <button class="btn" type="button" id="rigioca">Rigioca</button>
+      </section>
+
+      <!-- ============================ GRIGLIA ============================ -->
+      <section class="sezione" aria-labelledby="griglia">
+        <h2 id="griglia" class="h2">Griglia</h2>
+        <p class="testo-sm nota">
+          12 colonne sopra 1024px, 8 fino a 768px, 4 sotto. Restringi la finestra.
+        </p>
+        <div class="griglia dimostrazione">
+          {Array.from({ length: 12 }).map((_, i) => <span class="colonna">{i + 1}</span>)}
+        </div>
+      </section>
+
+      <footer class="piede">
+        <p class="etichetta">
+          Pagina di lavoro · fuori dalla sitemap · noindex · si toglie a fine Fase 8
+        </p>
+      </footer>
+    </main>
+
+    <script>
+      const bersagli = Array.from(document.querySelectorAll('[data-anima]'));
+
+      if (document.documentElement.classList.contains('puo-animare')) {
+        const osservatore = new IntersectionObserver(
+          (voci) => {
+            voci.forEach((v) => {
+              if (v.isIntersecting) {
+                v.target.classList.add('visibile');
+                osservatore.unobserve(v.target);
+              }
+            });
+          },
+          { threshold: 0.35, rootMargin: '0px 0px -8% 0px' }
+        );
+
+        // Chi al caricamento è già passato sopra la piega non entrerà mai in
+        // intersezione: va mostrato subito, altrimenti resta invisibile per
+        // sempre a chi apre la pagina con un'ancora o ricarica a metà.
+        bersagli.forEach((el) => {
+          if (el.getBoundingClientRect().bottom < 0) el.classList.add('visibile');
+          else osservatore.observe(el);
+        });
+
+        // Rete di sicurezza. L'osservatore non scatta finché il documento non
+        // viene disegnato: una pagina aperta in una scheda di sfondo ha
+        // `visibilityState === 'hidden'` e resta ferma. Al ritorno in primo
+        // piano riparte da sola, ma se per qualunque ragione non lo facesse,
+        // un sito il cui contenuto principale è testo non può restare bianco.
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            bersagli.forEach((el) => {
+              if (el.getBoundingClientRect().top < window.innerHeight * 1.5) {
+                el.classList.add('visibile');
+              }
+            });
+          }, 2500);
+        });
+      } else {
+        bersagli.forEach((el) => el.classList.add('visibile'));
+      }
+
+      document.getElementById('rigioca')?.addEventListener('click', () => {
+        bersagli.forEach((el) => el.classList.remove('visibile'));
+        void document.body.offsetHeight;
+        setTimeout(() => bersagli.forEach((el) => el.classList.add('visibile')), 60);
+      });
+    </script>
+
+    <style>
+      .pagina {
+        padding-block: var(--sp-9) var(--sp-10);
+      }
+
+      .testata {
+        display: grid;
+        gap: var(--sp-4);
+        padding-bottom: var(--sp-7);
+        border-bottom: 1px solid var(--ink);
+      }
+
+      .sezione {
+        padding-top: var(--section-sm);
+      }
+
+      .nota {
+        margin-top: var(--sp-3);
+        max-width: 60ch;
+      }
+
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.92em;
+        background: var(--paper-sunk);
+        padding: 0.1em 0.35em;
+        border-radius: var(--radius-1);
+      }
+
+      /* ------------------------------ colore ------------------------------ */
+      .campioni {
+        display: grid;
+        gap: 0;
+        margin-top: var(--sp-6);
+        border-top: 1px solid var(--rule);
+      }
+
+      .campioni li {
+        display: grid;
+        grid-template-columns: 40px 130px 88px 1fr auto;
+        gap: var(--sp-4);
+        align-items: center;
+        padding: var(--sp-3) 0;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .tinta {
+        width: 40px;
+        height: 24px;
+        border-radius: var(--radius-1);
+        box-shadow: inset 0 0 0 1px var(--rule);
+      }
+
+      .tinta.bordata {
+        box-shadow: inset 0 0 0 1px var(--edge);
+      }
+
+      .campioni .nome {
+        color: var(--ink);
+      }
+
+      .campioni .valore,
+      .campioni .misura {
+        color: var(--ink-3);
+      }
+
+      .campioni .misura {
+        justify-self: end;
+      }
+
+      .riquadro-palco {
+        margin-top: var(--sp-7);
+        padding: var(--sp-6);
+        border-radius: var(--radius-2);
+        display: grid;
+        gap: var(--sp-3);
+      }
+
+      /* --------------------------- tipografia --------------------------- */
+      .scala {
+        display: grid;
+        gap: var(--sp-3);
+        margin-top: var(--sp-6);
+      }
+
+      .scala .etichetta {
+        margin-top: var(--sp-5);
+        padding-bottom: var(--sp-2);
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .scala .etichetta:first-child {
+        margin-top: 0;
+      }
+
+      /* ------------------------------ spazio ------------------------------ */
+      .spazi {
+        display: grid;
+        gap: var(--sp-2);
+        margin-top: var(--sp-6);
+      }
+
+      .spazi li {
+        display: grid;
+        grid-template-columns: 88px 200px auto;
+        gap: var(--sp-4);
+        align-items: center;
+      }
+
+      .barra {
+        height: 12px;
+        background: var(--ink);
+        border-radius: var(--radius-1);
+      }
+
+      /* ------------------------------ stati ------------------------------ */
+      .stati {
+        display: grid;
+        gap: var(--sp-4);
+        margin-top: var(--sp-6);
+      }
+
+      .stati li {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--sp-4);
+      }
+
+      .stato {
+        font-family: var(--font-mono);
+        font-size: var(--t-label);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+        border: 1px solid var(--rule);
+        border-radius: var(--radius-1);
+        padding: 4px 10px;
+        white-space: nowrap;
+      }
+
+      .stato::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+      }
+
+      .stato.pieno::before {
+        background: var(--ink);
+      }
+
+      .stato.vuoto::before {
+        border: 1px solid var(--ink-3);
+      }
+
+      .stato.tratto::before {
+        border: 1px dashed var(--ink-3);
+      }
+
+      /* ---------------------------- movimento ---------------------------- */
+      .prova {
+        margin-top: var(--sp-7);
+        display: grid;
+        gap: var(--sp-4);
+      }
+
+      .prova .etichetta {
+        padding-bottom: var(--sp-2);
+        border-bottom: 1px solid var(--rule);
+      }
+
+      /* Ogni riga dell'otturatore ha bisogno del suo contenitore che taglia:
+         senza `overflow: hidden` il clip-path rivela e basta, non svela. */
+      .riga {
+        display: block;
+        overflow: hidden;
+      }
+
+      .riga > span {
+        display: block;
+      }
+
+      .btn {
+        margin-top: var(--sp-6);
+        font-family: var(--font-ui);
+        font-weight: 500;
+        font-size: var(--t-body-sm);
+        letter-spacing: -0.01em;
+        background: var(--signal);
+        color: var(--signal-on);
+        border-radius: var(--radius-1);
+        padding: 11px 20px;
+        justify-self: start;
+      }
+
+      /* ----------------------------- griglia ----------------------------- */
+      .dimostrazione {
+        margin-top: var(--sp-6);
+      }
+
+      .colonna {
+        background: var(--paper-sunk);
+        border: 1px solid var(--rule);
+        border-radius: var(--radius-1);
+        padding: var(--sp-5) 0;
+        text-align: center;
+        font-family: var(--font-mono);
+        font-size: var(--t-label);
+        color: var(--ink-3);
+      }
+
+      @media (max-width: 1023px) {
+        .colonna:nth-child(n + 9) {
+          display: none;
+        }
+      }
+
+      @media (max-width: 767px) {
+        .colonna:nth-child(n + 5) {
+          display: none;
+        }
+
+        .campioni li {
+          grid-template-columns: 40px 1fr;
+          row-gap: var(--sp-1);
+        }
+
+        .campioni .misura {
+          justify-self: start;
+          grid-column: 2;
+        }
+
+        .spazi li {
+          grid-template-columns: 88px 1fr;
+        }
+      }
+
+      .piede {
+        margin-top: var(--section);
+        padding-top: var(--sp-5);
+        border-top: 1px solid var(--rule);
+      }
+    </style>
+  </body>
+</html>
