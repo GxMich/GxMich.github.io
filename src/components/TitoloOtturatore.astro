@@ -1,0 +1,95 @@
+---
+/**
+ * Titolo che si apre a otturatore: ogni parola sale da sotto un bordo netto,
+ * come una lama che scopre la riga invece di una dissolvenza che la accende.
+ *
+ * Era un componente React con motion. Fa esattamente la stessa cosa, ma il
+ * movimento è più deciso e costa zero JavaScript: il ritardo di ogni parola è
+ * una variabile CSS calcolata qui, e l'animazione la manda avanti il browser.
+ * Su una headline sopra la piega la differenza si sente — non c'è nessun
+ * modulo da scaricare e valutare prima che la prima parola si muova.
+ *
+ * L'attesa del preloader resta, ma passa da una classe che il preloader
+ * stesso toglie: nessun listener, nessun salvagente da armare.
+ */
+interface Props {
+  /** Ogni riga è un array di parole, così i ritorni a capo restano voluti. */
+  righe: string[][];
+  class?: string;
+}
+
+const { righe, class: classe = '' } = Astro.props;
+
+let indice = 0;
+---
+
+<h1 class:list={['otturatore', classe]}>
+  {
+    righe.map((riga) => (
+      <span class="riga">
+        {riga.map((parola) => {
+          const i = indice++;
+          return (
+            <>
+              <span class="lama">
+                <span class="parola" style={`--i:${i}`}>{parola}</span>
+              </span>{' '}
+            </>
+          );
+        })}
+      </span>
+    ))
+  }
+</h1>
+
+<style>
+  .otturatore {
+    /* Il testo resta selezionabile e i lettori di schermo leggono una frase
+       sola: gli span non spezzano il flusso, aggiungono solo un contenitore. */
+    text-wrap: balance;
+  }
+  .riga {
+    display: block;
+  }
+  /* La lama è il bordo che nasconde: overflow nascosto e altezza della riga,
+     così la parola sotto è invisibile finché non sale. Il padding in fondo
+     lascia respirare le lettere che scendono sotto la linea di base — senza,
+     le "g" e le "p" venivano tagliate. */
+  .lama {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+  }
+  /* Lo spazio fra le parole è un vero spazio nel testo, fuori dalla lama.
+     Simularlo con del padding sembrava identico, ma copiando la frase
+     usciva "Qualcosanon funziona" — e i lettori di schermo la leggevano
+     così com'era scritta, cioè attaccata. */
+  .parola {
+    display: inline-block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Stato di partenza solo se il JavaScript ha confermato che si può
+       animare: se non arriva mai, il titolo si vede e basta. */
+    :global(html.can-animate) .parola {
+      transform: translateY(105%);
+    }
+    /* In home l'animazione parte quando il preloader si toglie di mezzo.
+       Sulle altre pagine, dove il preloader non esiste, parte subito. */
+    :global(html.can-animate:not([data-preloader='attivo'])) .parola {
+      animation: lama-sale 0.82s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(var(--i) * 0.075s);
+    }
+  }
+
+  @keyframes lama-sale {
+    from {
+      transform: translateY(105%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+</style>

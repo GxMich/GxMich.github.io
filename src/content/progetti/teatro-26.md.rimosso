@@ -1,0 +1,86 @@
+---
+titolo: Teatro 26
+cliente: Pizzeria di fascia alta, Vercelli
+tipo: sito
+anno: 2026
+natura: iniziativa
+stato: Completo, non ancora online
+durata: Due settimane
+riassunto: Un sito costruito attorno alle foto vere del locale, dopo aver scoperto che quelle di partenza raccontavano una cosa diversa da quello che mostravano.
+
+contesto: |
+  Teatro 26 è una pizzeria di fascia alta a Vercelli, con una carta lunga e una
+  cucina che lavora molto sul crudo di mare oltre che sulla pizza. Il forno gira
+  a 430 gradi e la leopardatura del cornicione è una delle cose di cui vanno più
+  fieri: è un dettaglio tecnico che un cliente abituale riconosce e che sul sito
+  non compariva da nessuna parte.
+
+  Non è un lavoro che mi ha commissionato qualcuno. L'ho costruito per capire
+  quanto lontano si può portare un sito di ristorazione prima di presentarlo, e
+  perché nella mia zona i locali buoni hanno quasi sempre siti che non gli
+  assomigliano.
+
+problema: |
+  Il materiale di partenza era il problema. Le immagini che avrei dovuto usare
+  erano didascalizzate come "la sala" e "gli interni": aprendole, erano fotografie
+  di pizze. Tutte e nove.
+
+  Su un sito di ristorazione questa non è una svista grafica. Chi cerca un locale
+  per una cena importante vuole vedere dove si siede, e una didascalia che promette
+  la sala e consegna un tagliere insegna al visitatore che il sito non è affidabile.
+  Da lì in poi non crede più nemmeno agli orari.
+
+soluzione: |
+  La regola che ho seguito è una sola: dove esiste materiale vero, il disegno si
+  toglie di mezzo. Ho riscritto tutte le didascalie partendo da cosa mostrano
+  davvero le foto, e ho ricostruito le sezioni attorno a quello che avevo, invece
+  di lasciare buchi arredati con illustrazioni.
+
+  Da questo è nata la sezione sul forno, che nel piano iniziale non c'era: se le
+  uniche immagini vere sono di cibo, allora il racconto lo fa il cibo, e la
+  leopardatura a 430 gradi diventa un capitolo invece che una nota a piè di pagina.
+
+  Sull'impaginazione ho tenuto un'idea teatrale — sipario che si apre, quinte,
+  palcoscenico — perché il nome la chiedeva, ma l'ho tenuta all'ingresso. Dopo la
+  prima schermata l'effetto sparisce e resta il menù, che è la cosa per cui la
+  gente arriva davvero. Il video della pizza pesa cinque megabyte e sotto i 721
+  pixel di larghezza non viene proprio scaricato: al suo posto c'è un fermo
+  immagine, così chi arriva in coda alla cassa con la rete lenta non paga il
+  costo di un'animazione che non vedrebbe comunque.
+
+risultato:
+  - voce: Menù completo e cercabile
+    dettaglio: 69 voci divise in cinque categorie, con filtri per vegetariano, vegano, senza glutine e piccante. La ricerca è lato client, quindi risponde senza chiamate al server.
+  - voce: Prestazioni misurate
+    dettaglio: Lighthouse 92 su performance e 95 su accessibilità. Primo contenuto a 1,2 secondi, elemento principale a 1,8, spostamento di layout a 0,05.
+  - voce: Niente video sul telefono
+    dettaglio: Sotto i 721 pixel il browser non scarica nessun MP4. Il peso della pagina scende di cinque megabyte esatti.
+  - voce: Accessibilità
+    dettaglio: Conforme WCAG 2.1 AA, con rapporto di contrasto sopra 7:1 sui testi principali e navigazione completa da tastiera.
+  - voce: Cosa manca
+    dettaglio: Le prenotazioni validano e simulano l'invio ma non hanno ancora un backend. Servono anche le foto vere della sala, che non esistono.
+
+anteprima: teatro26/copertina.jpg
+schermate:
+  - src: teatro26/copertina.jpg
+    alt: Pizza dentro un forno a legna acceso
+
+tecnologie:
+  - HTML e CSS senza framework
+  - JavaScript
+  - GSAP
+  - Three.js
+  - Schema.org
+
+inEvidenza: true
+ordine: 1
+
+metaTitolo: Teatro 26 — sito per pizzeria di fascia alta a Vercelli
+metaDescrizione: Come ho ricostruito il sito di una pizzeria vercellese partendo dalla scoperta che tutte le foto di partenza erano didascalizzate male. Menù di 69 voci, Lighthouse 92, zero video su mobile.
+---
+
+Una nota sul video in apertura. La prima versione caricava un modello Three.js
+della pizza che ruotava: bello da costruire, inutile da guardare. L'ho lasciato
+solo come riserva per i browser che non riproducono il video, e ho messo davanti
+un filmato vero. Quando esiste la cosa, la sua ricostruzione in poligoni è un
+esercizio di bravura che il cliente paga senza motivo.

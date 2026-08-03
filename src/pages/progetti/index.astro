@@ -1,0 +1,273 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CtaFinale from '../../components/CtaFinale.astro';
+import CardProgetto from '../../components/react/CardProgetto.tsx';
+import { SITE } from '../../config.js';
+import { briciole } from '../../lib/schema.ts';
+
+import { urlWebp } from '../../lib/immagini.ts';
+
+const progetti = (await getCollection('progetti')).sort(
+  (a, b) => a.data.ordine - b.data.ordine || b.data.anno - a.data.anno
+);
+const anteprime = new Map(
+  await Promise.all(
+    progetti.map(async (p) => [p.id, await urlWebp(p.data.anteprima, 800)] as const)
+  )
+);
+
+const filtri = [
+  { valore: 'tutti', etichetta: 'Tutti', n: progetti.length },
+  { valore: 'sito', etichetta: 'Siti', n: progetti.filter((p) => p.data.tipo === 'sito').length },
+  {
+    valore: 'tool',
+    etichetta: 'Tool & automazioni',
+    n: progetti.filter((p) => p.data.tipo === 'tool').length,
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Progetti',
+    url: `${SITE.url}/progetti`,
+    description:
+      'Siti su misura per attività locali e strumenti software su misura per aziende e professionisti.',
+    // L'elenco esplicito serve a far capire che la pagina è un indice e non
+    // un articolo: senza, i motori scelgono da soli quale card è il contenuto.
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: progetti.length,
+      itemListElement: progetti.map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${SITE.url}/progetti/${p.id}`,
+        name: p.data.titolo,
+      })),
+    },
+  },
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: 'Progetti', percorso: '/progetti' },
+  ]),
+];
+---
+
+<Base
+  title="Progetti — siti su misura, tool e automazioni | Michele"
+  description="I lavori che ho seguito: siti su misura per attività locali e strumenti software per aziende. Per ognuno il problema di partenza, la direzione scelta e come è andata."
+  ogImage="/og/progetti.png"
+  jsonLd={jsonLd}
+>
+  <div class="wrap pagina">
+      <section class="testa" data-hero data-reveal-group>
+        <p class="label" data-reveal>Progetti</p>
+        <h1 class="display-sm titolo" data-reveal>
+          Ogni progetto parte da un problema preciso.
+        </h1>
+        <p class="lede" data-reveal>
+          Non trovi qui gallerie di schermate senza spiegazioni. Per ogni lavoro c'è scritto
+          cosa non funzionava prima, che direzione abbiamo preso e perché.
+        </p>
+      </section>
+
+      <section class="elenco">
+        <nav class="filtri" aria-label="Filtra i progetti per tipo" data-reveal>
+          {
+            filtri.map((f) => (
+              <a
+                href={f.valore === 'tutti' ? '/progetti' : `/progetti?tipo=${f.valore}`}
+                class="filtro"
+                data-filtro={f.valore}
+                aria-current={f.valore === 'tutti' ? 'true' : undefined}
+              >
+                {f.etichetta} <span class="n">{f.n}</span>
+              </a>
+            ))
+          }
+        </nav>
+
+        <!-- La prima scheda e la quarta occupano tutta la riga: la griglia
+             smette di essere un catalogo a due colonne e prende un ritmo. -->
+        <div class="griglia" data-reveal-group data-griglia>
+          {
+            progetti.map((p, i) => (
+              <div data-reveal data-tipo={p.data.tipo} class:list={{ largo: i === 0 || i === 3 }}>
+                <CardProgetto
+                  client:visible
+                  href={`/progetti/${p.id}`}
+                  titolo={p.data.titolo}
+                  riassunto={p.data.riassunto}
+                  tipo={p.data.tipo}
+                  anno={p.data.anno}
+                  immagine={anteprime.get(p.id)}
+                  natura={p.data.natura}
+                  prioritaria={i < 2}
+                  larga={i === 0 || i === 3}
+                />
+              </div>
+            ))
+          }
+        </div>
+
+        <p class="vuoto" data-vuoto hidden>
+          Non ho ancora pubblicato progetti di questo tipo.
+          <a class="link-inline" href="/contatti">Scrivimi</a> se vuoi essere il primo.
+        </p>
+
+        <p class="nota" data-reveal>
+          Dove il lavoro è nato da me e non da una commessa, o dove è coperto da
+          riservatezza, sta scritto sulla scheda.
+        </p>
+      </section>
+  </div>
+
+  <CtaFinale
+    etichetta="Il prossimo"
+    titolo="Il prossimo progetto potrebbe essere il tuo."
+    testo="Che sia un sito per la tua attività o uno strumento che ti tolga lavoro manuale dalle mani, il punto di partenza è lo stesso: capire cosa ti serve davvero."
+  />
+</Base>
+
+<script>
+  // Il filtro non ricarica la pagina: cambia solo cosa è visibile.
+  // Funziona anche arrivando da un link esterno tipo /progetti?tipo=tool
+  //
+  // Va ricollegato a ogni navigazione, perché con ClientRouter la griglia è
+  // un elemento nuovo mentre questo script resta quello di prima. Anche il
+  // filtro iniziale va riletto: si arriva qui dalla home col link
+  // "Guarda i tool", e quel parametro nell'indirizzo deve valere ogni volta.
+  function collegaFiltri() {
+    const griglia = document.querySelector<HTMLElement>('[data-griglia]');
+    if (!griglia || griglia.dataset.collegato) return;
+    griglia.dataset.collegato = '1';
+
+    const vuoto = document.querySelector<HTMLElement>('[data-vuoto]');
+    const bottoni = document.querySelectorAll<HTMLAnchorElement>('[data-filtro]');
+
+    function applica(tipo: string, aggiornaUrl = true) {
+      if (!griglia) return;
+      const card = griglia.querySelectorAll<HTMLElement>('[data-tipo]');
+      let visibili = 0;
+
+      card.forEach((c) => {
+        const ok = tipo === 'tutti' || c.dataset.tipo === tipo;
+        c.hidden = !ok;
+        if (ok) visibili++;
+      });
+
+      bottoni.forEach((b) => {
+        if (b.dataset.filtro === tipo) b.setAttribute('aria-current', 'true');
+        else b.removeAttribute('aria-current');
+      });
+
+      if (vuoto) vuoto.hidden = visibili > 0;
+
+      if (aggiornaUrl) {
+        history.replaceState(null, '', tipo === 'tutti' ? '/progetti' : `/progetti?tipo=${tipo}`);
+      }
+    }
+
+    bottoni.forEach((b) => {
+      b.addEventListener('click', (e) => {
+        e.preventDefault();
+        applica(b.dataset.filtro || 'tutti');
+      });
+    });
+
+    const iniziale = new URLSearchParams(location.search).get('tipo');
+    if (iniziale === 'sito' || iniziale === 'tool') applica(iniziale, false);
+  }
+
+  document.addEventListener('astro:page-load', collegaFiltri);
+</script>
+
+<style>
+  .pagina {
+    padding-block: clamp(44px, 6vw, 88px) clamp(60px, 8vw, 110px);
+  }
+  .testa .label {
+    margin-bottom: clamp(24px, 3vw, 40px);
+  }
+  .titolo {
+    max-width: 17ch;
+  }
+  .testa .lede {
+    margin-top: 26px;
+  }
+
+  .elenco {
+    padding-top: clamp(48px, 6vw, 84px);
+  }
+  .filtri {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: clamp(30px, 4vw, 48px);
+  }
+  .filtro {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 10px 16px;
+    transition: color 0.25s ease, border-color 0.25s ease;
+  }
+  .filtro:hover {
+    color: var(--text);
+    border-color: var(--text-muted);
+  }
+  .filtro .n {
+    color: var(--text-faint);
+    margin-left: 5px;
+  }
+  .filtro[aria-current='true'] {
+    color: var(--bg);
+    background: var(--text);
+    border-color: var(--text);
+  }
+  .filtro[aria-current='true'] .n {
+    color: var(--bg);
+    opacity: 0.6;
+  }
+
+  .griglia {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(34px, 4.5vw, 64px);
+  }
+  /* Le schede larghe scavalcano le due colonne. Se il filtro ne nasconde una,
+     le altre si richiudono da sole: la riga non resta mai spaiata. */
+  .griglia > .largo {
+    grid-column: 1 / -1;
+  }
+  .vuoto {
+    color: var(--text-muted);
+    padding: 44px 0;
+  }
+  .nota {
+    margin-top: clamp(34px, 4vw, 52px);
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 900px) {
+    .griglia {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

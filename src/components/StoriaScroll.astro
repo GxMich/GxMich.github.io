@@ -1,0 +1,221 @@
+---
+/**
+ * I passi del metodo raccontati a scorrimento: il numero grande resta
+ * agganciato a sinistra mentre i quattro testi passano a destra, e cambia
+ * quando arriva il turno di ognuno.
+ *
+ * Prima erano quattro colonne affiancate: si leggevano tutte insieme, in
+ * competizione fra loro, e la sequenza — che è tutto il punto di un metodo —
+ * si perdeva. Un passo dopo l'altro obbliga a leggerli nell'ordine giusto.
+ *
+ * GSAP e ScrollTrigger arrivano con un import dinamico, dopo il primo disegno
+ * e solo se il movimento è consentito: sono quarantacinque kilobyte, e non
+ * devono stare fra chi apre la pagina e la prima riga che legge.
+ *
+ * Senza JavaScript, o con movimento ridotto, resta un elenco numerato che si
+ * legge dall'alto in basso. Non è un ripiego: è la stessa informazione.
+ */
+interface Passo {
+  n: string;
+  titolo: string;
+  testo: string;
+  chi: string;
+}
+
+const { passi } = Astro.props as { passi: Passo[] };
+---
+
+<div class="storia" data-storia>
+  <div class="colonna-num" aria-hidden="true">
+    <div class="num-pila">
+      {passi.map((p) => <span class="num-grande" data-num>{p.n}</span>)}
+    </div>
+  </div>
+
+  <ol class="passi-lista">
+    {
+      passi.map((p) => (
+        <li class="passo" data-passo>
+          <span class="num-piccolo label-plain">{p.n}</span>
+          <h3 class="h3 passo-titolo">{p.titolo}</h3>
+          <p class="passo-testo">{p.testo}</p>
+          <span class="chi label-plain">{p.chi}</span>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<script>
+  async function avviaStoria() {
+    const radice = document.querySelector<HTMLElement>('[data-storia]');
+    if (!radice || radice.dataset.pronta) return;
+    if (!window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+    // Sotto i 900px la colonna del numero non c'è: l'elenco resta verticale
+    // e agganciare qualcosa non avrebbe niente a cui agganciarsi.
+    if (window.innerWidth < 900) return;
+
+    radice.dataset.pronta = '1';
+
+    const [{ gsap }, { ScrollTrigger }] = await Promise.all([
+      import('gsap'),
+      import('gsap/ScrollTrigger'),
+    ]);
+    gsap.registerPlugin(ScrollTrigger);
+
+    const numeri = gsap.utils.toArray<HTMLElement>('[data-num]');
+    const passi = gsap.utils.toArray<HTMLElement>('[data-passo]');
+    const pila = radice.querySelector<HTMLElement>('.num-pila');
+    if (!pila || !numeri.length) return;
+
+    /**
+     * Lo spostamento è in percentuale dell'elemento, non in pixel.
+     *
+     * Con i pixel misuravo l'altezza di una cifra al momento dello scatto: se
+     * il carattere non era ancora arrivato la misura veniva zero, la pila
+     * restava a `translate(0px)` e il numero non cambiava mai. In percentuale
+     * non c'è niente da misurare — un quarto di pila con quattro numeri — e
+     * il conto resta giusto anche se il carattere arriva dopo.
+     */
+    const passo1 = 100 / numeri.length;
+
+    passi.forEach((passo, i) => {
+      const vaiA = () =>
+        gsap.to(pila, { yPercent: -passo1 * i, duration: 0.55, ease: 'power3.out' });
+
+      const accendi = () => {
+        numeri.forEach((n, k) => n.classList.toggle('attivo', k === i));
+        vaiA();
+      };
+
+      ScrollTrigger.create({
+        trigger: passo,
+        start: 'top 62%',
+        end: 'bottom 62%',
+        onEnter: accendi,
+        onEnterBack: accendi,
+      });
+
+      // Il passo attivo si accende, gli altri restano indietro. Animo opacità
+      // e spostamento, non colore: restano sul compositore.
+      gsap.fromTo(
+        passo,
+        { opacity: 0.28, x: 18 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.5,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: passo, start: 'top 78%', toggleActions: 'play none none reverse' },
+        }
+      );
+    });
+
+    /* Lenis muove lo scorrimento per conto suo: senza dirlo a ScrollTrigger,
+       i due tengono due posizioni diverse e gli agganci scattano in ritardo. */
+    const lenis = (window as unknown as { __lenis?: { on: (e: string, f: () => void) => void } })
+      .__lenis;
+    if (lenis) lenis.on('scroll', ScrollTrigger.update);
+
+    // Le misure vanno riprese dopo che caratteri e immagini sono arrivati:
+    // calcolate prima, gli agganci scattano qualche centinaio di pixel fuori posto.
+    numeri[0]?.classList.add('attivo');
+    await document.fonts?.ready;
+    ScrollTrigger.refresh();
+
+    document.addEventListener('astro:before-swap', () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+      delete radice.dataset.pronta;
+    });
+  }
+
+  document.addEventListener('astro:page-load', avviaStoria);
+  avviaStoria();
+</script>
+
+<style>
+  .storia {
+    display: grid;
+    gap: clamp(28px, 5vw, 80px);
+  }
+
+  .passi-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(40px, 7vw, 96px);
+  }
+  .passo {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    max-width: 46ch;
+  }
+  .num-piccolo {
+    color: var(--text-faint);
+  }
+  .passo-titolo {
+    text-wrap: balance;
+  }
+  .passo-testo {
+    color: var(--text-muted);
+    font-size: clamp(15px, 1.5vw, 16.5px);
+    line-height: 1.62;
+    text-wrap: pretty;
+  }
+  .chi {
+    color: var(--text-faint);
+    padding-top: 6px;
+  }
+
+  /* Sotto i 900px la colonna del numero sparisce: su una larghezza da telefono
+     ruberebbe metà riga per mostrare due cifre. */
+  .colonna-num {
+    display: none;
+  }
+
+  @media (min-width: 900px) {
+    .storia {
+      grid-template-columns: minmax(0, 0.42fr) minmax(0, 1fr);
+      align-items: start;
+    }
+    .colonna-num {
+      display: block;
+      position: sticky;
+      top: 34vh;
+      height: 1em;
+      overflow: hidden;
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: clamp(84px, 11vw, 168px);
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+    .num-pila {
+      display: grid;
+    }
+    .num-grande {
+      display: block;
+      height: 1em;
+      line-height: 1;
+      /* Contorno invece di pieno: a questa dimensione un numero pieno
+         diventa un muro e ruba l'attenzione al testo, che è il contenuto. */
+      -webkit-text-stroke: 1.4px var(--border-forte);
+      color: transparent;
+    }
+    /* Il numero del passo in corso è pieno, gli altri restano in contorno:
+       così si vede a colpo d'occhio a che punto della sequenza si è. */
+    .num-grande.attivo {
+      -webkit-text-stroke-color: transparent;
+      color: var(--text);
+      transition: color 0.4s ease, -webkit-text-stroke-color 0.4s ease;
+    }
+    .passo {
+      min-height: 42vh;
+    }
+    .num-piccolo {
+      display: none;
+    }
+  }
+</style>

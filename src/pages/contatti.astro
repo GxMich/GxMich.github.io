@@ -1,0 +1,486 @@
+﻿---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config.js';
+import { ID, briciole } from '../lib/schema.ts';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: 'Contatti',
+    url: `${SITE.url}/contatti`,
+    mainEntity: { '@id': ID.persona },
+  },
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: 'Contatti', percorso: '/contatti' },
+  ]),
+];
+---
+
+<Base
+  title="Contatti — parliamo del tuo progetto | Michele"
+  description="Scrivimi due righe su cosa fai e cosa non funziona oggi. Rispondo io entro un giorno. Trino, Vercelli, Casale Monferrato, Novara e da remoto in tutta Italia."
+  ogImage="/og/contatti.png"
+  jsonLd={jsonLd}
+>
+  <section class="testa">
+    <div class="wrap" data-reveal-group data-hero>
+      <p class="label" data-reveal>Contatti</p>
+      <h1 class="display-sm" data-reveal>
+        Dimmi cosa ti serve, anche se non è chiaro.
+      </h1>
+      <p class="lede" data-reveal>
+        Non serve che tu arrivi con le idee in ordine: metterle in ordine è il primo pezzo
+        del lavoro. Rispondo io, entro un giorno lavorativo.
+      </p>
+    </div>
+  </section>
+
+  <section class="contenuto">
+    <div class="wrap layout" data-reveal-group>
+      <!-- ============================ FORM ============================ -->
+      <div class="colonna-form" data-reveal>
+        <form
+          id="form-contatti"
+          class="form"
+          method="POST"
+          action={SITE.formEndpoint}
+          data-form
+        >
+          <input type="hidden" name="access_key" value={SITE.formAccessKey} />
+          <input type="hidden" name="subject" value="Nuovo contatto dal sito" />
+          <input type="hidden" name="from_name" value={`Sito ${SITE.name}`} />
+          <!-- Trappola per i robot: se viene riempito, il messaggio non parte.
+               aria-hidden perché a un lettore di schermo arriverebbe come una
+               casella da spuntare senza etichetta, cioè come un errore del
+               modulo. Non è focalizzabile, quindi nasconderla è sicuro. -->
+          <input
+            type="checkbox"
+            name="botcheck"
+            class="visually-hidden"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+          />
+
+          <div class="campo">
+            <label for="nome">Come ti chiami</label>
+            <input type="text" id="nome" name="nome" required autocomplete="name" />
+          </div>
+
+          <fieldset class="campo">
+            <legend>Di cosa avresti bisogno</legend>
+            <div class="scelte">
+              <label class="scelta">
+                <input type="radio" name="tipo" value="Sito" required />
+                <span>Un sito</span>
+              </label>
+              <label class="scelta">
+                <input type="radio" name="tipo" value="Tool o automazione" />
+                <span>Un tool o un'automazione</span>
+              </label>
+              <label class="scelta">
+                <input type="radio" name="tipo" value="Non so ancora" />
+                <span>Non so ancora</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="campo">
+            <label for="zona">Dove sei</label>
+            <select id="zona" name="zona" required>
+              <option value="">Scegli…</option>
+              <option>Trino e dintorni</option>
+              <option>Vercelli e provincia</option>
+              <option>Casale Monferrato e dintorni</option>
+              <option>Novara e provincia</option>
+              <option>Chivasso e dintorni</option>
+              <option>Altrove in Italia — lavoriamo da remoto</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="contatto">Come ti rispondo</label>
+            <input
+              type="text"
+              id="contatto"
+              name="contatto"
+              required
+              placeholder="Email o numero di telefono"
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="campo">
+            <label for="messaggio">Raccontami</label>
+            <textarea
+              id="messaggio"
+              name="messaggio"
+              rows="6"
+              required
+              placeholder="Cosa fai, cosa non funziona oggi, cosa vorresti che succedesse."
+            ></textarea>
+          </div>
+
+          <label class="privacy">
+            <input type="checkbox" name="privacy" required />
+            <span>
+              Ho letto l'<a class="link-inline" href="/privacy">informativa privacy</a> e
+              acconsento al trattamento dei dati per essere ricontattato.
+            </span>
+          </label>
+
+          <div class="btns">
+            <button class="btn btn-solid" type="submit" data-invia>
+              Invia il messaggio
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path
+                  d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+              </svg>
+            </button>
+          </div>
+
+          <p class="esito" data-esito role="status" aria-live="polite"></p>
+        </form>
+
+        <!-- conferma mostrata al posto del form dopo l'invio -->
+        <div class="conferma" data-conferma hidden>
+          <span class="segno" aria-hidden="true"></span>
+          <h2 class="h3">Ricevuto.</h2>
+          <p>
+            Il messaggio è arrivato. Ti rispondo io entro un giorno lavorativo, dall'indirizzo
+            <strong>{SITE.email}</strong> — se non vedi niente, controlla anche lo spam.
+          </p>
+          <p class="btns">
+            <a class="btn btn-ghost" href="/progetti">Intanto guarda i progetti</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- ========================== CANALI ========================== -->
+      <aside class="canali" data-reveal>
+        <div class="canale">
+          <p class="label">Se preferisci scrivere subito</p>
+          <a class="whatsapp" href={`https://wa.me/${SITE.whatsapp}`} rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path
+                d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.48 1.34 5L2 22l5.16-1.35a9.9 9.9 0 0 0 4.88 1.25h.01c5.5 0 9.96-4.46 9.96-9.96 0-2.66-1.04-5.16-2.92-7.04A9.88 9.88 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.17 8.17 0 0 1-1.26-4.34c0-4.57 3.72-8.29 8.29-8.29 2.21 0 4.29.86 5.86 2.43a8.24 8.24 0 0 1 2.43 5.86c0 4.57-3.72 8.29-8.29 8.29Zm4.55-6.2c-.25-.13-1.47-.72-1.7-.81-.23-.08-.4-.12-.56.13-.17.25-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.39.11-.51.11-.11.25-.29.37-.44.13-.15.17-.25.25-.42.08-.16.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.42.06-.64.31-.22.25-.84.82-.84 2s.86 2.32.98 2.48c.12.17 1.7 2.59 4.11 3.63.58.25 1.02.4 1.37.51.58.18 1.1.16 1.51.1.46-.07 1.47-.6 1.68-1.18.2-.58.2-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z"
+              ></path>
+            </svg>
+            {SITE.whatsappLabel}
+          </a>
+          <p class="canale-nota">
+            Rispondo negli orari di lavoro. Se scrivo poco, sto scrivendo codice.
+          </p>
+        </div>
+
+        <div class="canale">
+          <p class="label">Per email</p>
+          <a class="link-inline email" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+        </div>
+
+        <div class="canale">
+          <p class="label">Dove lavoro</p>
+          <ul class="zone">
+            {SITE.areas.map((a) => <li>{a}</li>)}
+          </ul>
+        </div>
+
+        <div class="canale">
+          <p class="label">Cosa succede dopo</p>
+          <ol class="dopo">
+            <li><span class="num">01</span> Ti rispondo e ti faccio due domande.</li>
+            <li><span class="num">02</span> Ci sentiamo mezz'ora, di persona o in video.</li>
+            <li><span class="num">03</span> Ti mando un preventivo scritto, senza impegno.</li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  /**
+   * Il modulo va riagganciato a ogni navigazione: con ClientRouter questo
+   * script viene eseguito una volta sola per sessione, mentre il form del DOM
+   * è nuovo ogni volta che si torna sulla pagina. Senza questo, chi visita
+   * /contatti, va altrove e torna indietro si trova un modulo che ricarica la
+   * pagina invece di inviare — e il messaggio si perde.
+   */
+  function collegaModulo() {
+    const form = document.querySelector<HTMLFormElement>('[data-form]');
+    if (!form || form.dataset.collegato) return;
+    form.dataset.collegato = '1';
+
+    const conferma = document.querySelector<HTMLElement>('[data-conferma]');
+    const esito = document.querySelector<HTMLElement>('[data-esito]');
+    const invia = document.querySelector<HTMLButtonElement>('[data-invia]');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const testoOriginale = invia?.textContent ?? '';
+      if (invia) {
+        invia.disabled = true;
+        invia.textContent = 'Invio in corso…';
+      }
+      if (esito) esito.textContent = '';
+
+      try {
+        const dati = Object.fromEntries(new FormData(form).entries());
+        const risposta = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(dati),
+        });
+
+        if (!risposta.ok) throw new Error(String(risposta.status));
+
+        form.hidden = true;
+        if (conferma) {
+          conferma.hidden = false;
+          conferma.querySelector('h2')?.setAttribute('tabindex', '-1');
+          (conferma.querySelector('h2') as HTMLElement | null)?.focus();
+        }
+      } catch {
+        if (esito) {
+          esito.textContent =
+            "Non sono riuscito a inviare il messaggio. Riprova, oppure scrivimi direttamente su WhatsApp o per email: arrivo lo stesso.";
+        }
+        if (invia) {
+          invia.disabled = false;
+          invia.textContent = testoOriginale;
+        }
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', collegaModulo);
+</script>
+
+<style>
+  .testa {
+    padding-block: clamp(40px, 6vw, 76px) clamp(30px, 4vw, 52px);
+  }
+  .testa .label {
+    margin-bottom: clamp(22px, 3vw, 36px);
+  }
+  .testa h1 {
+    max-width: 16ch;
+  }
+  .testa .lede {
+    margin-top: 22px;
+  }
+
+  .contenuto {
+    padding-bottom: var(--section);
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    gap: clamp(34px, 5vw, 76px);
+    align-items: start;
+  }
+
+  /* ------------------------------ form ------------------------------ */
+  .form {
+    display: grid;
+    gap: clamp(20px, 2.5vw, 28px);
+    border-top: 1px solid var(--border);
+    padding-top: clamp(26px, 3.5vw, 38px);
+  }
+  .campo {
+    display: grid;
+    gap: 9px;
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .campo > label,
+  .campo legend {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0;
+  }
+  input[type='text'],
+  select,
+  textarea {
+    width: 100%;
+    font: inherit;
+    font-size: 16px; /* niente zoom automatico su iOS */
+    color: var(--text);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px 14px;
+    transition: border-color 0.2s ease;
+  }
+  input[type='text']:hover,
+  select:hover,
+  textarea:hover {
+    border-color: var(--text-muted);
+  }
+  input[type='text']:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    border-color: var(--text);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 140px;
+  }
+  ::placeholder {
+    color: var(--text-muted);
+    opacity: 0.75;
+  }
+
+  .scelte {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .scelta {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 11px 14px;
+    font-size: 14.5px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  .scelta:hover {
+    border-color: var(--text-muted);
+  }
+  .scelta:has(input:checked) {
+    border-color: var(--text);
+  }
+  /* 18px invece dei 13 di default: il bersaglio vero è l'etichetta che li
+     avvolge, ma un pallino più grande si centra meglio col pollice. */
+  .scelta input {
+    accent-color: var(--text);
+    margin: 0;
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+
+  .privacy {
+    display: flex;
+    gap: 12px;
+    align-items: start;
+    font-size: 14.5px;
+    color: var(--text-muted);
+    max-width: 56ch;
+  }
+  .privacy input {
+    margin-top: 3px;
+    accent-color: var(--text);
+    flex: none;
+    width: 18px;
+    height: 18px;
+  }
+
+  .esito:empty {
+    display: none;
+  }
+  .esito {
+    color: var(--text);
+    font-size: 15px;
+    border-left: 2px solid var(--text-muted);
+    padding-left: 16px;
+    max-width: 56ch;
+  }
+
+  /* ---------------------------- conferma ---------------------------- */
+  .conferma {
+    border-top: 1px solid var(--border);
+    padding-top: clamp(26px, 3.5vw, 38px);
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+  }
+  .segno {
+    display: block;
+    width: 64px;
+    height: 1px;
+    background: var(--text);
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.5);
+  }
+  .conferma p {
+    color: var(--text-muted);
+    max-width: 52ch;
+  }
+  .conferma strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .conferma h2:focus-visible {
+    outline-offset: 6px;
+  }
+
+  /* ----------------------------- canali ----------------------------- */
+  .canali {
+    display: grid;
+    gap: clamp(26px, 3.5vw, 40px);
+    border-top: 1px solid var(--border);
+    padding-top: clamp(26px, 3.5vw, 38px);
+  }
+  .canale .label {
+    margin-bottom: 14px;
+  }
+  .whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    border-bottom: 1px solid var(--text-muted);
+    padding-bottom: 3px;
+  }
+  .canale-nota {
+    margin-top: 12px;
+    color: var(--text-muted);
+    font-size: 14px;
+    max-width: 34ch;
+  }
+  .email {
+    font-size: 16px;
+  }
+  .zone {
+    display: grid;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+  .dopo {
+    display: grid;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+  .dopo li {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+  }
+
+  @media (max-width: 900px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

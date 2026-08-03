@@ -1,0 +1,475 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CtaFinale from '../../components/CtaFinale.astro';
+import MacbookProgetto from '../../components/react/MacbookProgetto.tsx';
+import { urlWebp, immagineWebp } from '../../lib/immagini.ts';
+import { SITE } from '../../config.js';
+import { ID, briciole } from '../../lib/schema.ts';
+
+export async function getStaticPaths() {
+  const progetti = await getCollection('progetti');
+  return progetti.map((progetto) => ({
+    params: { slug: progetto.id },
+    props: { progetto },
+  }));
+}
+
+interface Props {
+  progetto: CollectionEntry<'progetti'>;
+}
+
+const { progetto } = Astro.props;
+const d = progetto.data;
+const { Content } = await render(progetto);
+
+/** I blocchi arrivano dal frontmatter come testo: qui diventano paragrafi. */
+const paragrafi = (testo: string) => testo.trim().split(/\n\s*\n/);
+
+const schermate = await Promise.all(
+  d.schermate.map(async (s) => {
+    const img = await immagineWebp(s.src, 1400);
+    return { alt: s.alt, src: img?.src, width: img?.width, height: img?.height };
+  })
+);
+/** Il laptop vale solo per i siti: dentro un mockup un'automazione non si racconta. */
+const dentroIlLaptop =
+  d.tipo === 'sito' ? (schermate[0]?.src ?? (await urlWebp(d.anteprima, 1400))) : undefined;
+const altreSchermate = dentroIlLaptop ? schermate.slice(1) : schermate;
+
+const blocchi = [
+  { n: '01', etichetta: 'Il contesto', titolo: 'Chi è il cliente', testo: d.contesto },
+  { n: '02', etichetta: 'Il problema', titolo: 'Cosa non funzionava', testo: d.problema },
+  {
+    n: '03',
+    etichetta: 'La direzione',
+    titolo: 'Cosa abbiamo scelto, e perché',
+    testo: d.soluzione,
+  },
+];
+
+/**
+ * Nota mostrata in testata quando il lavoro non è una commessa. Un portfolio
+ * che lascia intendere il contrario si smonta alla prima richiesta di
+ * referenza: meglio dirlo qui, dove suona come trasparenza.
+ */
+const NOTA_NATURA: Record<string, { titolo: string; testo: string }> = {
+  iniziativa: {
+    titolo: 'Progetto su iniziativa',
+    testo:
+      "Non me l'ha commissionato nessuno: l'ho costruito per rispondere a una domanda che mi ero fatto. Lo trovi qui perché le decisioni che racconta valgono anche su un lavoro pagato.",
+  },
+  interno: {
+    titolo: 'Lavoro interno, coperto da riservatezza',
+    testo:
+      "Fatto dentro un'azienda, quindi qui non trovi il nome del committente né i dati operativi. Il problema tecnico e le scelte di progetto invece li racconto per esteso.",
+  },
+};
+const nota = NOTA_NATURA[d.natura];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: d.titolo,
+    headline: d.titolo,
+    abstract: d.riassunto,
+    url: `${SITE.url}/progetti/${progetto.id}`,
+    dateCreated: String(d.anno),
+    inLanguage: 'it-IT',
+    creator: { '@id': ID.persona },
+    about: d.cliente,
+    keywords: [
+      d.tipo === 'sito' ? 'sito web su misura' : 'tool e automazioni',
+      ...d.tecnologie,
+    ].join(', '),
+  },
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: 'Progetti', percorso: '/progetti' },
+    { nome: d.titolo, percorso: `/progetti/${progetto.id}` },
+  ]),
+];
+---
+
+<Base
+  title={`${d.metaTitolo} | ${SITE.name}`}
+  description={d.metaDescrizione}
+  ogImage={d.ogImage ?? '/og/progetti.png'}
+  jsonLd={jsonLd}
+>
+  <article>
+    <!-- ========================= 1. TESTATA ========================= -->
+    <header class="testata">
+      <div class="wrap" data-hero data-reveal-group>
+        <p class="briciole" data-reveal>
+          <a href="/progetti">Progetti</a>
+          <span aria-hidden="true">/</span>
+          <span>{d.tipo === 'sito' ? 'Sito' : 'Tool & automazioni'}</span>
+        </p>
+
+        <h1 class="display-sm titolo" data-reveal>{d.titolo}</h1>
+        <p class="lede" data-reveal>{d.riassunto}</p>
+
+        {
+          nota && (
+            <p class="segnaposto" data-reveal>
+              <strong>{nota.titolo}</strong> — {nota.testo}
+            </p>
+          )
+        }
+
+        <dl class="scheda" data-reveal>
+          <div><dt>Cliente</dt><dd>{d.cliente}</dd></div>
+          <div><dt>Anno</dt><dd>{d.anno}</dd></div>
+          <div>
+            <dt>Tipo</dt>
+            <dd>{d.tipo === 'sito' ? 'Sito su misura' : 'Tool / automazione'}</dd>
+          </div>
+          {d.stato && <div><dt>Stato</dt><dd>{d.stato}</dd></div>}
+          {d.durata && <div><dt>Durata</dt><dd>{d.durata}</dd></div>}
+          {
+            d.tecnologie.length > 0 && (
+              <div><dt>Realizzato con</dt><dd>{d.tecnologie.join(' · ')}</dd></div>
+            )
+          }
+          {
+            d.link && (
+              <div>
+                <dt>Online</dt>
+                <dd><a class="link-inline" href={d.link} rel="noopener">Vai al sito</a></dd>
+              </div>
+            )
+          }
+        </dl>
+      </div>
+    </header>
+
+    <!-- ================= 2-3. IL RACCONTO ================= -->
+    {
+      blocchi.map((b, i) => (
+        <section class:list={['blocco', i === 1 && 'blocco-scuro']} data-reveal-group>
+          <div class="wrap split-wide blocco-inner">
+            <div class="blocco-testa" data-reveal>
+              <span class="num">{b.n}</span>
+              <p class="label-plain">{b.etichetta}</p>
+              <h2 class="h2">{b.titolo}</h2>
+            </div>
+            <div class="prose" data-reveal>
+              {paragrafi(b.testo).map((p) => (
+                <p>{p}</p>
+              ))}
+            </div>
+          </div>
+        </section>
+      ))
+    }
+
+    <!-- ==================== 4. RISULTATO ==================== -->
+    <section class="risultato chiara" aria-labelledby="risultato">
+      <div class="wrap">
+        <div class="risultato-testa" data-reveal>
+          <span class="num">04</span>
+          <p class="label-plain">Il risultato</p>
+          <h2 id="risultato" class="h2">Com'è andata</h2>
+        </div>
+
+        {
+          d.risultato.length > 0 && (
+            <dl class="esiti" data-reveal-group>
+              {d.risultato.map((r, i) => (
+                <div class="esito" data-reveal>
+                  <span class="esito-num" aria-hidden="true">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <dt class="esito-voce">{r.voce}</dt>
+                  <dd class="esito-dettaglio">{r.dettaglio}</dd>
+                </div>
+              ))}
+            </dl>
+          )
+        }
+      </div>
+
+      {
+        dentroIlLaptop && (
+          <div class="laptop">
+            <MacbookProgetto
+              client:visible
+              src={dentroIlLaptop}
+              titolo={`${d.titolo} — il sito dal vivo`}
+              alt={schermate[0]?.alt ?? `Schermata del sito ${d.titolo}`}
+            />
+          </div>
+        )
+      }
+
+      <div class="wrap">
+        {
+          altreSchermate.length > 0 && (
+            <div class="schermate" data-reveal-group>
+              {altreSchermate.map((s) =>
+                s.src ? (
+                  <figure data-reveal>
+                    <img
+                      src={s.src}
+                      alt={s.alt}
+                      width={s.width}
+                      height={s.height}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <figcaption class="label-plain">{s.alt}</figcaption>
+                  </figure>
+                ) : (
+                  <p class="mancante label-plain" data-reveal>
+                    Schermata da inserire — {s.alt}
+                  </p>
+                )
+              )}
+            </div>
+          )
+        }
+
+        <div class="nota-libera prose" data-reveal>
+          <Content />
+        </div>
+      </div>
+    </section>
+  </article>
+
+  <!-- ==================== 5. CHIAMATA ALL'AZIONE ==================== -->
+  <CtaFinale
+    etichetta="Un progetto simile"
+    titolo="Hai un problema che assomiglia a questo?"
+    testo="Raccontamelo com'è, disordinato quanto vuoi. Il primo passo è capire se si risolve con un sito, con uno strumento su misura o con niente del tutto."
+  />
+</Base>
+
+<style>
+  .testata {
+    padding-block: clamp(40px, 5vw, 76px) clamp(40px, 5vw, 68px);
+  }
+  .briciole {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: flex;
+    gap: 12px;
+    margin-bottom: clamp(26px, 3vw, 40px);
+  }
+  .briciole a {
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .titolo {
+    max-width: 18ch;
+  }
+  .testata .lede {
+    margin-top: 24px;
+  }
+  /* nota sulla natura del lavoro: iniziativa personale o commessa riservata */
+  .segnaposto {
+    margin-top: 28px;
+    max-width: 64ch;
+    padding: 15px 20px;
+    border-left: 2px solid var(--border);
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .segnaposto strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .scheda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 52px;
+    margin-top: clamp(34px, 4vw, 52px);
+    padding-top: 26px;
+    border-top: 1px solid var(--border);
+  }
+  .scheda dt {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .scheda dd {
+    margin: 0;
+    font-size: 15.5px;
+  }
+
+  .blocco {
+    padding-block: clamp(60px, 8vw, 116px);
+  }
+  /* l'unica variazione di superficie: una banda leggermente sollevata,
+     nessun effetto sopra */
+  .blocco-scuro {
+    background: var(--bg-elevated);
+    border-block: 1px solid var(--border);
+  }
+  .blocco-inner {
+    align-items: start;
+  }
+  .blocco-testa {
+    display: grid;
+    gap: 10px;
+    justify-items: start;
+    position: sticky;
+    top: 100px;
+  }
+  .blocco-testa h2 {
+    margin-top: 8px;
+    max-width: 14ch;
+  }
+
+  .risultato {
+    padding-block: clamp(60px, 8vw, 116px);
+  }
+  .risultato-testa {
+    display: grid;
+    gap: 10px;
+    justify-items: start;
+    margin-bottom: clamp(34px, 4vw, 56px);
+  }
+  /* ---------------------------- risultati ----------------------------
+     Erano tre colonne separate da bordi: sembravano celle di una tabella,
+     e le voci lunghe si spezzavano in colonnine strette illeggibili.
+
+     Adesso sono righe piene, una sotto l'altra, con il numero a sinistra e
+     la voce e il dettaglio su due colonne. Si leggono in orizzontale, che è
+     come si legge, e ogni riga ha lo spazio che le serve invece di quello
+     che avanza. */
+  .esiti {
+    margin: clamp(34px, 4vw, 56px) 0 0;
+    display: grid;
+  }
+  .esito {
+    display: grid;
+    grid-template-columns: 3.2rem minmax(0, 0.9fr) minmax(0, 1.4fr);
+    gap: clamp(16px, 3vw, 40px);
+    align-items: start;
+    padding-block: clamp(26px, 3vw, 38px);
+    border-top: 1px solid var(--border);
+  }
+  .esito:last-child {
+    border-bottom: 1px solid var(--border);
+  }
+  .esito-num {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    padding-top: 0.42em;
+  }
+  .esito-voce {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(17px, 1.7vw, 20px);
+    line-height: 1.28;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .esito-dettaglio {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.62;
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 720px) {
+    /* Su telefono le tre colonne non ci stanno: il numero passa sopra alla
+       voce, e il dettaglio va a capo sotto entrambi. */
+    .esito {
+      grid-template-columns: 2.4rem minmax(0, 1fr);
+      gap: 6px 14px;
+    }
+    .esito-dettaglio {
+      grid-column: 2;
+      margin-top: 6px;
+    }
+  }
+
+  .laptop {
+    margin-block: clamp(20px, 3vw, 40px);
+  }
+
+  .schermate {
+    display: grid;
+    gap: clamp(22px, 3vw, 40px);
+    margin-top: clamp(34px, 4vw, 56px);
+  }
+  .schermate figure {
+    margin: 0;
+  }
+  .schermate figure {
+    /* La finestra sta ferma, l'immagine dentro si muove più lenta della
+       pagina: è tutto il parallasse. Il rapporto è basso di proposito —
+       sopra il dieci per cento le schermate di un'interfaccia sembrano
+       scivolare via invece di stare in pagina. */
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .schermate img {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .schermate figure {
+        /* Il ritaglio nasconde la corsa dell'immagine: senza, ai due estremi
+           si vedrebbe il bordo bianco della figura. */
+        --corsa: 7%;
+      }
+      .schermate img {
+        margin-block: calc(var(--corsa) * -1);
+        animation: scorre-piano linear both;
+        animation-timeline: view();
+        animation-range: cover 0% cover 100%;
+      }
+    }
+  }
+  @keyframes scorre-piano {
+    from {
+      transform: translateY(calc(var(--corsa) * -1));
+    }
+    to {
+      transform: translateY(var(--corsa));
+    }
+  }
+  .schermate figcaption {
+    margin-top: 12px;
+  }
+  .mancante {
+    border: 1px dashed var(--border);
+    padding: 30px;
+    text-align: center;
+  }
+
+  .nota-libera {
+    margin-top: clamp(34px, 4vw, 56px);
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+  .nota-libera:empty {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .blocco-testa {
+      position: static;
+    }
+  }
+</style>

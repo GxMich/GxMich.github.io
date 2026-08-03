@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" role="img" aria-labelledby="tit-sla des-sla">
+  <title id="tit-sla">Le tre soglie di avviso</title>
+  <desc id="des-sla">Una linea che sale verso la scadenza contrattuale. Nella fascia verde tutto procede. Nella fascia gialla parte l'avviso, e c'è ancora tempo per intervenire. Nella fascia rossa la scadenza è già stata superata: la fascia gialla esiste apposta per non arrivarci mai.</desc>
+
+  <style>
+    .fascia { stroke: none; }
+    .verde { fill: #0e0e10; opacity: .05; }
+    .gialla { fill: #0e0e10; opacity: .12; }
+    .rossa { fill: #0e0e10; opacity: .22; }
+    .linea { fill: none; stroke: #0f0f13; stroke-width: 2.2; stroke-linecap: round; }
+    .guida { stroke: #c0bbb0; stroke-width: 1; stroke-dasharray: 3 4; }
+    .eti { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; fill: #6b6760;
+           letter-spacing: .12em; text-transform: uppercase; }
+    .t { font-family: 'Inter', system-ui, sans-serif; font-size: 12px; fill: #55524b; }
+    .t-forte { font-family: 'General Sans', system-ui, sans-serif; font-weight: 500;
+               font-size: 13px; fill: #0e0e10; }
+    .punto { fill: #0f0f13; }
+  </style>
+
+  <!-- fasce, dal basso verso l'alto -->
+  <rect class="fascia verde"  x="70" y="170" width="600" height="80" />
+  <rect class="fascia gialla" x="70" y="104" width="600" height="66" />
+  <rect class="fascia rossa"  x="70" y="46"  width="600" height="58" />
+
+  <!-- confini -->
+  <path class="guida" d="M70 170 H670" />
+  <path class="guida" d="M70 104 H670" />
+
+  <!-- etichette delle fasce -->
+  <text class="eti" x="682" y="216">Regolare</text>
+  <text class="eti" x="682" y="142">Avviso</text>
+  <text class="eti" x="682" y="80">Fuori accordo</text>
+
+  <!-- l'andamento che sale -->
+  <path class="linea" d="M78 236 L172 228 L266 214 L360 196 L454 160 L548 130 L640 96" />
+
+  <!-- il punto in cui scatta l'avviso -->
+  <circle class="punto" cx="454" cy="160" r="4.5" />
+  <path class="guida" d="M454 160 V276" />
+  <text class="t-forte" x="454" y="294" text-anchor="middle">Qui parte l'avviso</text>
+  <text class="t" x="454" y="310" text-anchor="middle">e c'è ancora tempo per intervenire</text>
+
+  <!-- asse del tempo -->
+  <path class="guida" d="M70 250 H670" />
+  <text class="eti" x="70" y="268">Tempo</text>
+</svg>

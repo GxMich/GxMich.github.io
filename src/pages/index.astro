@@ -1,0 +1,387 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import CtaFinale from '../components/CtaFinale.astro';
+import SfondoBeams from '../components/react/SfondoBeams.tsx';
+import TitoloOtturatore from '../components/TitoloOtturatore.astro';
+import BottoneBordo from '../components/react/BottoneBordo.tsx';
+import CardProgetto from '../components/react/CardProgetto.tsx';
+import Testimonianze from '../components/Testimonianze.astro';
+import TestoRivelato from '../components/TestoRivelato.astro';
+import StoriaScroll from '../components/StoriaScroll.astro';
+import SalutoScritto from '../components/react/SalutoScritto.tsx';
+import { persona, attivita, sitoWeb } from '../lib/schema.ts';
+
+import { urlWebp } from '../lib/immagini.ts';
+
+const progetti = (await getCollection('progetti'))
+  .filter((p) => p.data.inEvidenza)
+  .sort((a, b) => a.data.ordine - b.data.ordine)
+  .slice(0, 3);
+const anteprime = new Map(
+  await Promise.all(
+    progetti.map(async (p) => [p.id, await urlWebp(p.data.anteprima, 800)] as const)
+  )
+);
+
+const metodo = [
+  {
+    n: '01',
+    titolo: 'Capire il problema',
+    testo:
+      'Una conversazione vera su cosa fai, chi sono i tuoi clienti e cosa ti fa perdere tempo oggi. Senza questa parte tutto il resto è arredamento.',
+    chi: 'Solo io',
+  },
+  {
+    n: '02',
+    titolo: 'Esplorare direzioni',
+    testo:
+      'Metto in piedi più impostazioni diverse di struttura e design nello stesso tempo in cui, da solo, ne avrei fatta una.',
+    chi: 'Io + macchina',
+  },
+  {
+    n: '03',
+    titolo: 'Decidere e rifinire',
+    testo:
+      'Quale direzione tenere, cosa togliere, che parole usare. Qui la macchina non decide niente: propone, e spesso propone la cosa media.',
+    chi: 'Solo io',
+  },
+  {
+    n: '04',
+    titolo: 'Costruire e consegnare',
+    testo:
+      'Codice, controlli, velocità, accessibilità, indicizzazione. Poi ti spiego come si aggiorna, così non dipendi da me per una virgola.',
+    chi: 'Io + macchina',
+  },
+];
+
+/**
+ * Impegni, non slogan. Ognuno di questi risponde a una cosa che è successa
+ * davvero a qualcuno: il dominio intestato all'agenzia, il canone che parte
+ * senza che nessuno l'abbia spiegato, il preventivo che arriva al terzo
+ * incontro. Sono verificabili, e per questo valgono più di un premio.
+ */
+const garanzie = [
+  {
+    titolo: 'Il prezzo lo sai prima',
+    testo:
+      'Te lo dico nella prima risposta, non al terzo incontro. Una cifra, non una forbice larga come una casa. E se cambia strada lo ridiscutiamo prima, non dopo.',
+  },
+  {
+    titolo: 'Dominio e hosting intestati a te',
+    testo:
+      "Li paghi tu, direttamente al fornitore, e restano tuoi. Se un domani vuoi cambiare persona, porti via tutto senza chiedermi il permesso.",
+  },
+  {
+    titolo: 'Nessun canone obbligatorio',
+    testo:
+      'Il lavoro si paga una volta. La manutenzione è un accordo separato che fai solo se la vuoi, non una condizione per lavorare insieme.',
+  },
+  {
+    titolo: 'La prima mezz\'ora non si paga',
+    testo:
+      'Ci sentiamo, mi racconti, ti dico se ha senso. Se penso che non sono la persona giusta per te te lo dico lì, e non ti è costato niente.',
+  },
+];
+
+const jsonLd = [persona, attivita, sitoWeb];
+---
+
+<Base
+  title="Sviluppatore web a Vercelli, Casale Monferrato e Novara — Michele Modica"
+  description="Siti su misura per attività del territorio e strumenti per chi ha un processo che si inceppa. Da Trino, fra Vercelli, Casale Monferrato e Novara."
+  ogImage="/og/home.png"
+  jsonLd={jsonLd}
+>
+  <!-- ============================== HERO ============================== -->
+  <section class="hero scura">
+    <SfondoBeams client:only="react" />
+
+    <div class="wrap hero-inner" data-hero data-reveal-group>
+      <SalutoScritto client:load />
+
+      <p class="label" data-reveal>
+        Trino · Vercelli · Casale Monferrato
+      </p>
+
+      <TitoloOtturatore
+        class="display hero-titolo"
+        righe={[['Qualcosa', 'non'], ['funziona.'], ['Lo', 'sistemo', 'io.']]}
+      />
+
+      <div class="hero-foot" data-reveal>
+        <p class="lede">
+          Di giorno risolvo problemi in un magazzino. La sera scrivo il software che li
+          risolve una seconda volta. <strong>Siti per attività del territorio</strong> e
+          strumenti su misura per chi ha un processo che si inceppa sempre nello stesso punto.
+        </p>
+
+        <div class="hero-cta">
+          <BottoneBordo href="/progetti" client:load>Guarda i progetti</BottoneBordo>
+          <a class="btn btn-ghost" href="/contatti">Parliamo del tuo progetto</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="scorri" aria-hidden="true">
+      <span class="label-plain">Scorri</span>
+      <span class="filo"></span>
+    </div>
+  </section>
+
+  <!-- =========================== DUE STRADE =========================== -->
+  <section aria-labelledby="strade">
+    <h2 id="strade" class="visually-hidden">Cosa faccio</h2>
+    <div class="wrap">
+      <div class="rule-grid cols-2" data-reveal-group>
+        <a class="strada" href="/servizi" data-reveal>
+          <p class="label">Hai un'attività</p>
+          <h3 class="h3">Un sito che ti somiglia</h3>
+          <p class="strada-testo">
+            Non un modello riempito con le tue foto. Il tuo locale ha una faccia: il sito
+            deve avere quella, non quella di altri mille.
+          </p>
+          <span class="link-arrow">Cosa comprende →</span>
+        </a>
+
+        <a class="strada" href="/progetti?tipo=tool" data-reveal>
+          <p class="label">Hai un processo che si inceppa</p>
+          <h3 class="h3">Uno strumento su misura</h3>
+          <p class="strada-testo">
+            Quella cosa che rifai a mano ogni settimana e che ogni volta ti mangia un
+            pomeriggio. Quella lì si può automatizzare.
+          </p>
+          <span class="link-arrow">Guarda gli strumenti →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= METODO ============================= -->
+  <section class="band metodo-band chiara" aria-labelledby="metodo">
+    <div class="wrap">
+      <div class="split metodo-head" data-reveal-group>
+        <h2 id="metodo" class="h2" data-reveal="maschera">
+          Dove entra la macchina, dove entro io.
+        </h2>
+        <TestoRivelato
+          class="lede"
+          testo="Non uso l'intelligenza artificiale per fare le cose in fretta e peggio. La uso per esplorare più direzioni di quante ne esplorerei da solo, e per non sprecare tempo umano su lavoro meccanico."
+        />
+      </div>
+
+      <StoriaScroll passi={metodo} />
+
+      <p class="metodo-link" data-reveal>
+        <a class="link-arrow" href="/chi-sono">Il metodo per esteso →</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================ PROGETTI ============================ -->
+  <section class="band lavori" aria-labelledby="lavori">
+    <div class="wrap">
+      <div class="lavori-head" data-reveal-group>
+        <h2 id="lavori" class="h2" data-reveal>Lavori recenti</h2>
+        <a class="link-arrow" href="/progetti" data-reveal>Tutti i progetti →</a>
+      </div>
+
+      <div class="griglia" data-reveal-group>
+        {
+          progetti.map((p) => (
+            <div data-reveal>
+              <CardProgetto
+                client:visible
+                href={`/progetti/${p.id}`}
+                titolo={p.data.titolo}
+                riassunto={p.data.riassunto}
+                tipo={p.data.tipo}
+                anno={p.data.anno}
+                immagine={anteprime.get(p.id)}
+                natura={p.data.natura}
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ GARANZIE ============================ -->
+  <section class="band garanzie chiara" aria-labelledby="garanzie">
+    <div class="wrap">
+      <div class="split garanzie-head" data-reveal-group>
+        <h2 id="garanzie" class="h2" data-reveal="maschera">Cosa ti garantisco per iscritto.</h2>
+        <p class="lede" data-reveal>
+          Non sono promesse commerciali: sono le quattro cose che, parlando con chi si
+          è già bruciato una volta, saltano fuori sempre.
+        </p>
+      </div>
+
+      <ul class="rule-grid cols-4 patti" data-reveal-group>
+        {
+          garanzie.map((g) => (
+            <li class="patto" data-reveal>
+              <h3 class="h4">{g.titolo}</h3>
+              <p class="patto-testo">{g.testo}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Testimonianze />
+
+  <CtaFinale />
+</Base>
+
+<style>
+  /* ------------------------------ hero ------------------------------ */
+  .hero {
+    position: relative;
+    min-height: min(94vh, 900px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: clamp(64px, 10vw, 120px) clamp(80px, 10vw, 130px);
+    overflow: hidden;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+  .hero .label {
+    margin-bottom: clamp(28px, 4vw, 48px);
+  }
+  .hero-titolo {
+    max-width: 14ch;
+  }
+  .hero-foot {
+    margin-top: clamp(36px, 5vw, 60px);
+    display: grid;
+    gap: 34px;
+    max-width: 660px;
+  }
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .scorri {
+    position: absolute;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    z-index: 1;
+  }
+  .scorri .filo {
+    width: 1px;
+    height: 46px;
+    background: linear-gradient(to bottom, var(--text-muted), transparent);
+  }
+
+  /* --------------------------- due strade --------------------------- */
+  .strada {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-decoration: none;
+    color: inherit;
+    padding: clamp(32px, 4vw, 52px) clamp(24px, 3vw, 44px) clamp(34px, 4vw, 56px);
+    transition: background-color 0.35s var(--ease-out);
+  }
+  .strada:hover {
+    background: var(--bg-elevated);
+  }
+  .strada-testo {
+    color: var(--text-muted);
+    font-size: 15.5px;
+    max-width: 40ch;
+  }
+  .strada .link-arrow {
+    margin-top: auto;
+    padding-top: 28px;
+    align-self: flex-start;
+  }
+
+  /* ----------------------------- metodo ----------------------------- */
+  .metodo-head {
+    margin-bottom: clamp(40px, 5vw, 72px);
+  }
+  .passo {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 30px 24px 32px;
+  }
+  .passo-testo {
+    color: var(--text-muted);
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .chi {
+    margin-top: auto;
+    padding-top: 20px;
+  }
+  .metodo-link {
+    margin-top: clamp(32px, 4vw, 48px);
+  }
+
+  /* Prima fascia chiara della pagina. L'alternanza che ne esce è
+     hero scuro → metodo chiaro → lavori scuro → garanzie chiaro → invito
+     scuro: scorrendo si sente il cambio di capitolo senza doverlo leggere. */
+  .metodo-band {
+    padding-block: clamp(76px, 10vw, 136px);
+  }
+
+  /* ---------------------------- garanzie ----------------------------
+     È la fascia chiara della home. Spezza il nero a metà pagina e isola
+     le quattro promesse dal resto: sono la parte che deve restare in
+     mente, e su un fondo diverso si ricordano meglio di quanto farebbero
+     in mezzo a tutte le altre sezioni scure. */
+  .garanzie {
+    padding-block: clamp(76px, 10vw, 136px);
+  }
+  .garanzie-head {
+    margin-bottom: clamp(40px, 5vw, 72px);
+  }
+  .patto {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 30px 24px 34px;
+  }
+  .patto-testo {
+    color: var(--text-muted);
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+
+  /* ---------------------------- progetti ---------------------------- */
+  .lavori-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: clamp(32px, 4vw, 52px);
+  }
+  .griglia {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(22px, 3vw, 40px);
+  }
+  @media (max-width: 900px) {
+    .griglia {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

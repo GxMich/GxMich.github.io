@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" role="img" aria-labelledby="tit-pallet des-pallet">
+  <title id="tit-pallet">Il flusso prima e dopo</title>
+  <desc id="des-pallet">Prima: leggere l'etichetta, trascrivere il codice a mano, copiarlo nel gestionale, correggere gli errori. Dopo: una scansione e la riga si scrive da sola.</desc>
+
+  <style>
+    .lin { stroke: #55524b; stroke-width: 1.2; fill: none; }
+    .box { fill: none; stroke: #c0bbb0; stroke-width: 1.2; }
+    .box-forte { fill: #0f0f13; stroke: #0f0f13; }
+    .t { font-family: 'Inter', system-ui, sans-serif; font-size: 12.5px; fill: #0e0e10; }
+    .t-chiaro { fill: #fafafa; }
+    .t-spento { fill: #55524b; font-size: 11px; }
+    .eti { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; fill: #6b6760;
+           letter-spacing: .12em; text-transform: uppercase; }
+    .tempo { font-family: 'General Sans', system-ui, sans-serif; font-weight: 500;
+             font-size: 15px; fill: #0e0e10; }
+  </style>
+
+  <!-- ── PRIMA ───────────────────────────────────────────────── -->
+  <text class="eti" x="0" y="14">Prima</text>
+
+  <rect class="box" x="0" y="30" width="132" height="46" rx="5" />
+  <text class="t" x="14" y="52">Leggi l'etichetta</text>
+  <text class="t t-spento" x="14" y="68">sul pallet</text>
+
+  <path class="lin" d="M132 53 H172" marker-end="url(#p)" />
+
+  <rect class="box" x="176" y="30" width="150" height="46" rx="5" />
+  <text class="t" x="190" y="52">Trascrivi a mano</text>
+  <text class="t t-spento" x="190" y="68">su carta o foglio</text>
+
+  <path class="lin" d="M326 53 H366" marker-end="url(#p)" />
+
+  <rect class="box" x="370" y="30" width="150" height="46" rx="5" />
+  <text class="t" x="384" y="52">Ricopia nel</text>
+  <text class="t t-spento" x="384" y="68">gestionale</text>
+
+  <path class="lin" d="M520 53 H560" marker-end="url(#p)" />
+
+  <rect class="box" x="564" y="30" width="150" height="46" rx="5" />
+  <text class="t" x="578" y="52">Cerca l'errore</text>
+  <text class="t t-spento" x="578" y="68">quando non torna</text>
+
+  <text class="tempo" x="740" y="58">2 min</text>
+
+  <!-- ── DOPO ────────────────────────────────────────────────── -->
+  <text class="eti" x="0" y="176">Dopo</text>
+
+  <rect class="box-forte" x="0" y="192" width="180" height="52" rx="5" />
+  <text class="t t-chiaro" x="16" y="216">Scansiona il codice</text>
+  <text class="t t-chiaro" x="16" y="233" opacity=".62">con il terminale</text>
+
+  <path class="lin" d="M180 218 H228" marker-end="url(#p)" />
+
+  <rect class="box-forte" x="232" y="192" width="200" height="52" rx="5" />
+  <text class="t t-chiaro" x="248" y="216">La riga si scrive da sola</text>
+  <text class="t t-chiaro" x="248" y="233" opacity=".62">data, turno e posizione inclusi</text>
+
+  <text class="tempo" x="470" y="222">pochi secondi</text>
+
+  <marker id="p" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 1 L7 4 L0 7" fill="none" stroke="#55524b" stroke-width="1.2" />
+  </marker>
+</svg>

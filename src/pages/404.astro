@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Pagina non trovata — Michele"
+  description="La pagina che cercavi non esiste o è stata spostata."
+  noindex={true}
+>
+  <section class="quattroquattro">
+    <div class="wrap" data-reveal-group data-hero>
+      <p class="label" data-reveal>Errore 404</p>
+      <h1 class="display cifra" data-reveal>404</h1>
+      <p class="lede" data-reveal>
+        Questa strada non porta da nessuna parte: la pagina non esiste, o l'ho spostata.
+        Capita — da qui torni indietro senza perdere tempo.
+      </p>
+      <div class="btns" data-reveal>
+        <a class="btn btn-solid" href="/">Torna alla home</a>
+        <a class="btn btn-ghost" href="/progetti">Guarda i progetti</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .quattroquattro {
+    min-height: 72vh;
+    display: flex;
+    align-items: center;
+    padding-block: clamp(64px, 10vw, 130px);
+  }
+  .label {
+    margin-bottom: clamp(24px, 3vw, 40px);
+  }
+  .cifra {
+    font-size: clamp(96px, 22vw, 260px);
+    line-height: 0.82;
+  }
+  .lede {
+    margin-top: 30px;
+  }
+  .btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 36px;
+  }
+</style>

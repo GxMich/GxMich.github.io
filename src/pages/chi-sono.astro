@@ -1,0 +1,490 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaFinale from '../components/CtaFinale.astro';
+import Percorso from '../components/Percorso.astro';
+import { Image } from 'astro:assets';
+import ritratto from '../assets/michele.png';
+import scrivania from '../assets/me/scrivania.jpg';
+import { SITE } from '../config.js';
+import { ID, persona, briciole } from '../lib/schema.ts';
+
+const faLaMacchina = [
+  {
+    titolo: 'Esplorare varianti',
+    testo:
+      'Tre impostazioni di homepage invece di una, per capire quale regge meglio i tuoi contenuti veri. È la cosa in cui mi fa guadagnare più tempo.',
+  },
+  {
+    titolo: 'Scrivere il codice ripetitivo',
+    testo:
+      'Griglie, form, stati di errore, adattamento al telefono. Roba che so scrivere a memoria e che non mi diverte più da anni.',
+  },
+  {
+    titolo: 'Controllare il lavoro',
+    testo:
+      'Rileggere il codice cercando errori, contrasti insufficienti, link rotti, cose che ho dimenticato. Un secondo paio di occhi che non si stanca.',
+  },
+  {
+    titolo: 'Fare la prima stesura dei testi',
+    testo:
+      'Una base da correggere, mai da pubblicare così. I testi di un sito vanno riscritti da chi ha parlato col cliente.',
+  },
+];
+
+const restaUmano = [
+  {
+    titolo: 'Capire cosa vuoi davvero comunicare',
+    testo:
+      "Nessun modello linguistico è stato nel tuo locale il venerdì sera. Questa parte si fa parlando, guardando, e a volte contraddicendo quello che mi hai detto all'inizio.",
+  },
+  {
+    titolo: 'Il gusto',
+    testo:
+      "L'IA, se le lasci scegliere, converge sempre sulla media di quello che ha visto. La media è il motivo per cui tanti siti si somigliano. Scegliere cosa togliere è un lavoro di gusto, e il gusto non si delega.",
+  },
+  {
+    titolo: 'Le decisioni di prodotto',
+    testo:
+      'Cosa mettere in home e cosa no, quali funzioni valgono il loro costo, quando dirti che una cosa che hai chiesto ti farà perdere clienti.',
+  },
+  {
+    titolo: 'Il rapporto con te',
+    testo:
+      'Rispondere al telefono, spiegarti le scelte senza gergo, esserci quando qualcosa non va. Il pezzo più importante e quello meno automatizzabile.',
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: 'Chi sono e come lavoro',
+    url: `${SITE.url}/chi-sono`,
+    about: { '@id': ID.persona },
+    mainEntity: { '@id': ID.persona },
+  },
+  persona,
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: 'Chi sono', percorso: '/chi-sono' },
+  ]),
+];
+---
+
+<Base
+  title="Chi sono e come lavoro con l'IA — Michele, sviluppatore web"
+  description="Sviluppatore web di Trino, lavoro fra Vercelli, Casale Monferrato e Novara. Come uso davvero l'IA nel mio lavoro: cosa le lascio fare, cosa non le lascio decidere e perché."
+  ogImage="/og/chi-sono.png"
+  jsonLd={jsonLd}
+>
+  <div class="wrap pagina">
+      <!-- ============================ APERTURA ============================ -->
+      <section class="apertura" data-hero data-reveal-group>
+        <p class="label" data-reveal>Chi sono</p>
+        <h1 class="display-sm titolo" data-reveal>
+          Risolvo problemi in magazzino. Poi li risolvo di nuovo, in codice.
+        </h1>
+
+        <div class="presentazione">
+          <div class="intro prose" data-reveal>
+            <p>
+              Mi chiamo {SITE.name}, sviluppo siti e software su misura. Sto a {SITE.city},
+              lavoro di persona fra Vercelli, Casale Monferrato e Novara, e da remoto con
+              clienti in tutta Italia.
+            </p>
+            <p>
+              Di mestiere faccio il <strong>problem solver</strong> in un magazzino logistico:
+              il mio lavoro è capire perché una cosa si è inceppata e rimetterla in moto,
+              di corsa, mentre tutto il resto continua a muoversi. Scrivo software dal 2023,
+              e le due cose si sono incontrate presto — gli strumenti che ho costruito sono
+              nati dai problemi che vedevo ogni turno.
+            </p>
+            <p>
+              <strong>Perché ti conviene proprio adesso.</strong> Prendo pochi progetti l'anno,
+              quindi il tuo non è il quarantasettesimo della lista. E hai il numero di chi
+              scrive il codice, non di un commerciale che poi lo gira a qualcun altro.
+            </p>
+            <p>
+              <strong>Non sono uno che chiede a un'IA di fare un sito.</strong> Sono uno che sa
+              scrivere quel codice a mano e che ha deciso di usare l'IA dove ha senso, perché
+              il risultato viene meglio. Sotto ti spiego esattamente dove.
+            </p>
+          </div>
+
+          <figure class="ritratto" data-reveal>
+            <Image
+              src={ritratto}
+              alt={`${SITE.name}, sviluppatore web a ${SITE.city}`}
+              widths={[320, 480, 640]}
+              sizes="(max-width: 900px) 220px, 320px"
+              formats={['avif', 'webp']}
+              loading="eager"
+              fetchpriority="high"
+            />
+            <figcaption class="label-plain">
+              {SITE.name} — {SITE.city}
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ============================ PERCORSO ============================ -->
+      <section class="sezione fascia-chiara chiara" aria-labelledby="percorso">
+        <div class="split intestazione" data-reveal-group>
+          <h2 id="percorso" class="h2" data-reveal="maschera">Come ci sono arrivato.</h2>
+          <p class="lede" data-reveal>
+            Dal 2023 a oggi, compreso l'anno in cui ho costruito una cosa che non serviva a
+            nessuno.
+          </p>
+        </div>
+
+        <div class="percorso-corpo" data-reveal>
+          <Percorso />
+
+          <figure class="scatto">
+            <Image
+              src={scrivania}
+              alt="La mia scrivania: monitor, tastiera e taccuino, con la luce che entra dalla finestra"
+              widths={[320, 520, 780]}
+              sizes="(max-width: 900px) 100vw, 340px"
+              formats={['avif', 'webp']}
+              loading="lazy"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <!-- ========================= METODO CON L'IA ======================== -->
+      <section class="sezione" aria-labelledby="metodo">
+        <div class="split intestazione" data-reveal-group>
+          <h2 id="metodo" class="h2" data-reveal>Il pezzo che di solito nessuno racconta.</h2>
+          <p class="lede" data-reveal>
+            Quasi tutti quelli che lavorano con l'IA o la nascondono o la usano come slogan.
+            Preferisco dirti come funziona: così puoi giudicare tu se ti conviene.
+          </p>
+        </div>
+
+        <div class="colonne">
+          <div class="colonna" data-reveal-group>
+            <p class="label">Cosa faccio fare alla macchina</p>
+            <ul class="voci">
+              {
+                faLaMacchina.map((v) => (
+                  <li data-reveal>
+                    <h3 class="h4">{v.titolo}</h3>
+                    <p>{v.testo}</p>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <div class="colonna" data-reveal-group>
+            <p class="label">Cosa non delego mai</p>
+            <ul class="voci">
+              {
+                restaUmano.map((v) => (
+                  <li data-reveal>
+                    <h3 class="h4">{v.titolo}</h3>
+                    <p>{v.testo}</p>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================== PERCHÉ TI CONVIENE ====================== -->
+      <section class="sezione" aria-labelledby="vantaggio">
+        <h2 id="vantaggio" class="h2 titolo-largo" data-reveal>
+          Perché a te, che paghi, questo conviene.
+        </h2>
+
+        <div class="rule-grid cols-3 vantaggi" data-reveal-group>
+          <div class="vantaggio" data-reveal>
+            <span class="num">01</span>
+            <h3 class="h4">Tempi più corti, stessa cura</h3>
+            <p>
+              Un sito su misura richiede settimane, non mesi. Non perché lavoro di fretta,
+              ma perché la parte meccanica occupa una frazione del tempo di prima.
+            </p>
+          </div>
+          <div class="vantaggio" data-reveal>
+            <span class="num">02</span>
+            <h3 class="h4">Più alternative prima di decidere</h3>
+            <p>
+              Vedi tre direzioni possibili e scegli con me, invece di ricevere l'unica che
+              c'era tempo di preparare e doverla accettare.
+            </p>
+          </div>
+          <div class="vantaggio" data-reveal>
+            <span class="num">03</span>
+            <h3 class="h4">Il mio tempo va dove conta</h3>
+            <p>
+              Le ore che non spendo a riscrivere codice banale le spendo a capire il tuo
+              lavoro e a rifinire i dettagli. È lì che si vede la differenza.
+            </p>
+          </div>
+        </div>
+
+        <p class="onesta" data-reveal>
+          <strong>Il rovescio, per onestà:</strong> l'IA sbaglia, e sbaglia in modo convincente.
+          Per questo ogni cosa che consegno l'ho letta, provata e capita riga per riga. Se
+          una parte del lavoro non la so verificare, quella parte non la uso.
+        </p>
+      </section>
+
+      <!-- ========================== COME LAVORO =========================== -->
+      <section class="sezione" aria-labelledby="come-lavoro">
+        <div class="split-wide come-lavoro">
+          {/* Il titolo si aggancia in alto e accompagna la lettura invece di
+              restare piantato in cima a una colonna vuota alta ottocento
+              pixel. Sotto ai 900px torna un titolo normale. */}
+          <div class="testa-appesa" data-reveal="sfocatura">
+            <h2 id="come-lavoro" class="h2">Come lavoro</h2>
+            <p class="testa-nota">
+              Tre cose che di solito si scoprono strada facendo. Preferisco dirle prima.
+            </p>
+          </div>
+          <ul class="tappe prose" data-reveal-group>
+            <li data-reveal>
+              <span class="label-plain">Da solo</span>
+              <p>
+                Pochi progetti alla volta. Parli sempre con me, e chi scrive il codice è la
+                stessa persona che ti ha ascoltato.
+              </p>
+            </li>
+            <li data-reveal>
+              <span class="label-plain">Fuori orario</span>
+              <p>
+                Ho un lavoro a turni, quindi rispondo la sera e nei fine settimana. Non è un
+                limite nascosto: te lo dico prima, così sai cosa aspettarti sui tempi.
+              </p>
+            </li>
+            <li data-reveal>
+              <span class="label-plain">Se non sono adatto</span>
+              <p>
+                Te lo dico alla prima chiamata, non al terzo incontro. E quando posso ti
+                indico chi contattare al posto mio.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </section>
+  </div>
+
+  <CtaFinale
+    etichetta="Se ti torna"
+    titolo="Vediamo se sono la persona giusta."
+    testo="Il modo più veloce per capirlo è raccontarmi cosa fai e cosa ti blocca oggi. Se il tuo progetto non è nelle mie corde te lo dico subito, e quando posso ti indico chi contattare."
+  />
+</Base>
+
+<style>
+  .pagina {
+    padding-block: clamp(44px, 6vw, 88px) clamp(60px, 8vw, 110px);
+  }
+  .apertura .label {
+    margin-bottom: clamp(26px, 3.5vw, 44px);
+  }
+  .titolo {
+    max-width: 20ch;
+  }
+  /* Il ritratto sta a destra del testo e non sopra: chi legge deve arrivare
+     alla faccia mentre legge chi sono, non prima di sapere di chi si tratta. */
+  .presentazione {
+    margin-top: clamp(32px, 4vw, 52px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: clamp(28px, 4vw, 64px);
+    align-items: start;
+  }
+  .intro {
+    max-width: 64ch;
+    font-size: 17.5px;
+  }
+
+  .ritratto {
+    margin: 0;
+    display: grid;
+    gap: 12px;
+    justify-items: start;
+    width: clamp(200px, 24vw, 320px);
+  }
+  .ritratto img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* monocromatico come tutto il resto: il sito non ha una sola tinta,
+       e una foto a colori qui spaccherebbe la regola in due */
+    filter: grayscale(1) contrast(1.04);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  @media (max-width: 760px) {
+    .presentazione {
+      grid-template-columns: 1fr;
+    }
+    .ritratto {
+      width: min(220px, 55%);
+    }
+  }
+
+  .sezione {
+    padding-top: clamp(72px, 10vw, 140px);
+  }
+  .intestazione {
+    margin-bottom: clamp(42px, 5vw, 76px);
+  }
+
+  /* ---------------------------- percorso ----------------------------
+     La fascia chiara deve toccare i due bordi dello schermo, altrimenti
+     sembra una scheda posata sul nero invece di un cambio di capitolo.
+     La pagina sta dentro un contenitore centrato con margini laterali:
+     con i margini negativi calcolati sulla larghezza della finestra la
+     sezione esce dal contenitore senza bisogno di spostarla nel markup. */
+  .fascia-chiara {
+    margin-inline: calc(50% - 50vw);
+    padding-inline: max(var(--gutter), calc(50vw - var(--max) / 2));
+    padding-block: clamp(72px, 9vw, 128px);
+    margin-block: clamp(48px, 7vw, 100px);
+  }
+  /* Il padding-top della regola generica sommato al nostro raddoppierebbe
+     lo spazio in cima alla fascia. */
+  .sezione.fascia-chiara {
+    padding-top: clamp(72px, 9vw, 128px);
+  }
+  /* Le immagini dentro la fascia chiara non vanno schiarite: il filtro in
+     bianco e nero le renderebbe smorte su un fondo già chiaro. */
+  .fascia-chiara .scatto img {
+    filter: grayscale(1) contrast(1.08) brightness(0.96);
+  }
+
+  /* ---------------------------- percorso ---------------------------- */
+  .percorso-corpo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+  }
+  .scatto {
+    margin: 0;
+    width: clamp(240px, 26vw, 340px);
+    /* Si aggancia in alto e resta ferma mentre la linea temporale scorre:
+       la foto fa da punto fisso, che è esattamente il suo compito qui. */
+    position: sticky;
+    top: 120px;
+  }
+  .scatto img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: grayscale(1) contrast(1.04);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  @media (max-width: 860px) {
+    .percorso-corpo {
+      grid-template-columns: 1fr;
+    }
+    .scatto {
+      position: static;
+      width: min(280px, 70%);
+    }
+  }
+  .colonne {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(34px, 5vw, 76px);
+  }
+  .colonna .label {
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+  .voci {
+    display: grid;
+    gap: 28px;
+  }
+  .voci p {
+    color: var(--text-muted);
+    font-size: 15.5px;
+    margin-top: 8px;
+    max-width: 46ch;
+  }
+
+  .titolo-largo {
+    max-width: 20ch;
+    margin-bottom: clamp(36px, 4.5vw, 60px);
+  }
+  .vantaggio {
+    padding: 30px 26px 34px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .vantaggio p {
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+  .onesta {
+    margin-top: clamp(32px, 4vw, 52px);
+    max-width: 66ch;
+    color: var(--text-muted);
+    font-size: 16px;
+    border-left: 1px solid var(--text-muted);
+    padding-left: 22px;
+  }
+  .onesta strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .split-wide {
+    align-items: start;
+  }
+  /* ---------------------------- come lavoro ----------------------------
+     `align-items: end` allineava il titolo al fondo della colonna accanto,
+     e siccome quella colonna è alta tre paragrafi si apriva un vuoto sopra
+     al titolo. Ora parte dall'alto e resta agganciato mentre si scorre. */
+  .come-lavoro {
+    align-items: start;
+  }
+  .testa-appesa {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+  }
+  .testa-nota {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 30ch;
+    text-wrap: pretty;
+  }
+  @media (min-width: 901px) {
+    .testa-appesa {
+      position: sticky;
+      top: 128px;
+    }
+  }
+
+  .tappe {
+    display: grid;
+    gap: clamp(30px, 4vw, 46px);
+  }
+  .tappe li {
+    display: grid;
+    gap: 8px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 900px) {
+    .colonne {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

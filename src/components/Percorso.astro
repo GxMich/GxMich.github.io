@@ -1,0 +1,157 @@
+---
+/**
+ * Linea temporale del percorso.
+ *
+ * Nasce per risolvere un problema di credibilità, non di grafica. Scrivere
+ * "sviluppo software da anni" con tre anni alle spalle suona vago, e il vago
+ * in un portfolio si legge come reticenza. Tre anni *mostrati* — con dentro
+ * cosa è successo in ognuno — sono più solidi di dieci dichiarati.
+ *
+ * La linea verticale si riempie mentre si scorre, in CSS puro con
+ * `animation-timeline: view()`. Zero JavaScript: dove non è supportata la
+ * linea è semplicemente già piena, che è lo stato corretto.
+ */
+interface Tappa {
+  anno: string;
+  titolo: string;
+  testo: string;
+}
+
+const tappe: Tappa[] = [
+  {
+    anno: '2023',
+    titolo: 'Imparo a programmare, da solo',
+    testo:
+      'Il primo progetto finito si chiamava LightenUp: un tracciatore di allenamenti in PHP, uguale a centinaia di altri. Non lo apriva nessuno, me compreso. Mi ha insegnato la cosa che conta: finire non basta, bisogna risolvere qualcosa a qualcuno.',
+  },
+  {
+    anno: '2024 – 2025',
+    titolo: 'Il magazzino diventa la palestra',
+    testo:
+      "Da problem solver vedo ogni giorno dove il processo si inceppa. Comincio a costruire strumenti per il mio stesso lavoro: il tracciamento dei pallet, il monitoraggio dei tempi di consegna. Non sono esercizi — se sbaglio un dato, si ferma un camion.",
+  },
+  {
+    anno: '2026',
+    titolo: 'Progetti miei, portati fino in fondo',
+    testo:
+      'SuiteFit, la piattaforma per personal trainer e nutrizionisti. Il banco olografico, che smonta motori CAD a gesti davanti alla webcam. E i primi siti per attività del territorio.',
+  },
+  {
+    anno: 'Oggi',
+    titolo: 'Lo stesso mestiere, altri strumenti',
+    testo:
+      "Continuo a fare il problem solver: cambia solo che alcuni problemi li risolvo con una procedura e altri con del codice. Quando torno su LightenUp lo riscrivo da zero — smette di essere un'app per allenamenti e diventa un diario emotivo, che è la cosa che mancava davvero.",
+  },
+];
+---
+
+<ol class="percorso">
+  {
+    tappe.map((t) => (
+      <li class="tappa">
+        <div class="marcatore" aria-hidden="true"></div>
+        <p class="anno label-plain">{t.anno}</p>
+        <h3 class="h4 tappa-titolo">{t.titolo}</h3>
+        <p class="tappa-testo">{t.testo}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .percorso {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(34px, 4vw, 54px);
+    position: relative;
+  }
+
+  .tappa {
+    position: relative;
+    padding-left: clamp(28px, 4vw, 44px);
+    display: grid;
+    gap: 9px;
+    align-content: start;
+  }
+
+  /* La linea appartiene a ogni tappa e non al contenitore: così può
+     riempirsi in tempi diversi mentre le tappe entrano una dopo l'altra. */
+  .tappa::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: calc(clamp(34px, 4vw, 54px) * -1);
+    width: 1px;
+    background: var(--border);
+  }
+  .tappa:last-child::before {
+    bottom: auto;
+    height: 100%;
+    /* L'ultima si spegne invece di finire di netto: una linea tagliata a
+       metà sembra un errore di allineamento. */
+    background: linear-gradient(to bottom, var(--border), transparent);
+  }
+
+  .marcatore {
+    position: absolute;
+    left: -3px;
+    top: 6px;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--text);
+  }
+
+  .anno {
+    color: var(--text-muted);
+  }
+  .tappa-titolo {
+    margin-top: 2px;
+  }
+  .tappa-testo {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.62;
+    max-width: 54ch;
+    text-wrap: pretty;
+  }
+
+  /* La linea si disegna dall'alto e il punto compare quando la tappa entra
+     nello schermo. Legato allo scorrimento, quindi torna indietro se si
+     risale: è la stessa animazione, non una seconda. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .tappa::before {
+        transform-origin: top;
+        animation: linea-cresce linear both;
+        animation-timeline: view();
+        animation-range: entry 12% cover 34%;
+      }
+      .marcatore {
+        animation: punto-appare linear both;
+        animation-timeline: view();
+        animation-range: entry 18% entry 62%;
+      }
+    }
+  }
+
+  @keyframes linea-cresce {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+  @keyframes punto-appare {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+</style>

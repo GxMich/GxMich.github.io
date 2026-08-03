@@ -1,0 +1,190 @@
+---
+import { NAV, SITE } from '../config.js';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<header class="site-header">
+  <div class="wrap row">
+    <a class="brand" href="/">
+      {SITE.name}<span aria-hidden="true">°</span>
+      <span class="visually-hidden">— torna alla home</span>
+    </a>
+
+    <nav aria-label="Principale">
+      <ul>
+        {
+          NAV.map((item) => {
+            const active = path === item.href || path.startsWith(item.href + '/');
+            return (
+              <li>
+                <a href={item.href} aria-current={active ? 'page' : undefined}>
+                  {/* Due copie della stessa parola dentro una finestra alta
+                      una riga: al passaggio del mouse la pila scorre e la
+                      seconda prende il posto della prima. Costa un elemento
+                      in più e nessun JavaScript. La copia di sotto è nascosta
+                      ai lettori di schermo, che altrimenti leggerebbero ogni
+                      voce due volte. */}
+                  <span class="finestra">
+                    <span class="scorre">
+                      <span class="voce">{item.label}</span>
+                      <span class="voce" aria-hidden="true">{item.label}</span>
+                    </span>
+                  </span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+
+    <a class="scrivi" href="/contatti">Scrivimi</a>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    padding-block: 18px;
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease;
+  }
+  .site-header:hover,
+  .site-header:focus-within {
+    border-color: var(--border);
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brand {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+  }
+  .brand span {
+    color: var(--text-muted);
+  }
+  nav ul {
+    display: flex;
+    gap: 30px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  /* min-height 24px: criterio 2.5.8 delle WCAG 2.2. Il testo è alto 15px,
+     quindi senza questo il bersaglio tattile resta sotto la soglia. */
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding-block: 4px;
+    position: relative;
+    transition: color 0.25s ease;
+  }
+
+  /* ---------- la voce che ruota al passaggio ---------- */
+  .finestra {
+    display: block;
+    overflow: hidden;
+    height: 1.15em;
+  }
+  .scorre {
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .voce {
+    display: block;
+    height: 1.15em;
+    line-height: 1.15em;
+  }
+  nav a:hover .scorre,
+  nav a:focus-visible .scorre {
+    transform: translateY(-1.15em);
+  }
+  /* Chi ha chiesto meno movimento vede solo il cambio di colore, che c'è già. */
+  @media (prefers-reduced-motion: reduce) {
+    .scorre {
+      transition: none;
+    }
+    nav a:hover .scorre,
+    nav a:focus-visible .scorre {
+      transform: none;
+    }
+  }
+  nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 0;
+    background: var(--text);
+    transition: width 0.3s var(--ease-out);
+  }
+  nav a:hover {
+    color: var(--text);
+  }
+  nav a:hover::after,
+  nav a[aria-current='page']::after {
+    width: 100%;
+  }
+  nav a[aria-current='page'] {
+    color: var(--text);
+  }
+
+  .scrivi {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 9px 18px;
+    transition: border-color 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+  }
+  .scrivi:hover {
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+  }
+
+  @media (max-width: 720px) {
+    nav {
+      order: 3;
+      width: 100%;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+    .row {
+      flex-wrap: wrap;
+      row-gap: 10px;
+    }
+    nav ul {
+      gap: 18px;
+      justify-content: space-between;
+      font-size: 10.5px;
+      letter-spacing: 0.1em;
+    }
+    .site-header {
+      position: static;
+    }
+  }
+</style>

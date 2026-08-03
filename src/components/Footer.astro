@@ -1,0 +1,146 @@
+---
+import PiedePagina from './react/PiedePagina.tsx';
+import { NAV, SITE } from '../config.js';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer scura">
+  <div class="wrap">
+    {/* client:visible perché è l'ultima cosa della pagina: caricarlo prima
+        significherebbe pagarlo su ogni visita, comprese quelle che in fondo
+        non ci arrivano mai. */}
+    <PiedePagina
+      client:visible
+      nome={SITE.name}
+      descrizione="Sviluppatore web e problem solver. Siti su misura per attività del territorio e strumenti per chi ha un processo che si inceppa."
+      email={SITE.email}
+      whatsapp={SITE.whatsapp}
+      navigazione={NAV}
+      profili={SITE.profili}
+      anno={year}
+    />
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: clamp(64px, 8vw, 108px) clamp(30px, 4vw, 44px);
+    border-top: 1px solid var(--border);
+  }
+
+  .site-footer :global(.piede-griglia) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.7fr) minmax(0, 1fr);
+    gap: clamp(34px, 5vw, 76px);
+    align-items: start;
+  }
+
+  .site-footer :global(.piede-nome) {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(24px, 3vw, 34px);
+    letter-spacing: -0.03em;
+    margin-bottom: 14px;
+  }
+  .site-footer :global(.piede-desc) {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.62;
+    max-width: 40ch;
+    text-wrap: pretty;
+  }
+
+  .site-footer :global(.piede-social) {
+    display: flex;
+    gap: 10px;
+    margin-top: 26px;
+  }
+  .site-footer :global(.piede-icona) {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    transition: color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  }
+  .site-footer :global(.piede-icona:hover) {
+    color: var(--text);
+    border-color: var(--text-muted);
+    transform: translateY(-2px);
+  }
+  .site-footer :global(.piede-icona svg) {
+    width: 17px;
+    height: 17px;
+  }
+
+  .site-footer :global(.piede-etichetta) {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 18px;
+  }
+
+  .site-footer :global(.piede-nav ul) {
+    list-style: none;
+    display: grid;
+    gap: 11px;
+  }
+  .site-footer :global(.piede-nav a) {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 15px;
+    /* min-height per il criterio 2.5.8 delle WCAG 2.2 */
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    transition: color 0.25s ease;
+  }
+  .site-footer :global(.piede-nav a:hover) {
+    color: var(--text);
+  }
+
+  .site-footer :global(.piede-email) {
+    display: inline-block;
+    font-size: clamp(15px, 1.6vw, 17px);
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border-forte);
+    padding-bottom: 3px;
+    transition: border-color 0.25s ease;
+  }
+  .site-footer :global(.piede-email:hover) {
+    border-color: #d4f34a;
+  }
+  .site-footer :global(.piede-nota) {
+    color: var(--text-muted);
+    font-size: 13.5px;
+    line-height: 1.55;
+    margin-top: 14px;
+    max-width: 30ch;
+  }
+
+  .site-footer :global(.piede-basso) {
+    grid-column: 1 / -1;
+    margin-top: clamp(34px, 5vw, 62px);
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  @media (max-width: 860px) {
+    .site-footer :global(.piede-griglia) {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+</style>

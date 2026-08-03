@@ -1,0 +1,106 @@
+---
+/**
+ * Scorrimento con inerzia.
+ *
+ * È l'intervento che cambia di più la sensazione del sito a parità di
+ * contenuto: la rotella smette di spostare la pagina a scatti e la porta con
+ * una decelerazione. Costa circa otto kilobyte compressi, ed è l'unica
+ * dipendenza che ho aggiunto per ragioni puramente estetiche — la cito qui
+ * perché sia una scelta consapevole e non una libreria capitata dentro.
+ *
+ * Tre cose a cui sta attento:
+ *
+ * 1. Chi ha chiesto meno movimento non lo carica proprio. Non è un ramo che
+ *    lo disattiva dopo: la libreria non viene nemmeno scaricata, perché
+ *    l'import è dinamico e sta dentro il controllo.
+ *
+ * 2. Non tocca i collegamenti interni. Il link "Salta al contenuto" deve
+ *    spostare la messa a fuoco oltre che la pagina, e quello lo sa fare solo
+ *    il browser: intercettarlo per farlo scorrere dolcemente significherebbe
+ *    rompere l'unico strumento di chi naviga da tastiera, in cambio di
+ *    un'animazione che quella persona non sta nemmeno guardando.
+ *
+ * 3. Sopravvive al cambio pagina. La navigazione non ricarica il documento,
+ *    quindi l'istanza va creata una volta sola e riportata in cima a ogni
+ *    passaggio, altrimenti la pagina nuova si apre a metà.
+ */
+---
+
+<script>
+  interface ConLenis extends Window {
+    __lenis?: { scrollTo: (t: number, o?: Record<string, unknown>) => void; destroy: () => void };
+  }
+  const w = window as ConLenis;
+
+  async function avvia() {
+    if (w.__lenis) return;
+    if (!window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+
+    const { default: Lenis } = await import('lenis');
+
+    const lenis = new Lenis({
+      // Sotto 0.9 l'inerzia diventa gommosa e sembra che la pagina risponda
+      // in ritardo; sopra, l'effetto sparisce e tanto vale non averlo.
+      lerp: 0.11,
+      wheelMultiplier: 1,
+      // Sul telefono resta lo scorrimento di sistema: quello nativo è già
+      // fluido, ha il rimbalzo giusto e non consuma batteria.
+      syncTouch: false,
+    });
+
+    w.__lenis = lenis as unknown as ConLenis['__lenis'];
+
+    let ultimo = 0;
+    const giro = (ora: number) => {
+      lenis.raf(ora);
+      ultimo = requestAnimationFrame(giro);
+    };
+    ultimo = requestAnimationFrame(giro);
+
+    // Cambio pagina: la nuova deve partire dall'alto, e senza `immediate`
+    // la si vedrebbe risalire da sola davanti agli occhi.
+    document.addEventListener('astro:after-swap', () => {
+      lenis.scrollTo(0, { immediate: true });
+    });
+
+    window.addEventListener('pagehide', () => cancelAnimationFrame(ultimo), { once: true });
+  }
+
+  /**
+   * Due vie d'accesso, e servono entrambe.
+   *
+   * Il listener copre le navigazioni successive. La chiamata diretta copre il
+   * primo caricamento: questo modulo importa Lenis in modo dinamico, quindi
+   * viene valutato più tardi degli altri, e `astro:page-load` può essere già
+   * passato quando si registra — con il solo listener lo scorrimento non
+   * partiva mai finché non si cambiava pagina.
+   *
+   * Chiamarla due volte non fa danni: la guardia in cima a `avvia` esce
+   * subito se l'istanza esiste già.
+   */
+  document.addEventListener('astro:page-load', avvia);
+  avvia();
+</script>
+
+<style is:global>
+  /* Richieste da Lenis: senza, l'altezza calcolata va fuori sincrono e la
+     pagina si può bloccare a metà scorrimento. */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis:not(.lenis-autoToggle).lenis-stopped {
+    overflow: clip;
+  }
+  /* Riquadri che scorrono per conto loro — se un domani ce ne sarà uno —
+     devono trattenere il proprio scorrimento invece di passarlo alla pagina. */
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  /* Con l'inerzia attiva lo scorrimento morbido del CSS darebbe due
+     animazioni sovrapposte sullo stesso salto. */
+  html.lenis {
+    scroll-behavior: auto;
+  }
+</style>

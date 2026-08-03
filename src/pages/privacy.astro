@@ -1,0 +1,102 @@
+﻿---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config.js';
+---
+
+<Base
+  title="Informativa privacy — Michele"
+  description="Come tratto i dati che mi lasci scrivendomi dal sito: cosa raccolgo, perché, per quanto tempo e come farli cancellare."
+  noindex={true}
+>
+  <section class="pagina">
+    <div class="wrap">
+      <p class="label">Informativa privacy</p>
+      <h1 class="h2">Cosa faccio dei tuoi dati</h1>
+
+      <div class="avviso">
+        <strong>Da completare prima di pubblicare.</strong> Questo testo è una traccia
+        onesta ma generica: va integrato con i tuoi dati reali (denominazione, indirizzo,
+        partita IVA) e riletto da chi ti segue per gli adempimenti. Non è consulenza legale.
+      </div>
+
+      <div class="prose testo">
+        <h2 class="h4">Chi tratta i dati</h2>
+        <p>
+          Il titolare del trattamento è {SITE.name}, con sede in {SITE.city}, contattabile
+          all'indirizzo <a class="link-inline" href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+          L'attività è svolta come prestazione occasionale, senza partita IVA.
+        </p>
+
+        <h2 class="h4">Quali dati raccolgo</h2>
+        <p>
+          Solo quelli che mi scrivi tu nel modulo dei contatti: nome, recapito (email o
+          telefono), zona, tipo di progetto e il testo del messaggio. Non uso strumenti di
+          profilazione pubblicitaria e non ci sono cookie di terze parti su questo sito.
+        </p>
+
+        <h2 class="h4">Perché li tratto</h2>
+        <p>
+          Per risponderti e, se decidiamo di lavorare insieme, per gestire il progetto e i
+          relativi obblighi contrattuali e fiscali. Non li uso per mandarti comunicazioni
+          commerciali non richieste.
+        </p>
+
+        <h2 class="h4">A chi vengono comunicati</h2>
+        <p>
+          Il modulo è gestito da un servizio esterno che si occupa dell'invio della mail, e
+          la posta è ospitata dal mio fornitore di caselle. Sono responsabili del
+          trattamento e non usano i dati per finalità proprie. Nessun altro riceve i tuoi
+          dati.
+        </p>
+
+        <h2 class="h4">Per quanto tempo li tengo</h2>
+        <p>
+          Le richieste che non diventano un progetto le conservo per il tempo necessario a
+          risponderti e poco oltre, poi le cancello. Per i progetti avviati valgono i
+          termini di legge sui documenti fiscali.
+        </p>
+
+        <h2 class="h4">I tuoi diritti</h2>
+        <p>
+          Puoi chiedermi in qualsiasi momento di accedere ai tuoi dati, correggerli o
+          cancellarli, scrivendo a
+          <a class="link-inline" href={`mailto:${SITE.email}`}>{SITE.email}</a>. Rispondo
+          io, senza moduli da compilare. Se ritieni che il trattamento non sia corretto puoi
+          rivolgerti al Garante per la protezione dei dati personali.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .pagina {
+    padding-block: clamp(40px, 6vw, 76px) var(--section);
+  }
+  .label {
+    margin-bottom: clamp(20px, 3vw, 32px);
+  }
+  h1 {
+    max-width: 18ch;
+  }
+  .avviso {
+    margin-top: 28px;
+    max-width: 64ch;
+    padding: 16px 20px;
+    border: 1px dashed var(--text-muted);
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+  .avviso strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .testo {
+    margin-top: clamp(32px, 4vw, 52px);
+    max-width: 64ch;
+  }
+  .testo h2 {
+    margin-top: 34px;
+    margin-bottom: 8px;
+  }
+</style>

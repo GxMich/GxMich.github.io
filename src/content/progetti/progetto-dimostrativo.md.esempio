@@ -1,0 +1,56 @@
+---
+titolo: Progetto dimostrativo
+cliente: Scheda di esempio
+tipo: sito
+anno: 2026
+riassunto: Scheda di esempio per vedere come si comporta il template di un case study. Da sostituire con un caso reale.
+
+contesto: |
+  Qui va raccontato chi è il cliente e in che contesto lavora: che attività fa,
+  da quanto, chi sono le persone che ci lavorano, com'era la sua presenza online
+  prima di iniziare. Bastano cinque o sei righe, ma concrete: "un ristorante di
+  quaranta coperti aperto solo la sera" dice molto più di "un cliente del settore
+  ristorazione".
+
+problema: |
+  Qui va il problema vero, quello che gli faceva perdere tempo o clienti. Non la
+  mancanza di un sito: la conseguenza della mancanza di un sito. Esempi: le
+  prenotazioni arrivavano solo per telefono negli orari di servizio, il menù
+  aggiornato esisteva solo su un foglio stampato, chi cercava il locale su Google
+  trovava informazioni sbagliate lasciate da altri.
+
+soluzione: |
+  Qui va la direzione scelta e soprattutto il perché di quella e non di un'altra.
+  È la parte che distingue un portfolio da una galleria di immagini: spiega le
+  decisioni. Perché quella struttura di pagine, perché quel tono, cosa si è
+  deciso di non fare e per quale motivo.
+
+risultato:
+  - voce: Cosa è cambiato
+    dettaglio: Un dato o un fatto verificabile, non una promessa. Esempio - le prenotazioni online coprono ora un terzo del sabato sera.
+  - voce: Tempo di consegna
+    dettaglio: Dalla prima chiamata alla messa online, indicato in settimane.
+  - voce: Autonomia del cliente
+    dettaglio: Cosa riesce ad aggiornare da solo senza chiamarmi.
+
+anteprima: dimostrativo/schermata.png
+schermate:
+  - src: dimostrativo/schermata.png
+    alt: Schermata dimostrativa - da sostituire con una del progetto vero
+
+tecnologie:
+  - Astro
+  - CSS senza framework
+  - Form serverless
+
+inEvidenza: true
+ordine: 1
+segnaposto: true
+
+metaTitolo: Progetto dimostrativo — template di case study
+metaDescrizione: Scheda di esempio che mostra la struttura usata per raccontare ogni progetto - contesto, problema, direzione scelta, risultato.
+---
+
+Questo spazio in fondo alla scheda è libero: si può usare per una nota tecnica,
+un dettaglio che non entra nei cinque blocchi, o niente del tutto. È markdown
+normale, quindi accetta elenchi, grassetti e link.
