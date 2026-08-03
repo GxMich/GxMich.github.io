@@ -1,0 +1,436 @@
+---
+/**
+ * Intestazione e menu a schermo intero.
+ *
+ * Sono un componente solo perché sono la stessa navigazione in due forme, e
+ * tenerli separati vorrebbe dire duplicare l'elenco delle voci.
+ *
+ * Sopra 1024px la barra resta visibile con tre voci e il bottone di contatto:
+ * su un pubblico che sta valutando se chiamarti, nascondere la navigazione
+ * dietro un'icona è un costo di conversione, non una scelta estetica. Sotto
+ * 1024px il menu a schermo intero è la convenzione attesa, quindi la meccanica
+ * lavora dove non costa niente.
+ */
+import { SITE, NAVIGAZIONE } from '../../config.js';
+
+const percorso = Astro.url.pathname.replace(/\/$/, '') || '/';
+const attiva = (href: string) => percorso === href || percorso.startsWith(href + '/');
+const principali = NAVIGAZIONE.filter((v) => v.principale);
+---
+
+{/* La sentinella misura lo scorrimento senza un ascoltatore su `scroll`:
+    quando esce dalla viewport, l'intestazione si assottiglia. */}
+<div data-sentinella aria-hidden="true"></div>
+
+<header class="intestazione" data-intestazione>
+  <div class="contenitore barra">
+    <a class="marchio" href="/" aria-label={`${SITE.name} — torna alla home`}>
+      <span aria-hidden="true">MM</span>
+    </a>
+
+    <nav class="voci" aria-label="Navigazione principale">
+      {
+        principali.map((v) => (
+          <a href={v.href} aria-current={attiva(v.href) ? 'page' : undefined}>
+            {/* Due copie sovrapposte: al passaggio del mouse la prima sale e
+                la seconda entra da sotto. La seconda è decorativa, quindi
+                sparisce ai lettori di schermo. */}
+            <span class="scambio">
+              <span>{v.etichetta}</span>
+              <span aria-hidden="true">{v.etichetta}</span>
+            </span>
+          </a>
+        ))
+      }
+    </nav>
+
+    <a class="invito" href="/contatti">Parliamone</a>
+
+    <button class="apri" type="button" data-apri aria-expanded="false" aria-controls="menu-principale">
+      <span class="solo-lettori">Apri il menu</span>
+      <span class="tratti" aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </div>
+</header>
+
+<div class="menu" id="menu-principale" data-menu inert>
+  <div class="contenitore menu-dentro">
+    <nav aria-label="Menu">
+      <ul class="menu-voci">
+        {
+          NAVIGAZIONE.map((v, i) => (
+            <li class="riga" style={`--i:${i}`}>
+              <a href={v.href} aria-current={attiva(v.href) ? 'page' : undefined}>
+                {v.etichetta}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="menu-piede" style={`--i:${NAVIGAZIONE.length}`}>
+      <p class="riga">
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      </p>
+      <p class="riga">
+        <a href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>
+      </p>
+      <p class="riga etichetta">{SITE.city} · {SITE.provincia} — e da remoto</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* ----------------------------- intestazione ----------------------------- */
+  .intestazione {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: color-mix(in srgb, var(--paper) 86%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+    transition:
+      border-color var(--dur-2) var(--ease-out),
+      background-color var(--dur-2) var(--ease-out);
+  }
+
+  /* Il filetto compare solo quando c'è del contenuto sotto: in cima alla
+     pagina una riga orizzontale non separa niente e sporca l'apertura. */
+  .intestazione[data-scorsa] {
+    border-bottom-color: var(--rule);
+    background: color-mix(in srgb, var(--paper) 94%, transparent);
+  }
+
+  .barra {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-6);
+    height: var(--header-h);
+    transition: height var(--dur-2) var(--ease-out);
+  }
+
+  .intestazione[data-scorsa] .barra {
+    height: 54px;
+  }
+
+  .marchio {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    margin-right: auto;
+  }
+
+  .voci {
+    display: flex;
+    gap: var(--sp-6);
+  }
+
+  .voci a {
+    text-decoration: none;
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--ink-2);
+    transition: color var(--dur-1) var(--ease-out);
+  }
+
+  .voci a:hover,
+  .voci a[aria-current='page'] {
+    color: var(--ink);
+  }
+
+  /* Lo scambio ha bisogno di un'altezza fissa per non far ballare la barra
+     mentre la copia sale. */
+  .scambio {
+    display: block;
+    overflow: hidden;
+    height: 1.4em;
+    line-height: 1.4em;
+  }
+
+  .scambio > span {
+    display: block;
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  .voci a:hover .scambio > span,
+  .voci a:focus-visible .scambio > span {
+    transform: translateY(-100%);
+  }
+
+  .invito {
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    background: var(--signal);
+    color: var(--signal-on);
+    border-radius: var(--radius-1);
+    padding: 9px 16px;
+    white-space: nowrap;
+  }
+
+  .apri {
+    display: none;
+    padding: var(--sp-2);
+    margin-right: calc(var(--sp-2) * -1);
+  }
+
+  .tratti {
+    display: block;
+    width: 22px;
+  }
+
+  .tratti i {
+    display: block;
+    height: 1px;
+    background: var(--ink);
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  .tratti i:first-child {
+    margin-bottom: 6px;
+  }
+
+  /* ------------------------------- menu ---------------------------------- */
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-menu);
+    background: var(--ink);
+    color: var(--paper);
+    display: flex;
+    align-items: center;
+    /* Il cerchio parte dall'angolo dove sta il bottone che l'ha aperto. */
+    clip-path: circle(0% at calc(100% - 40px) 40px);
+    visibility: hidden;
+    transition:
+      clip-path 700ms var(--ease-expo),
+      visibility 0s linear 700ms;
+  }
+
+  .menu.aperto {
+    clip-path: circle(150% at calc(100% - 40px) 40px);
+    visibility: visible;
+    transition:
+      clip-path 700ms var(--ease-expo),
+      visibility 0s;
+  }
+
+  .menu-dentro {
+    display: grid;
+    gap: var(--sp-8);
+    width: 100%;
+  }
+
+  .menu-voci {
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  /* Ogni voce dentro il suo contenitore che taglia: è quello che fa entrare la
+     riga da sotto invece di farla comparire. */
+  .riga {
+    display: block;
+    overflow: hidden;
+  }
+
+  .riga > * {
+    display: block;
+    transform: translateY(100%);
+    transition: transform 600ms var(--ease-out);
+  }
+
+  /* Le righe partono al 55% dell'espansione del cerchio: prima sarebbero
+     coperte dal fondo che sta ancora arrivando. */
+  .menu.aperto .riga > * {
+    transform: none;
+    transition-delay: calc(385ms + var(--i, 0) * 60ms);
+  }
+
+  /* In chiusura nessun ritardo: uscire deve essere immediato. */
+  .menu:not(.aperto) .riga > * {
+    transition-delay: 0s;
+    transition-duration: var(--dur-2);
+  }
+
+  .menu-voci a {
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: clamp(38px, 11vw, 68px);
+    line-height: 1.14;
+    letter-spacing: -0.04em;
+    text-decoration: none;
+  }
+
+  .menu-voci a[aria-current='page'] {
+    color: var(--signal);
+  }
+
+  .menu-piede {
+    display: grid;
+    gap: var(--sp-2);
+    font-size: var(--t-body-sm);
+  }
+
+  .menu-piede a {
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--paper) 30%, transparent);
+    padding-bottom: 2px;
+  }
+
+  .menu-piede .etichetta {
+    color: color-mix(in srgb, var(--paper) 62%, transparent);
+    margin-top: var(--sp-2);
+  }
+
+  .menu :global(:focus-visible) {
+    outline-color: var(--signal);
+  }
+
+  /* --------------------------- sotto i 1024px ----------------------------- */
+  @media (max-width: 1023px) {
+    .voci,
+    .invito {
+      display: none;
+    }
+
+    .apri {
+      display: block;
+    }
+  }
+
+  /* Il bottone di chiusura è lo stesso di apertura: cambia solo la forma. */
+  :global(html[data-menu-aperto]) .tratti i:first-child {
+    transform: translateY(3.5px) rotate(45deg);
+  }
+
+  :global(html[data-menu-aperto]) .tratti i:last-child {
+    transform: translateY(-3.5px) rotate(-45deg);
+  }
+
+  :global(html[data-menu-aperto]) .apri .tratti i {
+    background: var(--paper);
+  }
+
+  :global(html[data-menu-aperto]) .intestazione {
+    background: none;
+    backdrop-filter: none;
+    border-bottom-color: transparent;
+  }
+
+  :global(html[data-menu-aperto]) .marchio {
+    color: var(--paper);
+  }
+
+  /* Con il menu aperto la pagina sotto non deve scorrere: su telefono è la
+     differenza fra un menu e un velo che si sposta mentre lo si legge. */
+  :global(html[data-menu-aperto]),
+  :global(html[data-menu-aperto] body) {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  /**
+   * `astro:page-load` scatta anche al primo caricamento, non solo ai passaggi
+   * successivi: montare qui e anche subito significherebbe due ascoltatori
+   * sullo stesso clic, cioè un menu che si apre e si richiude nello stesso
+   * istante. Il segno sul bottone rende il montaggio ripetibile senza danni,
+   * e serve davvero perché l'intestazione sopravvive ai cambi di pagina.
+   */
+  function montaIntestazione() {
+    const intestazione = document.querySelector<HTMLElement>('[data-intestazione]');
+    const sentinella = document.querySelector<HTMLElement>('[data-sentinella]');
+    const bottone = document.querySelector<HTMLButtonElement>('[data-apri]');
+    const menu = document.querySelector<HTMLElement>('[data-menu]');
+
+    if (!intestazione || !sentinella || !bottone || !menu) return;
+    if (bottone.dataset.montato) return;
+    bottone.dataset.montato = 'si';
+
+    /* Assottigliamento: un osservatore su una sentinella alta zero costa molto
+       meno di un ascoltatore su `scroll` che scatta a ogni fotogramma. */
+    const osservatore = new IntersectionObserver(
+      ([voce]) => {
+        intestazione.toggleAttribute('data-scorsa', !voce.isIntersecting);
+      },
+      { rootMargin: '0px' }
+    );
+    osservatore.observe(sentinella);
+
+    const focalizzabili = () =>
+      Array.from(
+        menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')
+      ).filter((el) => el.offsetParent !== null);
+
+    function apri() {
+      menu.classList.add('aperto');
+      menu.removeAttribute('inert');
+      bottone.setAttribute('aria-expanded', 'true');
+      bottone.querySelector('.solo-lettori')!.textContent = 'Chiudi il menu';
+      document.documentElement.setAttribute('data-menu-aperto', '');
+      focalizzabili()[0]?.focus();
+    }
+
+    function chiudi() {
+      menu.classList.remove('aperto');
+      menu.setAttribute('inert', '');
+      bottone.setAttribute('aria-expanded', 'false');
+      bottone.querySelector('.solo-lettori')!.textContent = 'Apri il menu';
+      document.documentElement.removeAttribute('data-menu-aperto');
+      /* Sempre al bottone, non all'ultimo elemento che aveva il fuoco: è il
+         controllo che possiede il menu, ed è dove chi naviga da tastiera si
+         aspetta di ritrovarsi. Riportare il fuoco altrove — o peggio al
+         corpo — perde il segno di dove si era. */
+      bottone.focus();
+    }
+
+    bottone.addEventListener('click', () => {
+      menu.classList.contains('aperto') ? chiudi() : apri();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!menu.classList.contains('aperto')) return;
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        chiudi();
+        return;
+      }
+
+      /* Trappola per il fuoco: senza, il tabulatore esce dal menu e continua
+         a scorrere i link della pagina sotto, che è coperta e illeggibile. */
+      if (e.key === 'Tab') {
+        const elementi = focalizzabili();
+        if (elementi.length === 0) return;
+        const primo = elementi[0];
+        const ultimo = elementi[elementi.length - 1];
+
+        if (e.shiftKey && document.activeElement === primo) {
+          e.preventDefault();
+          ultimo.focus();
+        } else if (!e.shiftKey && document.activeElement === ultimo) {
+          e.preventDefault();
+          primo.focus();
+        }
+      }
+    });
+
+    /* Chi apre il menu, sceglie e arriva sulla pagina nuova non deve
+       ritrovarsi il menu ancora aperto sopra. */
+    document.addEventListener('astro:before-swap', () => {
+      if (menu.classList.contains('aperto')) {
+        menu.classList.remove('aperto');
+        menu.setAttribute('inert', '');
+        document.documentElement.removeAttribute('data-menu-aperto');
+      }
+    });
+  }
+
+  montaIntestazione();
+  document.addEventListener('astro:page-load', montaIntestazione);
+</script>

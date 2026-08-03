@@ -2,15 +2,11 @@
 /**
  * Guida di stile viva.
  *
- * Non usa il layout Base di proposito: quello monta ancora l'intestazione, il
- * preloader e il cursore della direzione vecchia. Questa pagina deve mostrare i
- * token nuovi e nient'altro, così un difetto che si vede qui è un difetto dei
- * token e non di un componente che gli sta sopra.
- *
  * Resta nel sito finché la Fase 8 non è chiusa: è il posto dove si verifica che
- * una modifica ai token non abbia rotto qualcosa di lontano.
+ * una modifica ai token non abbia rotto qualcosa di lontano, e dove si prova il
+ * guscio — intestazione, menu e piede — senza aspettare la home.
  */
-import '../styles/base.css';
+import Guscio from '../layouts/Guscio.astro';
 
 const colori = [
   { nome: '--paper', valore: '#FAFAFA', ruolo: 'fondo di tutto', misura: '—' },
@@ -46,33 +42,12 @@ const stati = [
 ];
 ---
 
-<!doctype html>
-<html lang="it">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Guida di stile — Redesign v2</title>
-    <meta name="robots" content="noindex, nofollow" />
-    <meta name="color-scheme" content="light" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-
-    <link rel="preload" href="/fonts/geist-var.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/geist-mono-var.woff2" as="font" type="font/woff2" crossorigin />
-
-    <script is:inline>
-      // Prima del primo disegno: il contenuto si nasconde solo se c'è qualcuno
-      // che può rivelarlo. Senza questa riga, un errore di JavaScript lascia la
-      // pagina vuota per sempre.
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        document.documentElement.classList.add('puo-animare');
-      }
-    </script>
-  </head>
-
-  <body>
-    <a class="salta" href="#contenuto">Salta al contenuto</a>
-
-    <main id="contenuto" class="contenitore pagina">
+<Guscio
+  titolo="Guida di stile — Redesign v2"
+  descrizione="I token del sistema visivo, vivi. Pagina di lavoro."
+  noindex
+>
+  <div class="contenitore pagina">
       <header class="testata">
         <p class="etichetta">Redesign v2 · Fase 8 · Passo 1</p>
         <h1 class="display">Guida di stile</h1>
@@ -234,14 +209,13 @@ const stati = [
         </div>
       </section>
 
-      <footer class="piede">
-        <p class="etichetta">
-          Pagina di lavoro · fuori dalla sitemap · noindex · si toglie a fine Fase 8
-        </p>
-      </footer>
-    </main>
+      <p class="etichetta coda-pagina">
+        Pagina di lavoro · fuori dalla sitemap · noindex · si toglie a fine Fase 8
+      </p>
+  </div>
+</Guscio>
 
-    <script>
+<script>
       const bersagli = Array.from(document.querySelectorAll('[data-anima]'));
 
       if (document.documentElement.classList.contains('puo-animare')) {
@@ -530,11 +504,10 @@ const stati = [
         }
       }
 
-      .piede {
+      .coda-pagina {
+        display: block;
         margin-top: var(--section);
         padding-top: var(--sp-5);
         border-top: 1px solid var(--rule);
       }
-    </style>
-  </body>
-</html>
+</style>

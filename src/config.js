@@ -126,3 +126,24 @@ export const NAV = [
   { href: '/servizi', label: 'Servizi' },
   { href: '/contatti', label: 'Contatti' },
 ];
+
+/**
+ * Navigazione della direzione nuova.
+ *
+ * Convive con NAV finché i componenti vecchi non escono di scena: toccare NAV
+ * adesso cambierebbe l'intestazione ancora in uso.
+ *
+ * "Lavori" e non "Progetti": chi arriva cercando un sito per la sua attività
+ * riconosce prima la parola che usa lui. L'indirizzo resta /progetti, perché
+ * rinominarlo butterebbe via indicizzazione e collegamenti per un guadagno
+ * solo estetico.
+ *
+ * `principale: false` tiene la voce fuori dalla barra su schermo largo, dove
+ * c'è già il bottone di contatto: nel menu a schermo intero c'è tutto.
+ */
+export const NAVIGAZIONE = [
+  { href: '/progetti', etichetta: 'Lavori', principale: true },
+  { href: '/servizi', etichetta: 'Servizi', principale: true },
+  { href: '/chi-sono', etichetta: 'Chi sono', principale: true },
+  { href: '/contatti', etichetta: 'Contatti', principale: false },
+];

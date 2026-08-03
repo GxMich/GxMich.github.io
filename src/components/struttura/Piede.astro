@@ -1,0 +1,158 @@
+---
+/**
+ * Piede. Zero effetti, per scelta.
+ *
+ * È l'ultima cosa che vede chi non ha ancora deciso: deve dare i contatti e la
+ * zona senza chiedere niente in cambio, e senza far aspettare un'animazione.
+ */
+import { SITE, NAVIGAZIONE } from '../../config.js';
+
+const anno = new Date().getFullYear();
+---
+
+<footer class="piede">
+  <div class="contenitore dentro">
+    <div class="colonna primaria">
+      <p class="etichetta">Parliamone</p>
+      <p class="contatto">
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      </p>
+      <p class="contatto">
+        <a href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>
+      </p>
+      <p class="testo-sm nota">La prima mezz'ora non si paga.</p>
+    </div>
+
+    <div class="colonna">
+      <p class="etichetta">Pagine</p>
+      <ul class="elenco">
+        {NAVIGAZIONE.map((v) => <li><a href={v.href}>{v.etichetta}</a></li>)}
+      </ul>
+    </div>
+
+    <div class="colonna">
+      <p class="etichetta">Dove lavoro</p>
+      <ul class="elenco spento">
+        {SITE.areas.map((a) => <li>{a}</li>)}
+      </ul>
+    </div>
+
+    <div class="colonna">
+      <p class="etichetta">Altrove</p>
+      <ul class="elenco">
+        {
+          SITE.profili.map((url) => (
+            <li>
+              <a href={url} rel="me noopener" target="_blank">
+                {new URL(url).hostname.replace('www.', '')}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="contenitore coda">
+    <p class="etichetta">
+      © {anno} {SITE.name} — {SITE.city} ({SITE.provincia})
+    </p>
+    <p class="etichetta">
+      <a href="/privacy">Privacy</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .piede {
+    border-top: 1px solid var(--ink);
+    margin-top: var(--section);
+    padding-block: var(--sp-8) var(--sp-6);
+  }
+
+  .dentro {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(3, 1fr);
+    gap: var(--sp-8) var(--col-gap);
+  }
+
+  .colonna {
+    display: grid;
+    gap: var(--sp-3);
+    align-content: start;
+  }
+
+  .colonna .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: var(--sp-1);
+  }
+
+  .contatto {
+    font-size: var(--t-h4);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+
+  .contatto a {
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 2px;
+    transition: border-color var(--dur-1) var(--ease-out);
+  }
+
+  .contatto a:hover {
+    border-bottom-color: var(--ink);
+  }
+
+  .nota {
+    margin-top: var(--sp-2);
+  }
+
+  .elenco {
+    display: grid;
+    gap: var(--sp-2);
+    font-size: var(--t-body-sm);
+  }
+
+  .elenco a {
+    text-decoration: none;
+    color: var(--ink-2);
+    transition: color var(--dur-1) var(--ease-out);
+  }
+
+  .elenco a:hover {
+    color: var(--ink);
+  }
+
+  .elenco.spento {
+    color: var(--ink-2);
+  }
+
+  .coda {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    margin-top: var(--sp-8);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--rule);
+  }
+
+  .coda a {
+    color: inherit;
+  }
+
+  @media (max-width: 1023px) {
+    .dentro {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .dentro {
+      grid-template-columns: 1fr;
+      gap: var(--sp-7);
+    }
+  }
+</style>

@@ -1,0 +1,103 @@
+---
+/**
+ * Guscio — il layout della direzione nuova.
+ *
+ * Convive con Base.astro finché le pagine non sono migrate una per una. Qui
+ * dentro non c'è preloader, né cursore su misura, né navigazione flottante:
+ * erano i tre effetti che l'audit ha bocciato per primi.
+ */
+import '../styles/base.css';
+import { ClientRouter } from 'astro:transitions';
+import Intestazione from '../components/struttura/Intestazione.astro';
+import Piede from '../components/struttura/Piede.astro';
+import { SITE } from '../config.js';
+
+interface Props {
+  titolo: string;
+  descrizione: string;
+  ogImage?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  titolo,
+  descrizione,
+  ogImage = '/og/home.png',
+  noindex = false,
+  jsonLd,
+} = Astro.props;
+
+const percorso = Astro.url.pathname.replace(/\/$/, '') || '/';
+const canonico = new URL(percorso, Astro.site ?? SITE.url);
+const urlOg = new URL(ogImage, Astro.site ?? SITE.url);
+const blocchi = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+
+/* Corta di proposito: sopra i 300ms una transizione smette di sembrare
+   fluidità e comincia a sembrare attesa. */
+const passaggio = {
+  old: { name: 'pagina-esce', duration: '0.16s', easing: 'cubic-bezier(0.4,0,1,1)', fillMode: 'both' },
+  new: { name: 'pagina-entra', duration: '0.28s', easing: 'cubic-bezier(0.16,1,0.3,1)', fillMode: 'both' },
+};
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{titolo}</title>
+    <meta name="description" content={descrizione} />
+    <link rel="canonical" href={canonico.href} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#FAFAFA" />
+    <meta name="color-scheme" content="light" />
+
+    {/* I due tagli che si vedono per primi. Il serif arriva dopo: compare solo
+        a metà pagina e non vale un blocco sul primo disegno. */}
+    <link rel="preload" href="/fonts/geist-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/geist-mono-var.woff2" as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="it_IT" />
+    <meta property="og:site_name" content={`${SITE.name} — ${SITE.tagline}`} />
+    <meta property="og:title" content={titolo} />
+    <meta property="og:description" content={descrizione} />
+    <meta property="og:url" content={canonico.href} />
+    <meta property="og:image" content={urlOg.href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={titolo} />
+    <meta name="twitter:description" content={descrizione} />
+    <meta name="twitter:image" content={urlOg.href} />
+
+    {blocchi.map((b) => <script type="application/ld+json" set:html={JSON.stringify(b)} />)}
+
+    <script is:inline>
+      // Prima del primo disegno: il contenuto si nasconde solo se c'è qualcuno
+      // che può rivelarlo. Senza questa riga, un errore di JavaScript lascia la
+      // pagina bianca per sempre.
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('puo-animare');
+      }
+    </script>
+
+    <ClientRouter fallback="none" />
+  </head>
+
+  <body>
+    <a class="salta" href="#contenuto">Salta al contenuto</a>
+
+    <Intestazione transition:persist />
+
+    <main id="contenuto" transition:animate={{ forwards: passaggio, backwards: passaggio }}>
+      <slot />
+    </main>
+
+    <Piede transition:animate="none" />
+  </body>
+</html>
