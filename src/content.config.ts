@@ -35,15 +35,47 @@ const progetti = defineCollection({
 
     // --- i cinque blocchi ---
     contesto: z.string(), // 1. chi è il cliente / contesto
-    problema: z.string(), // 2. il problema reale
-    soluzione: z.string(), // 3. la direzione scelta e perché
+    problema: z.string(), // 1. il problema reale
+
+    /**
+     * 2. La strada scartata, e perché non reggeva.
+     *
+     * Opzionale per non rompere le schede già scritte, ma è il blocco che
+     * convince di più: mostrare il tentativo sbagliato è l'unica prova di
+     * competenza che non si può fingere. Finché è vuoto, il racconto salta
+     * dal problema alla soluzione come se la soluzione fosse ovvia — e se
+     * fosse stata ovvia non ci sarebbe voluto un mestiere.
+     */
+    ricerca: z.string().optional(),
+
+    soluzione: z.string(), // 3. la direzione scelta, dal lato di chi la usa
+
+    /**
+     * 4. La decisione di codice e il perché, separata dalla soluzione di
+     * prodotto: sono due cose diverse e mescolarle le indebolisce entrambe.
+     */
+    tecnica: z.string().optional(),
+
     risultato: z
       .array(z.object({ voce: z.string(), dettaglio: z.string() }))
-      .default([]), // 4. il risultato, in dettagli concreti
+      .default([]), // 5. il risultato, in dettagli concreti
 
     schermate: z
       .array(z.object({ src: z.string(), alt: z.string() }))
       .default([]),
+
+    /**
+     * Slot per il video, quando ci sarà. Il percorso è dentro public/video/.
+     * Previsto ma non indispensabile: la scheda deve reggere anche vuota,
+     * altrimenti il sito dipende da materiale che non esiste.
+     */
+    video: z
+      .object({
+        src: z.string(),
+        poster: z.string().optional(),
+        descrizione: z.string(),
+      })
+      .optional(),
     tecnologie: z.array(z.string()).default([]),
     /** Immagine di anteprima nella griglia: percorso dentro src/assets/progetti/ */
     anteprima: z.string().optional(),

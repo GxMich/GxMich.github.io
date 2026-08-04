@@ -29,13 +29,13 @@ problema: |
   salute delle persone. Peso, misure, piani alimentari. Non è materiale su cui
   si può improvvisare la cancellazione dell'account.
 
-soluzione: |
-  Ho tenuto due rapporti separati invece di uno generico — trainer-cliente e
-  nutrizionista-cliente sono tabelle distinte, ognuna con il suo stato. I
-  permessi diventano una domanda semplice a cui si può rispondere sempre, e
-  aggiungere un terzo tipo di professionista domani non richiede di riscrivere
-  quelli esistenti.
+ricerca: |
+  La tentazione era fare un rapporto solo, chiamarlo "professionista-cliente" e
+  metterci dentro un campo tipo. Ci ho provato, e il codice si è riempito di
+  `if` sul tipo sparsi ovunque: nei permessi, nelle notifiche, nelle query.
+  Ogni funzione nuova doveva ricordarsi di controllare.
 
+soluzione: |
   Il cliente ha una sola schermata che unisce le due parti: la scheda di
   allenamento e il piano alimentare stanno vicini perché è così che vive la sua
   settimana, non divisi per chi glieli ha dati.
@@ -44,6 +44,13 @@ soluzione: |
   finestra di ripensamento, un processo pianificato che rimuove davvero quello
   che è scaduto, registro dei consensi separato. È la parte che non si vede in
   nessuna schermata ed è quella che ho riscritto più volte.
+
+tecnica: |
+  Ho tenuto due rapporti separati invece di uno generico — trainer-cliente e
+  nutrizionista-cliente sono tabelle distinte, ognuna con il suo stato. I
+  permessi diventano una domanda semplice a cui si può rispondere sempre, e
+  aggiungere un terzo tipo di professionista domani non richiede di riscrivere
+  quelli esistenti.
 
 risultato:
   - voce: Quattro ruoli, un accesso a testa
@@ -83,11 +90,6 @@ ordine: 3
 metaTitolo: SuiteFit — gestionale per personal trainer e nutrizionisti
 metaDescrizione: "Piattaforma dove trainer e nutrizionista seguono lo stesso cliente da profili separati, e il cliente vede scheda e dieta in un posto solo. PHP e MySQL, in beta."
 ---
-
-La tentazione era fare un rapporto solo, chiamarlo "professionista-cliente" e
-metterci dentro un campo tipo. Ci ho provato, e il codice si è riempito di
-`if` sul tipo sparsi ovunque: nei permessi, nelle notifiche, nelle query. Ogni
-funzione nuova doveva ricordarsi di controllare.
 
 Due tabelle separate sembrano più lavoro e ne fanno di meno. La domanda
 "questo nutrizionista può vedere questo cliente?" ha una risposta sola, in un

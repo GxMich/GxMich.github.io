@@ -1,0 +1,98 @@
+---
+/**
+ * Un blocco numerato del racconto.
+ *
+ * La numerazione non è decorazione: i cinque blocchi sono una sequenza, e chi
+ * legge deve poter capire a colpo d'occhio a che punto del ragionamento si
+ * trova. Se un giorno l'ordine smettesse di contare, i numeri andrebbero tolti.
+ *
+ * `su-palco` inverte i token invece di ridefinire i colori: il contenuto dentro
+ * non sa di essere su fondo scuro.
+ */
+interface Props {
+  n: string;
+  etichetta: string;
+  titolo?: string;
+  palco?: boolean;
+  id?: string;
+}
+
+const { n, etichetta, titolo, palco = false, id } = Astro.props;
+---
+
+<section class:list={['blocco', { 'su-palco': palco }]} aria-labelledby={id} id={id ? `sez-${id}` : undefined}>
+  <div class="contenitore dentro">
+    <div class="testa">
+      <p class="etichetta numero">
+        <span class="cifra">{n}</span>
+        {etichetta}
+      </p>
+    </div>
+
+    <div class="corpo">
+      {titolo && <h2 id={id} class="h3 titolo sfoca-entra" data-anima>{titolo}</h2>}
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .blocco {
+    padding-block: var(--section-sm);
+  }
+
+  .blocco.su-palco {
+    padding-block: var(--section);
+    margin-block: var(--section-sm);
+  }
+
+  .dentro {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+    gap: clamp(20px, 4vw, 64px);
+    align-items: start;
+  }
+
+  .testa {
+    position: sticky;
+    top: calc(var(--header-h) + var(--sp-5));
+  }
+
+  .numero {
+    display: grid;
+    gap: var(--sp-2);
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .cifra {
+    color: var(--ink);
+    font-size: var(--t-h4);
+    letter-spacing: 0.04em;
+  }
+
+  .corpo {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  .titolo {
+    max-width: 26ch;
+  }
+
+  .corpo :global(p) {
+    max-width: 66ch;
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 860px) {
+    .dentro {
+      grid-template-columns: 1fr;
+      gap: var(--sp-5);
+    }
+
+    .testa {
+      position: static;
+    }
+  }
+</style>

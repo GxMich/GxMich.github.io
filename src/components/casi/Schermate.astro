@@ -1,0 +1,108 @@
+---
+/**
+ * La galleria delle schermate.
+ *
+ * Per i siti scorre in orizzontale: sono pagine, e sfogliarle di lato è il
+ * gesto giusto. Per i sistemi resta impilata: quelle non sono pagine, sono
+ * diagrammi e ognuno va guardato fermo.
+ *
+ * Come in home, lo scorrimento nativo è il punto di partenza e non il ripiego:
+ * se il JavaScript non arriva, le schermate restano tutte raggiungibili.
+ */
+import { Image } from 'astro:assets';
+import { originale } from '../../lib/immagini.ts';
+
+interface Props {
+  schermate: { src: string; alt: string }[];
+  laterale?: boolean;
+}
+
+const { schermate, laterale = false } = Astro.props;
+const scorre = laterale && schermate.length > 1;
+---
+
+<div
+  class:list={['galleria', { laterale: scorre }]}
+  tabindex={scorre ? 0 : undefined}
+  role={scorre ? 'group' : undefined}
+  aria-label={scorre ? 'Schermate, scorrimento orizzontale' : undefined}
+>
+  {
+    schermate.map((s, i) => {
+      const img = originale(s.src);
+      if (!img) return null;
+      const eVettore = s.src.toLowerCase().endsWith('.svg');
+      return (
+        <figure class="scatto">
+          {eVettore ? (
+            <img src={img.src} alt={s.alt} width={img.width} height={img.height} loading="lazy" />
+          ) : (
+            <Image
+              src={img}
+              alt={s.alt}
+              widths={[540, 900, 1400]}
+              sizes={scorre ? '(max-width: 767px) 88vw, 62vw' : '(max-width: 900px) 100vw, 62vw'}
+              formats={['avif', 'webp']}
+              loading={i === 0 ? 'eager' : 'lazy'}
+            />
+          )}
+          <figcaption class="etichetta">{s.alt}</figcaption>
+        </figure>
+      );
+    })
+  }
+</div>
+
+<style>
+  .galleria {
+    display: grid;
+    gap: var(--sp-7);
+  }
+
+  .laterale {
+    display: flex;
+    gap: clamp(16px, 2.4vw, 32px);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    padding-bottom: var(--sp-4);
+  }
+
+  .laterale .scatto {
+    flex: 0 0 auto;
+    width: min(62vw, 780px);
+    scroll-snap-align: start;
+  }
+
+  .scatto {
+    margin: 0;
+    display: grid;
+    gap: var(--sp-3);
+  }
+
+  .scatto img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-2);
+    background: var(--paper-sunk);
+  }
+
+  .scatto figcaption {
+    max-width: 62ch;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 767px) {
+    .laterale {
+      flex-direction: column;
+      overflow: visible;
+    }
+
+    .laterale .scatto {
+      width: 100%;
+    }
+  }
+</style>

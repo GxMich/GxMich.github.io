@@ -1,0 +1,81 @@
+---
+/**
+ * I risultati, in voci concrete.
+ *
+ * La voce "Cosa manca" prende un trattamento diverso e dichiarato: è la parte
+ * che quasi nessun portfolio scrive, e nasconderla in fondo come una nota a
+ * piè di pagina le toglierebbe esattamente il valore che ha. Qui è un elemento
+ * di interfaccia con un segno suo.
+ */
+interface Props {
+  voci: { voce: string; dettaglio: string }[];
+}
+
+const { voci } = Astro.props;
+
+const eLimite = (voce: string) => /cosa manca|quante persone|quanti/i.test(voce);
+---
+
+<ul class="risultati">
+  {
+    voci.map((r) => (
+      <li class:list={['voce', { limite: eLimite(r.voce) }]}>
+        <p class="h4 nome">{r.voce}</p>
+        <p class="testo-sm">{r.dettaglio}</p>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .risultati {
+    display: grid;
+    border-top: 1px solid var(--ink);
+  }
+
+  .voce {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--sp-2) clamp(16px, 3vw, 40px);
+    padding: var(--sp-5) 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+
+  .nome {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-3);
+  }
+
+  .nome::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ink);
+    flex: 0 0 auto;
+    transform: translateY(-2px);
+  }
+
+  /* Il limite dichiarato non si mimetizza: contorno tratteggiato, come lo
+     stato "beta" del resto del sito. Stesso segno, stesso significato. */
+  .limite .nome::before {
+    background: none;
+    border: 1px dashed var(--ink-3);
+  }
+
+  .limite .nome {
+    color: var(--ink-2);
+  }
+
+  .voce p:last-child {
+    max-width: 60ch;
+  }
+
+  @media (max-width: 700px) {
+    .voce {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
