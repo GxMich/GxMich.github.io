@@ -1,0 +1,270 @@
+---
+/**
+ * Frame 09 — l'invito.
+ *
+ * È il punto di conversione, quindi funziona senza JavaScript: il modulo fa un
+ * POST normale e il servizio rimanda alla pagina di conferma. Con JavaScript
+ * la risposta arriva sul posto, senza perdere la pagina.
+ *
+ * La riga sotto il modulo — "se non è nelle mie corde te lo dico subito" — è
+ * quella che fa scrivere le persone, perché toglie il rischio di sentirsi
+ * vendere qualcosa. Sta dopo il bottone di proposito.
+ */
+import { SITE } from '../../config.js';
+---
+
+<section class="invito" aria-labelledby="invito-titolo">
+  <div class="contenitore dentro">
+    <div class="testo">
+      <p class="etichetta">Se ti torna</p>
+      <h2 id="invito-titolo" class="h2 sfoca-entra" data-anima>
+        Vediamo se sono la persona giusta.
+      </h2>
+      <p class="testo-sm sfoca-entra" data-anima>
+        Il modo più veloce per capirlo è raccontarmi cosa fai e cosa ti blocca oggi. Ti
+        rispondo io, di sera o nel fine settimana — ho un lavoro a turni e preferisco dirtelo
+        prima.
+      </p>
+      <p class="alternative testo-sm">
+        Oppure scrivimi direttamente:
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a> ·
+        <a href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>
+      </p>
+    </div>
+
+    <form class="modulo" method="POST" action={SITE.formEndpoint} data-modulo>
+      <input type="hidden" name="access_key" value={SITE.formAccessKey} />
+      <input type="hidden" name="subject" value="Nuovo contatto dal sito" />
+      <input type="hidden" name="from_name" value={SITE.name} />
+
+      {/* Trappola per i robot: chi compila questo campo non è una persona. */}
+      <div class="niente" aria-hidden="true">
+        <label for="azienda-extra">Non compilare questo campo</label>
+        <input id="azienda-extra" type="text" name="botcheck" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <p class="campo">
+        <label for="nome">Come ti chiami</label>
+        <input id="nome" name="nome" type="text" required autocomplete="name" />
+      </p>
+
+      <p class="campo">
+        <label for="recapito">Email o telefono</label>
+        <input id="recapito" name="recapito" type="text" required autocomplete="email" />
+      </p>
+
+      <p class="campo">
+        <label for="messaggio">Cosa fai e cosa ti blocca</label>
+        <textarea id="messaggio" name="messaggio" rows="4" required></textarea>
+      </p>
+
+      <button class="manda" type="submit" data-manda>Mandami un messaggio</button>
+
+      <p class="esito" data-esito role="status" aria-live="polite"></p>
+
+      <p class="rassicura testo-sm">
+        Se il tuo progetto non è nelle mie corde te lo dico subito, e quando posso ti indico
+        chi contattare.
+      </p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .invito {
+    padding-block: var(--section);
+    border-top: 1px solid var(--ink);
+  }
+
+  .dentro {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: start;
+  }
+
+  .testo {
+    display: grid;
+    gap: var(--sp-4);
+    align-content: start;
+  }
+
+  .testo h2 {
+    max-width: 14ch;
+  }
+
+  .testo p {
+    max-width: 46ch;
+  }
+
+  .alternative {
+    margin-top: var(--sp-3);
+  }
+
+  .alternative a {
+    color: var(--signal-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .alternative a:hover {
+    border-bottom-color: var(--signal-ink);
+  }
+
+  .modulo {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  .campo {
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  label {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  input,
+  textarea {
+    font-size: var(--t-body);
+    color: var(--ink);
+    background: var(--paper-sunk);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-1);
+    padding: 12px 14px;
+    width: 100%;
+    transition: border-color var(--dur-1) var(--ease-out);
+  }
+
+  input:hover,
+  textarea:hover {
+    border-color: var(--ink-3);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 110px;
+    font-family: inherit;
+    line-height: 1.55;
+  }
+
+  .niente {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .manda {
+    font-family: var(--font-ui);
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    background: var(--signal);
+    color: var(--signal-on);
+    border-radius: var(--radius-1);
+    padding: 13px 22px;
+    justify-self: start;
+    transition:
+      background-color var(--dur-1) var(--ease-out),
+      color var(--dur-1) var(--ease-out);
+  }
+
+  .manda:hover {
+    background: var(--signal-ink);
+    color: var(--paper);
+  }
+
+  .manda[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .esito {
+    font-size: var(--t-body-sm);
+    margin: 0;
+  }
+
+  .esito:empty {
+    display: none;
+  }
+
+  .esito[data-stato='ok'] {
+    color: var(--ink);
+    border-left: 2px solid var(--signal);
+    padding-left: var(--sp-4);
+  }
+
+  .esito[data-stato='no'] {
+    color: var(--signal-ink);
+  }
+
+  .rassicura {
+    max-width: 52ch;
+  }
+
+  @media (max-width: 860px) {
+    .dentro {
+      grid-template-columns: 1fr;
+      gap: var(--sp-7);
+    }
+  }
+</style>
+
+<script>
+  function montaModulo() {
+    const modulo = document.querySelector<HTMLFormElement>('[data-modulo]');
+    if (!modulo || modulo.dataset.montato !== undefined) return;
+    modulo.dataset.montato = 'si';
+
+    const bottone = modulo.querySelector<HTMLButtonElement>('[data-manda]');
+    const esito = modulo.querySelector<HTMLElement>('[data-esito]');
+    if (!bottone || !esito) return;
+
+    modulo.addEventListener('submit', async (e) => {
+      // Solo da qui in poi si prende il controllo: se qualcosa fallisce prima,
+      // il modulo ha già fatto il suo POST normale.
+      e.preventDefault();
+
+      const testoOriginale = bottone.textContent;
+      bottone.disabled = true;
+      bottone.textContent = 'Mando…';
+      esito.removeAttribute('data-stato');
+      esito.textContent = '';
+
+      try {
+        const risposta = await fetch(modulo.action, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(modulo),
+        });
+
+        if (!risposta.ok) throw new Error(String(risposta.status));
+
+        esito.setAttribute('data-stato', 'ok');
+        esito.textContent =
+          'Ricevuto. Ti rispondo io, di solito entro un giorno — di sera o nel fine settimana.';
+        modulo.reset();
+        bottone.textContent = testoOriginale;
+      } catch {
+        // Un errore qui non deve lasciare la persona senza strade: le due
+        // alternative sono già in pagina, e le richiamo per nome.
+        esito.setAttribute('data-stato', 'no');
+        esito.textContent =
+          'Non è partito. Scrivimi direttamente per email o su WhatsApp: i due recapiti sono qui sopra.';
+        bottone.textContent = testoOriginale;
+      } finally {
+        bottone.disabled = false;
+      }
+    });
+  }
+
+  montaModulo();
+  document.addEventListener('astro:page-load', montaModulo);
+</script>

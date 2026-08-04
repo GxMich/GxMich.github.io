@@ -14,12 +14,20 @@ import Vetrina from '../components/sezioni/Vetrina.astro';
 import DueStrade from '../components/sezioni/DueStrade.astro';
 import Metodo from '../components/sezioni/Metodo.astro';
 import Prezzo from '../components/sezioni/Prezzo.astro';
+import Chi from '../components/sezioni/Chi.astro';
+import Sistemi from '../components/sezioni/Sistemi.astro';
+import Domande from '../components/sezioni/Domande.astro';
+import Invito from '../components/sezioni/Invito.astro';
 import { persona, attivita, sitoWeb } from '../lib/schema.ts';
 
 const progetti = await getCollection('progetti');
 
 const siti = progetti
   .filter((p) => p.data.tipo === 'sito')
+  .sort((a, b) => a.data.ordine - b.data.ordine);
+
+const sistemi = progetti
+  .filter((p) => p.data.tipo === 'tool')
   .sort((a, b) => a.data.ordine - b.data.ordine);
 
 const primo = siti[0];
@@ -85,4 +93,12 @@ const jsonLd = [persona, attivita, sitoWeb];
   <Metodo />
 
   <Prezzo />
+
+  <Chi />
+
+  {sistemi.length > 0 && <Sistemi sistemi={sistemi} />}
+
+  <Domande />
+
+  <Invito />
 </Guscio>

@@ -1,0 +1,261 @@
+---
+/**
+ * Frame 08 — le domande, a tab verticali.
+ *
+ * La Fase 4 prevedeva l'indicatore con `layoutId` di Motion. Misurato: React
+ * più react-dom costano 78 KB compressi contro un budget di 55 per l'intera
+ * pagina, cioè più di tutto il resto della home messo insieme, per far
+ * scivolare un rettangolo alto quaranta pixel. Qui l'indicatore è un elemento
+ * solo che si sposta con una trasformazione: stessa meccanica, zero libreria.
+ *
+ * Senza JavaScript i pannelli restano tutti aperti e leggibili: il ritaglio lo
+ * dichiara lo script solo dopo aver montato davvero.
+ */
+const domande = [
+  {
+    d: 'Quanto costa un sito su misura?',
+    r: "Te lo dico alla prima risposta, non al terzo incontro: mi racconti cosa ti serve e ti do una cifra, non una forbice. Dipende da quante pagine servono, da chi scrive i testi, dalle fotografie disponibili e da quanti servizi esterni vanno collegati. Restano fuori dominio e hosting, circa 50-120 euro l'anno pagati direttamente al fornitore così restano intestati a te.",
+  },
+  {
+    d: 'Quanto tempo ci vuole?',
+    r: 'Di solito tre o quattro settimane dalla prima conversazione alla messa online. Non faccio consegne sotto la settimana: un lavoro su misura ha bisogno di tempo per essere capito, e comprimerlo si vede nel risultato.',
+  },
+  {
+    d: 'Devo pagare un canone mensile?',
+    r: 'No. Il prezzo è una tantum e non ti lego a nessun abbonamento. Se in seguito vuoi un accordo di manutenzione lo facciamo, ma è una scelta tua e non una condizione per lavorare insieme.',
+  },
+  {
+    d: 'Posso aggiornare il sito da solo dopo la consegna?',
+    r: 'Sì, e ti spiego come prima di chiudere il lavoro. Costruisco le cose in modo che cambiare un orario, un prezzo o una foto non richieda me. Se invece serve una modifica strutturale, quella la faccio io.',
+  },
+];
+---
+
+<section class="domande" aria-labelledby="domande-titolo">
+  <div class="contenitore">
+    <h2 id="domande-titolo" class="h2 sfoca-entra" data-anima>Le domande che mi fanno tutti.</h2>
+
+    <div class="tab" data-tab>
+      <div class="elenco" role="tablist" aria-orientation="vertical" aria-labelledby="domande-titolo">
+        <span class="indicatore" data-indicatore aria-hidden="true"></span>
+        {
+          domande.map((q, i) => (
+            <button
+              type="button"
+              role="tab"
+              id={`domanda-${i}`}
+              aria-controls={`risposta-${i}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+              data-scheda
+            >
+              {q.d}
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="pannelli">
+        {
+          domande.map((q, i) => (
+            <div
+              role="tabpanel"
+              id={`risposta-${i}`}
+              aria-labelledby={`domanda-${i}`}
+              tabindex="0"
+              data-pannello
+              data-attivo={i === 0 ? '' : undefined}
+            >
+              <p class="testo-sm">{q.r}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <p class="tutte">
+      <a class="freccia" href="/servizi">Tutte le domande <span aria-hidden="true">→</span></a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .domande {
+    padding-block: var(--section);
+  }
+
+  h2 {
+    max-width: 18ch;
+    margin-bottom: clamp(32px, 4.5vw, 60px);
+  }
+
+  .tab {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(24px, 4vw, 64px);
+    align-items: start;
+  }
+
+  .elenco {
+    position: relative;
+    display: grid;
+    border-left: 1px solid var(--rule);
+  }
+
+  /* L'indicatore è un elemento solo: si sposta e si ridimensiona, non ne
+     esiste uno per scheda che si accende e si spegne. */
+  .indicatore {
+    position: absolute;
+    left: -1px;
+    top: 0;
+    width: 2px;
+    background: var(--signal);
+    transition:
+      transform var(--dur-2) var(--ease-out),
+      height var(--dur-2) var(--ease-out);
+    opacity: 0;
+  }
+
+  .tab[data-montato] .indicatore {
+    opacity: 1;
+  }
+
+  .elenco button {
+    text-align: left;
+    font-family: var(--font-ui);
+    font-size: var(--t-h4);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    color: var(--ink-3);
+    padding: var(--sp-4) var(--sp-5);
+    transition: color var(--dur-1) var(--ease-out);
+  }
+
+  .elenco button:hover {
+    color: var(--ink-2);
+  }
+
+  .elenco button[aria-selected='true'] {
+    color: var(--ink);
+  }
+
+  .pannelli p {
+    max-width: 62ch;
+  }
+
+  /* Senza JavaScript restano tutti visibili, uno sotto l'altro: una domanda
+     senza risposta è peggio di una domanda senza animazione. */
+  .pannelli > div + div {
+    margin-top: var(--sp-5);
+  }
+
+  .tab[data-montato] .pannelli > div {
+    display: none;
+    margin-top: 0;
+  }
+
+  .tab[data-montato] .pannelli > div[data-attivo] {
+    display: block;
+    animation: entra var(--dur-2) var(--ease-out);
+  }
+
+  @keyframes entra {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  .tutte {
+    margin-top: clamp(28px, 3.5vw, 48px);
+  }
+
+  .freccia {
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    color: var(--signal-ink);
+    text-decoration: none;
+    display: inline-flex;
+    gap: var(--sp-2);
+  }
+
+  @media (max-width: 860px) {
+    .tab {
+      grid-template-columns: 1fr;
+    }
+
+    .elenco button {
+      padding-inline: var(--sp-4);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tab[data-montato] .pannelli > div[data-attivo] {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  function montaTab() {
+    const tab = document.querySelector<HTMLElement>('[data-tab]');
+    if (!tab || tab.dataset.montato !== undefined) return;
+
+    const schede = Array.from(tab.querySelectorAll<HTMLButtonElement>('[data-scheda]'));
+    const pannelli = Array.from(tab.querySelectorAll<HTMLElement>('[data-pannello]'));
+    const indicatore = tab.querySelector<HTMLElement>('[data-indicatore]');
+    if (schede.length === 0 || schede.length !== pannelli.length || !indicatore) return;
+
+    tab.dataset.montato = 'si';
+
+    let attiva = 0;
+
+    function muoviIndicatore() {
+      const s = schede[attiva];
+      indicatore!.style.height = `${s.offsetHeight}px`;
+      indicatore!.style.transform = `translateY(${s.offsetTop}px)`;
+    }
+
+    function seleziona(i: number, spostaFuoco = true) {
+      attiva = i;
+      schede.forEach((s, n) => {
+        const scelta = n === i;
+        s.setAttribute('aria-selected', String(scelta));
+        // Un solo tab nel percorso del tabulatore: dentro il gruppo ci si
+        // muove con le frecce, non con Tab. È la parte che quasi nessuno
+        // implementa e l'unica che rende il componente usabile da tastiera.
+        s.tabIndex = scelta ? 0 : -1;
+        pannelli[n].toggleAttribute('data-attivo', scelta);
+      });
+      if (spostaFuoco) schede[i].focus();
+      muoviIndicatore();
+    }
+
+    schede.forEach((s, i) => {
+      s.addEventListener('click', () => seleziona(i, false));
+      s.addEventListener('keydown', (e) => {
+        const ultimi = schede.length - 1;
+        let prossima: number | null = null;
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') prossima = i === ultimi ? 0 : i + 1;
+        else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') prossima = i === 0 ? ultimi : i - 1;
+        else if (e.key === 'Home') prossima = 0;
+        else if (e.key === 'End') prossima = ultimi;
+        if (prossima === null) return;
+        e.preventDefault();
+        seleziona(prossima);
+      });
+    });
+
+    seleziona(0, false);
+
+    // I caratteri arrivano dopo il primo disegno e cambiano l'altezza delle
+    // schede: senza questo, l'indicatore resta della misura sbagliata.
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(() => muoviIndicatore()).observe(tab);
+    }
+    document.fonts?.ready.then(muoviIndicatore);
+  }
+
+  montaTab();
+  document.addEventListener('astro:page-load', montaTab);
+</script>

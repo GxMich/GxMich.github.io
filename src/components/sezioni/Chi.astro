@@ -1,0 +1,165 @@
+---
+/**
+ * Frame 06 — chi te lo fa.
+ *
+ * Qui, e solo qui, entra l'ingegneria: un paragrafo, non un capitolo. Chi cerca
+ * un sito per la sua attività non deve inciampare in logistica e automazioni
+ * prima di aver capito che fai siti. Chi invece si sta chiedendo se sei serio,
+ * qui trova la risposta.
+ */
+import { Image } from 'astro:assets';
+import ritratto from '../../assets/michele.png';
+import { SITE } from '../../config.js';
+---
+
+<section class="chi" aria-labelledby="chi-titolo">
+  <div class="contenitore dentro">
+    <figure class="ritratto" data-lento>
+      <Image
+        src={ritratto}
+        alt={`${SITE.name}, sviluppatore web a ${SITE.city}`}
+        widths={[320, 480, 640]}
+        sizes="(max-width: 900px) 60vw, 30vw"
+        formats={['avif', 'webp']}
+        loading="lazy"
+      />
+      <figcaption class="etichetta">{SITE.name} — {SITE.city} ({SITE.provincia})</figcaption>
+    </figure>
+
+    <div class="testo" data-veloce>
+      <p class="etichetta">Chi te lo fa</p>
+      <h2 id="chi-titolo" class="h2 sfoca-entra" data-anima>
+        Di giorno risolvo problemi in un magazzino. La sera scrivo il software che li
+        risolve una seconda volta.
+      </h2>
+      <p class="testo-sm sfoca-entra" data-anima>
+        Di mestiere faccio il problem solver in un magazzino logistico: capire perché una
+        cosa si è inceppata e rimetterla in moto, di corsa, mentre tutto il resto continua a
+        muoversi. È lo stesso mestiere, applicato al tuo sito — con la differenza che qui
+        non c'è niente da rimettere in moto di corsa, e si può fare bene la prima volta.
+      </p>
+      <p class="testo-sm sfoca-entra" data-anima>
+        Prendo pochi progetti l'anno, quindi il tuo non è il quarantasettesimo della lista.
+        E hai il numero di chi scrive il codice, non di un commerciale che poi lo gira a
+        qualcun altro.
+      </p>
+      <p class="sfoca-entra" data-anima>
+        <a class="freccia" href="/chi-sono">Il percorso per esteso <span aria-hidden="true">→</span></a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .chi {
+    padding-block: var(--section);
+  }
+
+  .dentro {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: center;
+  }
+
+  .ritratto {
+    margin: 0;
+    display: grid;
+    gap: var(--sp-3);
+    will-change: transform;
+  }
+
+  .ritratto img {
+    width: 100%;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-2);
+    /* Monocromatico come il resto: una foto a colori qui aprirebbe una seconda
+       gamma cromatica accanto all'unico accento, e l'accento perderebbe forza. */
+    filter: grayscale(1) contrast(1.04);
+  }
+
+  .testo {
+    display: grid;
+    gap: var(--sp-5);
+    will-change: transform;
+  }
+
+  .testo h2 {
+    max-width: 22ch;
+  }
+
+  .testo p {
+    max-width: 58ch;
+  }
+
+  .freccia {
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    color: var(--signal-ink);
+    text-decoration: none;
+    display: inline-flex;
+    gap: var(--sp-2);
+  }
+
+  .freccia span {
+    transition: transform var(--dur-1) var(--ease-out);
+  }
+
+  .freccia:hover span {
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 900px) {
+    .dentro {
+      grid-template-columns: 1fr;
+      gap: var(--sp-7);
+    }
+
+    .ritratto {
+      width: min(240px, 56%);
+    }
+  }
+</style>
+
+<script>
+  import { caricaGsap, movimentoRiccoAmmesso } from '../../lib/movimento.ts';
+
+  function montaParallasseRitratto() {
+    const lento = document.querySelector<HTMLElement>('[data-lento]');
+    const veloce = document.querySelector<HTMLElement>('[data-veloce]');
+    if (!lento || !veloce || lento.dataset.montato !== undefined) return;
+    if (!movimentoRiccoAmmesso()) return;
+
+    lento.dataset.montato = 'si';
+
+    caricaGsap().then(({ gsap }) => {
+      const sezione = lento.closest('section');
+
+      // Velocità diverse sullo stesso asse: è tutta la meccanica. Numeri
+      // contenuti — sopra i cento pixel la foto si stacca dal testo che
+      // dovrebbe accompagnare, e la profondità diventa scollamento.
+      gsap.fromTo(
+        lento,
+        { y: 34 },
+        {
+          y: -34,
+          ease: 'none',
+          scrollTrigger: { trigger: sezione, start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true },
+        }
+      );
+
+      gsap.fromTo(
+        veloce,
+        { y: -14 },
+        {
+          y: 14,
+          ease: 'none',
+          scrollTrigger: { trigger: sezione, start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true },
+        }
+      );
+    });
+  }
+
+  montaParallasseRitratto();
+  document.addEventListener('astro:page-load', montaParallasseRitratto);
+</script>

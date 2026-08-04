@@ -1,0 +1,181 @@
+---
+/**
+ * Frame 07 — la prova tecnica.
+ *
+ * Occupa poco spazio apposta. Serve a chi si sta chiedendo se sei serio, non a
+ * chi sta cercando un sito: chi ci clicca finisce nei case study e lì trova
+ * tutta la profondità che vuole.
+ *
+ * Gli stati non hanno colore. L'accento del sito è uno solo e significa
+ * azione: qui la distinzione è di forma — pieno, vuoto, tratteggiato — e regge
+ * anche in bianco e nero.
+ */
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  sistemi: CollectionEntry<'progetti'>[];
+}
+
+const { sistemi } = Astro.props;
+
+/**
+ * Il segno di stato si ricava dal campo `stato` che i case study hanno già.
+ * Nessun campo nuovo da riempire, nessuna cifra inventata.
+ */
+function segno(stato?: string) {
+  const s = (stato ?? '').toLowerCase();
+  if (s.includes('in uso') || s.includes('completo')) return 'pieno';
+  if (s.includes('beta')) return 'tratto';
+  return 'vuoto';
+}
+
+function etichettaStato(stato?: string) {
+  const s = (stato ?? '').toLowerCase();
+  if (s.includes('in uso')) return 'In uso';
+  if (s.includes('completo')) return 'Completo';
+  if (s.includes('beta')) return 'Beta';
+  return 'In corso';
+}
+---
+
+<section class="sistemi" aria-labelledby="sistemi-titolo">
+  <div class="contenitore">
+    <div class="testa">
+      <h2 id="sistemi-titolo" class="h3 sfoca-entra" data-anima>
+        E quando serve qualcosa di più complicato.
+      </h2>
+      <p class="testo-sm sfoca-entra" data-anima>
+        Strumenti su misura per processi che si inceppano. Due sono lavoro interno e i dati
+        non si possono pubblicare: quello che trovi è il ragionamento.
+      </p>
+    </div>
+
+    <ul class="elenco">
+      {
+        sistemi.map((p) => (
+          <li class="riga sfoca-entra" data-anima>
+            <a href={`/progetti/${p.id}`}>
+              <span class="nome">{p.data.titolo}</span>
+              <span class="testo-sm sunto">{p.data.riassunto}</span>
+              <span class:list={['stato', segno(p.data.stato)]}>{etichettaStato(p.data.stato)}</span>
+              <span class="vai" aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .sistemi {
+    padding-block: var(--section-sm);
+    background: var(--paper-sunk);
+  }
+
+  .testa {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(16px, 3vw, 48px);
+    align-items: baseline;
+    padding-bottom: var(--sp-6);
+  }
+
+  .testa h2 {
+    max-width: 18ch;
+  }
+
+  .testa p {
+    max-width: 54ch;
+  }
+
+  .elenco {
+    border-top: 1px solid var(--ink);
+  }
+
+  .riga a {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr) auto auto;
+    gap: var(--sp-3) clamp(16px, 3vw, 40px);
+    align-items: center;
+    padding: var(--sp-5) 0;
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+    transition: padding-inline var(--dur-1) var(--ease-out);
+  }
+
+  .riga a:hover {
+    padding-inline: var(--sp-3);
+  }
+
+  .nome {
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .sunto {
+    max-width: 62ch;
+  }
+
+  .stato {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    white-space: nowrap;
+  }
+
+  .stato::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+
+  .stato.pieno::before {
+    background: var(--ink);
+  }
+
+  .stato.vuoto::before {
+    border: 1px solid var(--ink-3);
+  }
+
+  .stato.tratto::before {
+    border: 1px dashed var(--ink-3);
+  }
+
+  .vai {
+    color: var(--ink-3);
+    transition: transform var(--dur-1) var(--ease-out);
+  }
+
+  .riga a:hover .vai {
+    transform: translateX(4px);
+    color: var(--ink);
+  }
+
+  @media (max-width: 900px) {
+    .testa {
+      grid-template-columns: 1fr;
+    }
+
+    .riga a {
+      grid-template-columns: minmax(0, 1fr) auto;
+      row-gap: var(--sp-2);
+    }
+
+    .sunto {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    .vai {
+      display: none;
+    }
+  }
+</style>
