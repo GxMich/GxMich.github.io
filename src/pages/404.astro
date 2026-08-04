@@ -1,49 +1,72 @@
 ---
-import Base from '../layouts/Base.astro';
+/**
+ * Pagina non trovata.
+ *
+ * Chi ci finisce ha sbagliato indirizzo o ha seguito un link vecchio: quello
+ * che gli serve sono due strade, non una scusa lunga.
+ */
+import Guscio from '../layouts/Guscio.astro';
 ---
 
-<Base
-  title="Pagina non trovata — Michele"
-  description="La pagina che cercavi non esiste o è stata spostata."
+<Guscio
+  titolo="Pagina non trovata — Michele Modica"
+  descrizione="Questo indirizzo non esiste. Dai lavori o dai contatti si riparte."
   noindex={true}
 >
-  <section class="quattroquattro">
-    <div class="wrap" data-reveal-group data-hero>
-      <p class="label" data-reveal>Errore 404</p>
-      <h1 class="display cifra" data-reveal>404</h1>
-      <p class="lede" data-reveal>
-        Questa strada non porta da nessuna parte: la pagina non esiste, o l'ho spostata.
-        Capita — da qui torni indietro senza perdere tempo.
+  <section class="niente">
+    <div class="contenitore">
+      <p class="etichetta">Errore 404</p>
+      <h1 class="display">Questa pagina non c’è.</h1>
+      <p class="lede">
+        O l’indirizzo è sbagliato, o l’ho spostata io e ho dimenticato di lasciare un
+        cartello. Da qui si riparte.
       </p>
-      <div class="btns" data-reveal>
-        <a class="btn btn-solid" href="/">Torna alla home</a>
-        <a class="btn btn-ghost" href="/progetti">Guarda i progetti</a>
-      </div>
+      <p class="strade">
+        <a class="collegamento" href="/progetti">Guarda i lavori</a>
+        <a class="collegamento" href="/contatti">Scrivimi</a>
+        <a class="collegamento" href="/">Torna all’inizio</a>
+      </p>
     </div>
   </section>
-</Base>
+</Guscio>
 
 <style>
-  .quattroquattro {
-    min-height: 72vh;
-    display: flex;
-    align-items: center;
-    padding-block: clamp(64px, 10vw, 130px);
+  .niente {
+    padding-block: clamp(64px, 12vw, 160px) var(--section);
   }
-  .label {
-    margin-bottom: clamp(24px, 3vw, 40px);
+
+  .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(20px, 3vw, 36px);
   }
-  .cifra {
-    font-size: clamp(96px, 22vw, 260px);
-    line-height: 0.82;
+
+  h1 {
+    max-width: 14ch;
   }
+
   .lede {
-    margin-top: 30px;
+    margin-top: var(--sp-5);
   }
-  .btns {
+
+  .strade {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 36px;
+    gap: var(--sp-3) var(--sp-6);
+    margin-top: clamp(28px, 4vw, 48px);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--rule);
+  }
+
+  .collegamento {
+    color: var(--signal-ink);
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 2px;
+  }
+
+  .collegamento:hover {
+    border-bottom-color: var(--signal-ink);
   }
 </style>

@@ -1,6 +1,17 @@
 ---
-import Base from '../layouts/Base.astro';
-import CtaFinale from '../components/CtaFinale.astro';
+/**
+ * Servizi.
+ *
+ * Sito su misura per primo e sviluppato, tool e automazioni come secondo
+ * blocco più corto: l'ordine segue chi arriva su questa pagina, non la
+ * quantità di lavoro che c'è dietro le due cose.
+ *
+ * Le domande stanno in pagina e nei dati strutturati con la stessa risposta,
+ * parola per parola. Metterne due versioni diverse è il modo più veloce per
+ * farsi togliere il riquadro da Google.
+ */
+import Guscio from '../layouts/Guscio.astro';
+import Invito from '../components/sezioni/Invito.astro';
 import { SITE } from '../config.js';
 import { ID, domande, briciole } from '../lib/schema.ts';
 
@@ -43,61 +54,31 @@ const prezzoDipende = [
   { titolo: 'Cosa deve collegarsi', testo: 'Menù digitale, prenotazioni, newsletter, gestionale: ogni pezzo aggiunge lavoro.' },
 ];
 
-/**
- * Le domande che mi arrivano davvero, con la risposta per esteso.
- * Stanno in pagina e nei dati strutturati: la stessa risposta, parola per
- * parola. Metterne una versione diversa nei due posti è il modo più veloce
- * per farsi togliere il riquadro da Google.
- *
- * Servono anche a chi cerca tramite un assistente invece che con la lista dei
- * dieci link: una risposta autosufficiente si può citare, un rimando a
- * "contattaci per un preventivo" no.
- */
+const sistemi = [
+  { titolo: 'Automazioni', testo: 'Quel lavoro manuale che qualcuno rifà uguale ogni lunedì: rapporti, copia-incolla fra sistemi, controlli ripetitivi. Si toglie di mezzo una volta sola.' },
+  { titolo: 'Strumenti interni', testo: 'Piccoli applicativi fatti sul vostro processo, non sul processo medio di un software commerciale che poi vi tocca aggirare.' },
+  { titolo: 'Dashboard e dati', testo: 'Numeri sparsi in fogli diversi riuniti in una schermata sola che si aggiorna da sé, con dentro solo le cose che guardate davvero.' },
+];
+
 const faq = [
-  {
-    d: 'Quanto costa un sito su misura?',
-    r: "Te lo dico alla prima risposta, non al terzo incontro: mi racconti cosa ti serve e ti do una cifra, non una forbice. Dipende da quante pagine servono, da chi scrive i testi, dalle fotografie disponibili e da quanti servizi esterni vanno collegati. Restano fuori dominio e hosting, circa 50-120 euro l'anno pagati direttamente al fornitore così restano intestati a te. Non c'è nessun canone obbligatorio.",
-  },
-  {
-    d: 'Quanto tempo ci vuole?',
-    r: 'Di solito tre o quattro settimane dalla prima conversazione alla messa online. Non faccio consegne sotto la settimana: un lavoro su misura ha bisogno di tempo per essere capito, e comprimerlo si vede nel risultato.',
-  },
-  {
-    d: 'Devo pagare un canone mensile?',
-    r: 'No. Il prezzo è una tantum e non ti lego a nessun abbonamento. Se in seguito vuoi un accordo di manutenzione lo facciamo, ma è una scelta tua e non una condizione per lavorare insieme.',
-  },
-  {
-    d: 'Lavori solo in zona o anche a distanza?',
-    r: "Sto a Trino, in provincia di Vercelli. Di persona lavoro fra Vercelli, Casale Monferrato, Novara e Chivasso, e per i siti di attività locali preferisco così: bisogna vedere il posto. Per i tool e le automazioni lavoro da remoto in tutta Italia senza problemi, perché lì l'oggetto del lavoro è un processo e non un locale.",
-  },
-  {
-    d: 'Chi scrive i testi del sito?',
-    r: 'La prima stesura la scrivo io, partendo da quello che mi racconti durante le conversazioni iniziali. Poi la correggiamo insieme finché suona come parli tu. Se hai già i testi pronti li usiamo e il lavoro si accorcia.',
-  },
-  {
-    d: 'Posso aggiornare il sito da solo dopo la consegna?',
-    r: 'Sì, e ti spiego come prima di chiudere il lavoro. Costruisco le cose in modo che cambiare un orario, un prezzo o una foto non richieda me. Se invece serve una modifica strutturale, quella la faccio io.',
-  },
-  {
-    d: "Usi l'intelligenza artificiale per fare i siti?",
-    r: "La uso per esplorare più direzioni di design nello stesso tempo in cui, da solo, ne farei una, e per scrivere il codice ripetitivo che so già a memoria. Non la uso per decidere: cosa mettere in home, che tono usare e cosa togliere restano decisioni mie, perché un modello linguistico converge sempre sulla media di quello che ha visto, e la media è il motivo per cui tanti siti si somigliano.",
-  },
-  {
-    d: 'Fai anche e-commerce?',
-    r: 'Non e-commerce complessi con magazzino, taglie, spedizioni e resi: non è il mio mestiere e ti conviene qualcuno che faccia solo quello. Un catalogo con pochi prodotti e pagamento appoggiato a un servizio esterno invece sì.',
-  },
+  { d: 'Quanto costa un sito su misura?', r: "Te lo dico alla prima risposta, non al terzo incontro: mi racconti cosa ti serve e ti do una cifra, non una forbice. Dipende da quante pagine servono, da chi scrive i testi, dalle fotografie disponibili e da quanti servizi esterni vanno collegati. Restano fuori dominio e hosting, circa 50-120 euro l'anno pagati direttamente al fornitore così restano intestati a te. Non c'è nessun canone obbligatorio." },
+  { d: 'Quanto tempo ci vuole?', r: 'Di solito tre o quattro settimane dalla prima conversazione alla messa online. Non faccio consegne sotto la settimana: un lavoro su misura ha bisogno di tempo per essere capito, e comprimerlo si vede nel risultato.' },
+  { d: 'Devo pagare un canone mensile?', r: 'No. Il prezzo è una tantum e non ti lego a nessun abbonamento. Se in seguito vuoi un accordo di manutenzione lo facciamo, ma è una scelta tua e non una condizione per lavorare insieme.' },
+  { d: 'Lavori solo in zona o anche a distanza?', r: "Sto a Trino, in provincia di Vercelli. Di persona lavoro fra Vercelli, Casale Monferrato, Novara e Chivasso, e per i siti di attività locali preferisco così: bisogna vedere il posto. Per i tool e le automazioni lavoro da remoto in tutta Italia senza problemi, perché lì l'oggetto del lavoro è un processo e non un locale." },
+  { d: 'Chi scrive i testi del sito?', r: 'La prima stesura la scrivo io, partendo da quello che mi racconti durante le conversazioni iniziali. Poi la correggiamo insieme finché suona come parli tu. Se hai già i testi pronti li usiamo e il lavoro si accorcia.' },
+  { d: 'Posso aggiornare il sito da solo dopo la consegna?', r: 'Sì, e ti spiego come prima di chiudere il lavoro. Costruisco le cose in modo che cambiare un orario, un prezzo o una foto non richieda me. Se invece serve una modifica strutturale, quella la faccio io.' },
+  { d: "Usi l'intelligenza artificiale per fare i siti?", r: "La uso per esplorare più direzioni di design nello stesso tempo in cui, da solo, ne farei una, e per scrivere il codice ripetitivo che so già a memoria. Non la uso per decidere: cosa mettere in home, che tono usare e cosa togliere restano decisioni mie, perché un modello linguistico converge sempre sulla media di quello che ha visto, e la media è il motivo per cui tanti siti si somigliano." },
+  { d: 'Fai anche e-commerce?', r: 'Non e-commerce complessi con magazzino, taglie, spedizioni e resi: non è il mio mestiere e ti conviene qualcuno che faccia solo quello. Un catalogo con pochi prodotti e pagamento appoggiato a un servizio esterno invece sì.' },
 ];
 
 const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    serviceType: 'Realizzazione siti web su misura',
+    name: 'Sito su misura per attività locali',
+    serviceType: 'Progettazione e sviluppo di siti web',
     provider: { '@id': ID.persona },
-    areaServed: SITE.areas.map((a) => ({ '@type': 'Place', name: a })),
-    /* Niente prezzi nei dati strutturati: se non compaiono nella pagina non
-       possono comparire qui. Google verifica che le due cose coincidano e
-       toglie il risultato arricchito quando non tornano. */
+    areaServed: SITE.areas,
     offers: {
       '@type': 'Offer',
       availability: 'https://schema.org/InStock',
@@ -112,344 +93,327 @@ const jsonLd = [
 ];
 ---
 
-<Base
-  title="Servizi — siti su misura e automazioni | Michele Modica"
-  description="Cosa comprende davvero un sito su misura, cosa resta fuori e per chi è pensato. Il prezzo te lo dico alla prima risposta, non al terzo incontro."
+<Guscio
+  titolo="Cosa comprende un sito su misura, e cosa no — Michele Modica"
+  descrizione="Cosa è incluso, cosa non lo è, per chi è pensato e cosa fa variare il prezzo. Otto domande con risposta per esteso, senza giri di parole."
   ogImage="/og/servizi.png"
   jsonLd={jsonLd}
 >
-  <section class="testa">
-    <div class="wrap" data-hero data-reveal-group>
-      <p class="label" data-reveal>Servizi</p>
-      <h1 class="display-sm titolo" data-reveal>Cosa comprende. E cosa no.</h1>
-      <p class="lede" data-reveal>
-        Scritto per intero, anche la parte che di solito non si scrive. Meglio sapere
-        subito se siamo fatti per lavorare insieme, che scoprirlo al terzo incontro.
+  <header class="testata">
+    <div class="contenitore">
+      <p class="etichetta">Servizi</p>
+      <h1 class="display otturatore" data-anima>
+        <span class="riga"><span>Cosa comprende.</span></span>
+        <span class="riga"><span>E cosa no.</span></span>
+      </h1>
+      <p class="lede sfoca-entra" data-anima>
+        Scritto per esteso, così sai cosa stai comprando prima di chiedermelo. Le cose che
+        non faccio sono in fondo alla stessa pagina, non nascoste.
       </p>
     </div>
-  </section>
+  </header>
 
-  <!-- ======================== SITO SU MISURA ======================== -->
-  <section class="band-tight" aria-labelledby="sito">
-    <div class="wrap">
-      <div class="sezione-testa" data-reveal>
-        <span class="num">01</span>
+  <section class="sezione" aria-labelledby="sito">
+    <div class="contenitore">
+      <div class="intestazione">
+        <p class="etichetta">01 · Il servizio principale</p>
         <h2 id="sito" class="h2">Sito su misura per attività locali</h2>
-        <p class="lede">
-          Il lavoro completo, dalla prima conversazione al sito online e indicizzato.
-          Di solito tre o quattro settimane.
-        </p>
       </div>
 
-      <div class="rule-grid cols-4 voci" data-reveal-group>
-        {incluso.map((v) => (
-          <div class="voce" data-reveal>
-            <h3 class="h4">{v.titolo}</h3>
-            <p>{v.testo}</p>
-          </div>
-        ))}
-      </div>
+      <ul class="voci quattro">
+        {
+          incluso.map((v) => (
+            <li class="sfoca-entra" data-anima>
+              <p class="h4">{v.titolo}</p>
+              <p class="testo-sm">{v.testo}</p>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
-  <!-- ========================= COSA NON FACCIO ======================== -->
-  <section class="band-tight sollevata" aria-labelledby="escluso">
-    <div class="wrap">
-      <div class="split escluso-testa" data-reveal-group>
-        <h2 id="escluso" class="h2" data-reveal>Cosa non comprende.</h2>
-        <p class="lede" data-reveal>
-          Un elenco onesto vale più di una promessa generica. Se ti serve una di queste
-          cose, dimmelo subito: o la agganciamo a un servizio esterno, o ti mando da
-          qualcuno più adatto di me.
-        </p>
+  <section class="sezione escluso" aria-labelledby="escluso">
+    <div class="contenitore">
+      <div class="intestazione">
+        <p class="etichetta">Cosa non comprende</p>
+        <h2 id="escluso" class="h2">Le cose che non faccio.</h2>
       </div>
 
-      <div class="rule-grid cols-4 voci" data-reveal-group>
-        {nonIncluso.map((v) => (
-          <div class="voce" data-reveal>
-            <h3 class="h4">{v.titolo}</h3>
-            <p>{v.testo}</p>
-          </div>
-        ))}
-      </div>
+      <ul class="voci quattro">
+        {
+          nonIncluso.map((v) => (
+            <li class="sfoca-entra" data-anima>
+              <p class="h4">{v.titolo}</p>
+              <p class="testo-sm">{v.testo}</p>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
-  <!-- ============================ PER CHI ============================ -->
-  <section class="band" aria-labelledby="perchi">
-    <div class="wrap">
-      <h2 id="perchi" class="h2 titolo-largo" data-reveal>Per chi è pensato, e per chi no.</h2>
+  <section class="sezione" aria-labelledby="perchi">
+    <div class="contenitore">
+      <h2 id="perchi" class="h2 largo">Per chi è pensato, e per chi no.</h2>
 
-      <div class="due-liste">
-        <div class="lista" data-reveal-group>
-          <p class="label">Siamo fatti per lavorare insieme se</p>
-          <ul>{per.map((t) => <li data-reveal>{t}</li>)}</ul>
+      <div class="due-colonne">
+        <div class="colonna">
+          <p class="etichetta">Ti riconosci qui</p>
+          <ul class="lista si">
+            {per.map((t) => <li class="testo-sm">{t}</li>)}
+          </ul>
         </div>
-        <div class="lista lista-no" data-reveal-group>
-          <p class="label">Meglio di no se</p>
-          <ul>{nonPer.map((t) => <li data-reveal>{t}</li>)}</ul>
+        <div class="colonna">
+          <p class="etichetta">Meglio di no</p>
+          <ul class="lista no">
+            {nonPer.map((t) => <li class="testo-sm">{t}</li>)}
+          </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============================= PREZZO ============================ -->
-  <section class="band sollevata prezzo" aria-labelledby="prezzo">
-    <div class="wrap">
-      {/*
-        Il listino non c'è più. Lavorando come prestazione occasionale, una
-        tariffa pubblica è la prova documentale più comoda per sostenere che
-        l'attività sia abituale — e chiede la partita IVA a prescindere
-        dall'importo. Resta però la promessa che contava davvero: sapere il
-        prezzo prima, e sentirselo dire subito.
-      */}
-      <div class="prezzo-blocco" data-reveal-group>
-        <div data-reveal>
-          <p class="label">Quanto costa</p>
-          <p id="prezzo" class="numero">Te lo dico<br />al primo messaggio.</p>
-          <p class="label-plain">Nessun canone obbligatorio</p>
-        </div>
-        <p class="lede" data-reveal>
-          Non ti faccio inseguire un preventivo per tre settimane. Mi racconti cosa ti serve,
-          e nella stessa risposta ti do una cifra — non una forbice larga come una casa, una
-          cifra. Se poi il lavoro cambia strada, il prezzo lo ridiscutiamo prima, non dopo.
-        </p>
+  <section class="sezione prezzo" aria-labelledby="prezzo">
+    <div class="contenitore">
+      <div class="intestazione">
+        <p class="etichetta">Il prezzo</p>
+        <h2 id="prezzo" class="h2">Una cifra, detta prima.</h2>
       </div>
 
-      <div class="rule-grid cols-4 voci" data-reveal-group>
-        {prezzoDipende.map((v) => (
-          <div class="voce" data-reveal>
-            <h3 class="h4">{v.titolo}</h3>
-            <p>{v.testo}</p>
-          </div>
-        ))}
-      </div>
+      <p class="lede sfoca-entra" data-anima>
+        Non c'è un listino appeso, perché due attività non hanno mai lo stesso bisogno. Ma la
+        cifra la sai alla prima risposta, non al terzo incontro. Ecco cosa la fa variare.
+      </p>
 
-      <p class="extra" data-reveal>
-        Restano fuori dal prezzo il dominio e l'hosting (circa 50–120 € l'anno, pagati da te
-        direttamente al fornitore, così restano tuoi) ed eventuali servizi esterni a
-        pagamento che decidiamo di collegare.
+      <ul class="voci quattro">
+        {
+          prezzoDipende.map((v) => (
+            <li class="sfoca-entra" data-anima>
+              <p class="h4">{v.titolo}</p>
+              <p class="testo-sm">{v.testo}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="testo-sm fuori">
+        Restano fuori dal prezzo il dominio e l'hosting, circa 50–120 € l'anno, pagati da te
+        direttamente al fornitore così restano intestati a te. Nessun canone obbligatorio.
       </p>
     </div>
   </section>
 
-  <!-- ======================== TOOL E AUTOMAZIONI ====================== -->
-  <section class="band" aria-labelledby="tool">
-    <div class="wrap">
-      <div class="sezione-testa" data-reveal>
-        <span class="num">02</span>
+  <section class="sezione sistemi" aria-labelledby="tool">
+    <div class="contenitore">
+      <div class="intestazione">
+        <p class="etichetta">02 · L'altra metà</p>
         <h2 id="tool" class="h2">Tool e automazioni su misura</h2>
-        <p class="lede">
-          Per aziende e professionisti, anche da remoto in tutta Italia. Qui non esiste un
-          listino: il preventivo nasce da mezza giornata passata a guardare come lavorate
-          adesso.
-        </p>
       </div>
 
-      <div class="rule-grid cols-3 voci" data-reveal-group>
-        <div class="voce" data-reveal>
-          <h3 class="h4">Automazioni</h3>
-          <p>
-            Quel lavoro manuale che qualcuno rifà uguale ogni lunedì: rapporti,
-            copia-incolla fra sistemi, controlli ripetitivi. Si toglie di mezzo una volta
-            sola.
-          </p>
-        </div>
-        <div class="voce" data-reveal>
-          <h3 class="h4">Strumenti interni</h3>
-          <p>
-            Piccoli applicativi fatti sul vostro processo, non sul processo medio di un
-            software commerciale che poi vi tocca aggirare.
-          </p>
-        </div>
-        <div class="voce" data-reveal>
-          <h3 class="h4">Dashboard e dati</h3>
-          <p>
-            Numeri sparsi in fogli diversi riuniti in una schermata sola che si aggiorna da
-            sé, con dentro solo le cose che guardate davvero.
-          </p>
-        </div>
-      </div>
+      <p class="lede sfoca-entra" data-anima>
+        Per aziende e professionisti, anche da remoto in tutta Italia. Qui non esiste un
+        listino: il preventivo nasce da mezza giornata passata a guardare come lavorate
+        adesso.
+      </p>
 
-      <p class="extra" data-reveal>
-        <a class="link-arrow" href="/progetti?tipo=tool">Guarda i tool già fatti →</a>
+      <ul class="voci tre">
+        {
+          sistemi.map((v) => (
+            <li class="sfoca-entra" data-anima>
+              <p class="h4">{v.titolo}</p>
+              <p class="testo-sm">{v.testo}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="testo-sm">
+        <a class="freccia" href="/progetti">Guarda i sistemi che ho costruito <span aria-hidden="true">→</span></a>
       </p>
     </div>
   </section>
 
-  <!-- ============================= DOMANDE ============================ -->
-  <section class="band chiara" aria-labelledby="domande">
-    <div class="wrap">
-      <div class="sezione-testa" data-reveal>
-        <span class="num">03</span>
-        <h2 id="domande" class="h2">Le domande che mi fanno tutti</h2>
-        <p class="lede">
-          Risposte per esteso, non rimandi a un preventivo. Se la tua non è qui,
-          <a class="link-inline" href="/contatti">scrivimela</a>.
-        </p>
-      </div>
+  <section class="sezione domande" aria-labelledby="domande">
+    <div class="contenitore">
+      <h2 id="domande" class="h2 largo">Le domande che mi fanno tutti.</h2>
 
-      <div class="faq" data-reveal-group>
+      <dl class="faq">
         {
           faq.map((q) => (
-            <div class="domanda" data-reveal>
-              <h3 class="h4">{q.d}</h3>
-              <p>{q.r}</p>
+            <div class="qa sfoca-entra" data-anima>
+              <dt class="h4">{q.d}</dt>
+              <dd class="testo-sm">{q.r}</dd>
             </div>
           ))
         }
-      </div>
+      </dl>
     </div>
   </section>
 
-  <CtaFinale
-    etichetta="Il passo dopo"
-    titolo="Ti torna quello che hai letto?"
-    testo="Allora il passo dopo è semplice: due righe su cosa fai e cosa ti serve. Ti dico se rientra in questa fascia, quanto tempo serve e da dove partiremmo."
-  />
-</Base>
+  <Invito />
+</Guscio>
 
 <style>
-  .testa {
-    padding-block: clamp(44px, 6vw, 88px) 0;
+  .testata {
+    padding-block: clamp(40px, 6vw, 88px) clamp(32px, 4vw, 56px);
   }
-  .testa .label {
+
+  .testata .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
     margin-bottom: clamp(24px, 3vw, 40px);
   }
-  .titolo {
-    max-width: 16ch;
-  }
-  .testa .lede {
-    margin-top: 26px;
+
+  .riga {
+    display: block;
+    overflow: hidden;
   }
 
-  .sollevata {
-    background: var(--bg-elevated);
-    border-block: 1px solid var(--border);
+  .riga > span {
+    display: block;
   }
 
-  .sezione-testa {
+  .testata .lede {
+    margin-top: clamp(18px, 2.4vw, 28px);
+  }
+
+  .sezione {
+    padding-block: var(--section-sm);
+  }
+
+  .escluso,
+  .prezzo {
+    background: var(--paper-sunk);
+  }
+
+  .intestazione {
     display: grid;
-    gap: 14px;
-    justify-items: start;
-    margin-bottom: clamp(32px, 4vw, 52px);
-  }
-  .sezione-testa h2 {
-    max-width: 20ch;
+    gap: var(--sp-3);
+    padding-bottom: clamp(28px, 3.5vw, 48px);
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: clamp(28px, 3.5vw, 48px);
   }
 
-  /* ----------------------------- domande ----------------------------- */
-  /* Due colonne larghe invece di quattro strette: una risposta lunga in una
-     colonna da 24ch diventa una striscia verticale illeggibile. */
-  .faq {
+  .largo {
+    max-width: 18ch;
+    padding-bottom: clamp(28px, 3.5vw, 48px);
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: clamp(28px, 3.5vw, 48px);
+  }
+
+  .voci {
+    display: grid;
+    gap: clamp(24px, 3vw, 44px) var(--col-gap);
+  }
+
+  .voci.quattro {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .voci.tre {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .voci li {
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule);
+  }
+
+  .due-colonne {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(28px, 3.5vw, 52px);
+    gap: clamp(28px, 4vw, 72px);
   }
-  .domanda {
-    border-top: 1px solid var(--border);
-    padding-top: 22px;
+
+  .colonna .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: var(--sp-5);
   }
-  .domanda h3 {
-    margin-bottom: 12px;
-    max-width: 30ch;
+
+  .lista {
+    display: grid;
+    gap: var(--sp-4);
   }
-  .domanda p {
-    color: var(--text-muted);
-    font-size: 15px;
-    line-height: 1.65;
-    max-width: 52ch;
+
+  .lista li {
+    position: relative;
+    padding-left: var(--sp-6);
+    max-width: 48ch;
   }
-  @media (max-width: 860px) {
-    .faq {
-      grid-template-columns: 1fr;
+
+  /* Due segni diversi, non due colori: chi fa fatica a distinguere le tinte
+     deve poter separare le due colonne lo stesso. */
+  .lista li::before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--font-mono);
+    color: var(--ink-3);
+  }
+
+  .lista.si li::before {
+    content: '+';
+  }
+
+  .lista.no li::before {
+    content: '−';
+  }
+
+  .prezzo .lede,
+  .sistemi .lede {
+    margin-bottom: clamp(28px, 3.5vw, 44px);
+  }
+
+  .fuori {
+    margin-top: clamp(24px, 3vw, 40px);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--rule);
+    max-width: 62ch;
+  }
+
+  .freccia {
+    color: var(--signal-ink);
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    gap: var(--sp-2);
+    margin-top: clamp(24px, 3vw, 40px);
+  }
+
+  .faq {
+    display: grid;
+    border-top: 1px solid var(--ink);
+  }
+
+  .qa {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--sp-3) clamp(16px, 3vw, 48px);
+    padding: var(--sp-5) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .qa dd {
+    margin: 0;
+    max-width: 66ch;
+  }
+
+  @media (max-width: 1023px) {
+    .voci.quattro {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  .voce {
-    padding: 30px 24px 34px;
-  }
-  .voce p {
-    color: var(--text-muted);
-    font-size: 14.5px;
-    line-height: 1.55;
-    margin-top: 10px;
-  }
-  .sollevata :global(.rule-grid) > * {
-    background: var(--bg-elevated);
-  }
-
-  .escluso-testa {
-    margin-bottom: clamp(36px, 4.5vw, 60px);
-  }
-
-  .titolo-largo {
-    max-width: 20ch;
-    margin-bottom: clamp(34px, 4vw, 56px);
-  }
-  .due-liste {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(32px, 5vw, 72px);
-  }
-  .lista .label {
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 24px;
-  }
-  .lista ul {
-    display: grid;
-    gap: 18px;
-  }
-  .lista li {
-    color: var(--text-muted);
-    font-size: 15.5px;
-    padding-left: 24px;
-    position: relative;
-  }
-  .lista li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.62em;
-    width: 11px;
-    height: 1px;
-    background: var(--text);
-  }
-  .lista-no li::before {
-    width: 9px;
-    height: 9px;
-    top: 0.42em;
-    border: 1px solid var(--text-faint);
-    background: none;
-  }
-
-  .prezzo-blocco {
-    display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    gap: clamp(28px, 4vw, 64px);
-    align-items: end;
-    padding-bottom: clamp(36px, 4.5vw, 60px);
-  }
-  .numero {
-    font-family: var(--font-display);
-    font-size: clamp(42px, 7vw, 84px);
-    font-weight: 700;
-    letter-spacing: -0.045em;
-    line-height: 1;
-    margin-block: 16px 12px;
-  }
-
-  .extra {
-    margin-top: clamp(28px, 3.5vw, 44px);
-    max-width: 66ch;
-    color: var(--text-muted);
-    font-size: 15px;
-  }
-
-  @media (max-width: 900px) {
-    .due-liste,
-    .prezzo-blocco {
+  @media (max-width: 767px) {
+    .voci.quattro,
+    .voci.tre,
+    .due-colonne,
+    .qa {
       grid-template-columns: 1fr;
     }
   }

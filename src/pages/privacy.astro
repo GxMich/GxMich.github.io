@@ -1,17 +1,17 @@
-﻿---
-import Base from '../layouts/Base.astro';
+---
+import Guscio from '../layouts/Guscio.astro';
 import { SITE } from '../config.js';
 ---
 
-<Base
-  title="Informativa privacy — Michele"
-  description="Come tratto i dati che mi lasci scrivendomi dal sito: cosa raccolgo, perché, per quanto tempo e come farli cancellare."
+<Guscio
+  titolo="Informativa privacy — Michele"
+  descrizione="Come tratto i dati che mi lasci scrivendomi dal sito: cosa raccolgo, perché, per quanto tempo e come farli cancellare."
   noindex={true}
 >
   <section class="pagina">
-    <div class="wrap">
-      <p class="label">Informativa privacy</p>
-      <h1 class="h2">Cosa faccio dei tuoi dati</h1>
+    <div class="contenitore">
+      <p class="etichetta">Informativa privacy</p>
+      <h1 class="display">Cosa faccio dei tuoi dati</h1>
 
       <div class="avviso">
         <strong>Da completare prima di pubblicare.</strong> Questo testo è una traccia
@@ -19,11 +19,11 @@ import { SITE } from '../config.js';
         partita IVA) e riletto da chi ti segue per gli adempimenti. Non è consulenza legale.
       </div>
 
-      <div class="prose testo">
+      <div class="testo">
         <h2 class="h4">Chi tratta i dati</h2>
         <p>
           Il titolare del trattamento è {SITE.name}, con sede in {SITE.city}, contattabile
-          all'indirizzo <a class="link-inline" href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+          all'indirizzo <a class="collegamento" href={`mailto:${SITE.email}`}>{SITE.email}</a>.
           L'attività è svolta come prestazione occasionale, senza partita IVA.
         </p>
 
@@ -60,14 +60,14 @@ import { SITE } from '../config.js';
         <p>
           Puoi chiedermi in qualsiasi momento di accedere ai tuoi dati, correggerli o
           cancellarli, scrivendo a
-          <a class="link-inline" href={`mailto:${SITE.email}`}>{SITE.email}</a>. Rispondo
+          <a class="collegamento" href={`mailto:${SITE.email}`}>{SITE.email}</a>. Rispondo
           io, senza moduli da compilare. Se ritieni che il trattamento non sia corretto puoi
           rivolgerti al Garante per la protezione dei dati personali.
         </p>
       </div>
     </div>
   </section>
-</Base>
+</Guscio>
 
 <style>
   .pagina {
@@ -79,24 +79,38 @@ import { SITE } from '../config.js';
   h1 {
     max-width: 18ch;
   }
+  .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(20px, 3vw, 36px);
+  }
   .avviso {
-    margin-top: 28px;
+    margin-top: var(--sp-6);
     max-width: 64ch;
-    padding: 16px 20px;
-    border: 1px dashed var(--text-muted);
-    color: var(--text-muted);
-    font-size: 15px;
+    padding: var(--sp-4) var(--sp-5);
+    border: 1px dashed var(--ink-3);
+    border-radius: var(--radius-1);
+    color: var(--ink-2);
+    font-size: var(--t-body-sm);
   }
   .avviso strong {
-    color: var(--text);
+    color: var(--ink);
     font-weight: 500;
   }
   .testo {
     margin-top: clamp(32px, 4vw, 52px);
     max-width: 64ch;
+    display: grid;
+    gap: var(--sp-3);
   }
   .testo h2 {
-    margin-top: 34px;
-    margin-bottom: 8px;
+    margin-top: var(--sp-6);
+  }
+  .testo p {
+    color: var(--ink-2);
+    text-wrap: pretty;
+  }
+  .collegamento {
+    color: var(--signal-ink);
   }
 </style>

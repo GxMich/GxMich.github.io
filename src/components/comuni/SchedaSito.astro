@@ -1,0 +1,114 @@
+---
+/**
+ * La scheda di un sito nella griglia dei lavori.
+ *
+ * L'immagine domina: chi cerca un sito per la sua attività decide guardando,
+ * non leggendo. Il testo è quello che serve a capire di che tipo di attività
+ * si tratta, e basta — il resto sta nella scheda completa.
+ */
+import { Image } from 'astro:assets';
+import { originale } from '../../lib/immagini.ts';
+
+interface Props {
+  href: string;
+  titolo: string;
+  cliente: string;
+  riassunto: string;
+  anno: number;
+  immagine?: string;
+  primo?: boolean;
+}
+
+const { href, titolo, cliente, riassunto, anno, immagine, primo = false } = Astro.props;
+const img = originale(immagine);
+---
+
+<a class="scheda" href={href}>
+  {
+    img && (
+      <div class="cornice">
+        <Image
+          src={img}
+          alt=""
+          widths={[420, 720, 1100]}
+          sizes="(max-width: 767px) 92vw, 46vw"
+          formats={['avif', 'webp']}
+          loading={primo ? 'eager' : 'lazy'}
+        />
+      </div>
+    )
+  }
+
+  <div class="sotto">
+    <p class="etichetta">{cliente} · {anno}</p>
+    <p class="h3 nome">{titolo}</p>
+    <p class="testo-sm sunto">{riassunto}</p>
+    <span class="freccia">Guarda com'è venuto <span aria-hidden="true">→</span></span>
+  </div>
+</a>
+
+<style>
+  .scheda {
+    display: grid;
+    gap: var(--sp-5);
+    text-decoration: none;
+    align-content: start;
+  }
+
+  /* Il fondo scuro fa da cornice perché la schermata chiara brilli: è lo
+     stesso meccanismo dell'apertura in home. */
+  .cornice {
+    background: var(--stage);
+    padding: clamp(14px, 1.8vw, 26px);
+    border-radius: var(--radius-2);
+    overflow: hidden;
+  }
+
+  .cornice img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--edge);
+    border-radius: var(--radius-1);
+    transition: transform var(--dur-3) var(--ease-out);
+  }
+
+  .scheda:hover .cornice img {
+    transform: scale(1.02);
+  }
+
+  .sotto {
+    display: grid;
+    gap: var(--sp-3);
+  }
+
+  .nome {
+    letter-spacing: -0.025em;
+  }
+
+  .sunto {
+    max-width: 46ch;
+  }
+
+  .freccia {
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    color: var(--signal-ink);
+    display: inline-flex;
+    gap: var(--sp-2);
+    margin-top: var(--sp-1);
+  }
+
+  .freccia span {
+    transition: transform var(--dur-1) var(--ease-out);
+  }
+
+  .scheda:hover .freccia span {
+    transform: translateX(4px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scheda:hover .cornice img {
+      transform: none;
+    }
+  }
+</style>

@@ -1,57 +1,68 @@
 ---
-import Base from '../layouts/Base.astro';
-import CtaFinale from '../components/CtaFinale.astro';
-import Percorso from '../components/Percorso.astro';
+/**
+ * Chi sono.
+ *
+ * È la pagina che si legge dopo aver già deciso di essere interessati: può
+ * permettersi di essere lunga.
+ *
+ * La linea temporale nasce per un problema di credibilità, non di grafica.
+ * Scrivere "sviluppo software da anni" con tre anni alle spalle suona vago, e
+ * il vago in un portfolio si legge come reticenza. Tre anni mostrati — con
+ * dentro cosa è successo in ognuno — sono più solidi di dieci dichiarati.
+ */
 import { Image } from 'astro:assets';
+import Guscio from '../layouts/Guscio.astro';
+import Invito from '../components/sezioni/Invito.astro';
 import ritratto from '../assets/michele.png';
 import scrivania from '../assets/me/scrivania.jpg';
 import { SITE } from '../config.js';
 import { ID, persona, briciole } from '../lib/schema.ts';
 
-const faLaMacchina = [
+const tappe = [
   {
-    titolo: 'Esplorare varianti',
+    anno: '2023',
+    titolo: 'Imparo a programmare, da solo',
     testo:
-      'Tre impostazioni di homepage invece di una, per capire quale regge meglio i tuoi contenuti veri. È la cosa in cui mi fa guadagnare più tempo.',
+      'Il primo progetto finito si chiamava LightenUp: un tracciatore di allenamenti in PHP, uguale a centinaia di altri. Non lo apriva nessuno, me compreso. Mi ha insegnato la cosa che conta: finire non basta, bisogna risolvere qualcosa a qualcuno.',
   },
   {
-    titolo: 'Scrivere il codice ripetitivo',
+    anno: '2024 – 2025',
+    titolo: 'Il magazzino diventa la palestra',
     testo:
-      'Griglie, form, stati di errore, adattamento al telefono. Roba che so scrivere a memoria e che non mi diverte più da anni.',
+      'Da problem solver vedo ogni giorno dove il processo si inceppa. Comincio a costruire strumenti per il mio stesso lavoro: il tracciamento dei pallet, il monitoraggio dei tempi di consegna. Non sono esercizi — se sbaglio un dato, si ferma un camion.',
   },
   {
-    titolo: 'Controllare il lavoro',
+    anno: '2026',
+    titolo: 'Progetti miei, portati fino in fondo',
     testo:
-      'Rileggere il codice cercando errori, contrasti insufficienti, link rotti, cose che ho dimenticato. Un secondo paio di occhi che non si stanca.',
+      'SuiteFit, la piattaforma per personal trainer e nutrizionisti. Il banco olografico, che smonta motori CAD a gesti davanti alla webcam. E i primi siti per attività del territorio.',
   },
   {
-    titolo: 'Fare la prima stesura dei testi',
+    anno: 'Oggi',
+    titolo: 'Lo stesso mestiere, altri strumenti',
     testo:
-      'Una base da correggere, mai da pubblicare così. I testi di un sito vanno riscritti da chi ha parlato col cliente.',
+      "Continuo a fare il problem solver: cambia solo che alcuni problemi li risolvo con una procedura e altri con del codice. Quando torno su LightenUp lo riscrivo da zero — smette di essere un'app per allenamenti e diventa un diario emotivo, che è la cosa che mancava davvero.",
   },
 ];
 
+const faLaMacchina = [
+  { titolo: 'Esplorare varianti', testo: 'Tre impostazioni di homepage invece di una, per capire quale regge meglio i tuoi contenuti veri. È la cosa in cui mi fa guadagnare più tempo.' },
+  { titolo: 'Scrivere il codice ripetitivo', testo: 'Griglie, form, stati di errore, adattamento al telefono. Roba che so scrivere a memoria e che non mi diverte più da anni.' },
+  { titolo: 'Controllare il lavoro', testo: 'Rileggere il codice cercando errori, contrasti insufficienti, link rotti, cose che ho dimenticato. Un secondo paio di occhi che non si stanca.' },
+  { titolo: 'Fare la prima stesura dei testi', testo: 'Una base da correggere, mai da pubblicare così. I testi di un sito vanno riscritti da chi ha parlato col cliente.' },
+];
+
 const restaUmano = [
-  {
-    titolo: 'Capire cosa vuoi davvero comunicare',
-    testo:
-      "Nessun modello linguistico è stato nel tuo locale il venerdì sera. Questa parte si fa parlando, guardando, e a volte contraddicendo quello che mi hai detto all'inizio.",
-  },
-  {
-    titolo: 'Il gusto',
-    testo:
-      "L'IA, se le lasci scegliere, converge sempre sulla media di quello che ha visto. La media è il motivo per cui tanti siti si somigliano. Scegliere cosa togliere è un lavoro di gusto, e il gusto non si delega.",
-  },
-  {
-    titolo: 'Le decisioni di prodotto',
-    testo:
-      'Cosa mettere in home e cosa no, quali funzioni valgono il loro costo, quando dirti che una cosa che hai chiesto ti farà perdere clienti.',
-  },
-  {
-    titolo: 'Il rapporto con te',
-    testo:
-      'Rispondere al telefono, spiegarti le scelte senza gergo, esserci quando qualcosa non va. Il pezzo più importante e quello meno automatizzabile.',
-  },
+  { titolo: 'Capire cosa vuoi davvero comunicare', testo: "Nessun modello linguistico è stato nel tuo locale il venerdì sera. Questa parte si fa parlando, guardando, e a volte contraddicendo quello che mi hai detto all'inizio." },
+  { titolo: 'Il gusto', testo: "L'IA, se le lasci scegliere, converge sempre sulla media di quello che ha visto. La media è il motivo per cui tanti siti si somigliano. Scegliere cosa togliere è un lavoro di gusto, e il gusto non si delega." },
+  { titolo: 'Le decisioni di prodotto', testo: 'Cosa mettere in home e cosa no, quali funzioni valgono il loro costo, quando dirti che una cosa che hai chiesto ti farà perdere clienti.' },
+  { titolo: 'Il rapporto con te', testo: 'Rispondere al telefono, spiegarti le scelte senza gergo, esserci quando qualcosa non va. Il pezzo più importante e quello meno automatizzabile.' },
+];
+
+const tappeLavoro = [
+  { etichetta: 'Da solo', testo: 'Pochi progetti alla volta. Parli sempre con me, e chi scrive il codice è la stessa persona che ti ha ascoltato.' },
+  { etichetta: 'Fuori orario', testo: 'Ho un lavoro a turni, quindi rispondo la sera e nei fine settimana. Non è un limite nascosto: te lo dico prima, così sai cosa aspettarti sui tempi.' },
+  { etichetta: 'Se non sono adatto', testo: 'Te lo dico alla prima chiamata, non al terzo incontro. E quando posso ti indico chi contattare al posto mio.' },
 ];
 
 const jsonLd = [
@@ -71,420 +82,375 @@ const jsonLd = [
 ];
 ---
 
-<Base
-  title="Chi sono e come lavoro con l'IA — Michele, sviluppatore web"
-  description="Sviluppatore web di Trino, lavoro fra Vercelli, Casale Monferrato e Novara. Come uso davvero l'IA nel mio lavoro: cosa le lascio fare, cosa non le lascio decidere e perché."
+<Guscio
+  titolo="Chi sono e come lavoro con l'IA — Michele, sviluppatore web"
+  descrizione="Sviluppatore web di Trino, lavoro fra Vercelli, Casale Monferrato e Novara. Come uso davvero l'IA nel mio lavoro: cosa le lascio fare, cosa non le lascio decidere e perché."
   ogImage="/og/chi-sono.png"
   jsonLd={jsonLd}
 >
-  <div class="wrap pagina">
-      <!-- ============================ APERTURA ============================ -->
-      <section class="apertura" data-hero data-reveal-group>
-        <p class="label" data-reveal>Chi sono</p>
-        <h1 class="display-sm titolo" data-reveal>
-          Risolvo problemi in magazzino. Poi li risolvo di nuovo, in codice.
+  <header class="testata">
+    <div class="contenitore dentro">
+      <div class="apertura">
+        <p class="etichetta">Chi sono</p>
+        <h1 class="display otturatore" data-anima>
+          <span class="riga"><span>Risolvo problemi in magazzino.</span></span>
+          <span class="riga"><span>Poi li risolvo di nuovo, in codice.</span></span>
         </h1>
-
-        <div class="presentazione">
-          <div class="intro prose" data-reveal>
-            <p>
-              Mi chiamo {SITE.name}, sviluppo siti e software su misura. Sto a {SITE.city},
-              lavoro di persona fra Vercelli, Casale Monferrato e Novara, e da remoto con
-              clienti in tutta Italia.
-            </p>
-            <p>
-              Di mestiere faccio il <strong>problem solver</strong> in un magazzino logistico:
-              il mio lavoro è capire perché una cosa si è inceppata e rimetterla in moto,
-              di corsa, mentre tutto il resto continua a muoversi. Scrivo software dal 2023,
-              e le due cose si sono incontrate presto — gli strumenti che ho costruito sono
-              nati dai problemi che vedevo ogni turno.
-            </p>
-            <p>
-              <strong>Perché ti conviene proprio adesso.</strong> Prendo pochi progetti l'anno,
-              quindi il tuo non è il quarantasettesimo della lista. E hai il numero di chi
-              scrive il codice, non di un commerciale che poi lo gira a qualcun altro.
-            </p>
-            <p>
-              <strong>Non sono uno che chiede a un'IA di fare un sito.</strong> Sono uno che sa
-              scrivere quel codice a mano e che ha deciso di usare l'IA dove ha senso, perché
-              il risultato viene meglio. Sotto ti spiego esattamente dove.
-            </p>
-          </div>
-
-          <figure class="ritratto" data-reveal>
-            <Image
-              src={ritratto}
-              alt={`${SITE.name}, sviluppatore web a ${SITE.city}`}
-              widths={[320, 480, 640]}
-              sizes="(max-width: 900px) 220px, 320px"
-              formats={['avif', 'webp']}
-              loading="eager"
-              fetchpriority="high"
-            />
-            <figcaption class="label-plain">
-              {SITE.name} — {SITE.city}
-            </figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <!-- ============================ PERCORSO ============================ -->
-      <section class="sezione fascia-chiara chiara" aria-labelledby="percorso">
-        <div class="split intestazione" data-reveal-group>
-          <h2 id="percorso" class="h2" data-reveal="maschera">Come ci sono arrivato.</h2>
-          <p class="lede" data-reveal>
-            Dal 2023 a oggi, compreso l'anno in cui ho costruito una cosa che non serviva a
-            nessuno.
+        <div class="intro sfoca-entra" data-anima>
+          <p class="testo">
+            Mi chiamo {SITE.name}, sviluppo siti e software su misura. Sto a {SITE.city},
+            lavoro di persona fra Vercelli, Casale Monferrato e Novara, e da remoto con
+            clienti in tutta Italia.
+          </p>
+          <p class="testo">
+            <strong>Non sono uno che chiede a un'IA di fare un sito.</strong> Sono uno che sa
+            scrivere quel codice a mano e che ha deciso di usare l'IA dove ha senso, perché il
+            risultato viene meglio. Sotto ti spiego esattamente dove.
           </p>
         </div>
+      </div>
 
-        <div class="percorso-corpo" data-reveal>
-          <Percorso />
+      <figure class="ritratto">
+        <Image
+          src={ritratto}
+          alt={`${SITE.name}, sviluppatore web a ${SITE.city}`}
+          widths={[320, 480, 640]}
+          sizes="(max-width: 900px) 220px, 300px"
+          formats={['avif', 'webp']}
+          loading="eager"
+          fetchpriority="high"
+        />
+        <figcaption class="etichetta">{SITE.name} — {SITE.city}</figcaption>
+      </figure>
+    </div>
+  </header>
 
-          <figure class="scatto">
-            <Image
-              src={scrivania}
-              alt="La mia scrivania: monitor, tastiera e taccuino, con la luce che entra dalla finestra"
-              widths={[320, 520, 780]}
-              sizes="(max-width: 900px) 100vw, 340px"
-              formats={['avif', 'webp']}
-              loading="lazy"
-            />
-          </figure>
-        </div>
-      </section>
-
-      <!-- ========================= METODO CON L'IA ======================== -->
-      <section class="sezione" aria-labelledby="metodo">
-        <div class="split intestazione" data-reveal-group>
-          <h2 id="metodo" class="h2" data-reveal>Il pezzo che di solito nessuno racconta.</h2>
-          <p class="lede" data-reveal>
-            Quasi tutti quelli che lavorano con l'IA o la nascondono o la usano come slogan.
-            Preferisco dirti come funziona: così puoi giudicare tu se ti conviene.
-          </p>
-        </div>
-
-        <div class="colonne">
-          <div class="colonna" data-reveal-group>
-            <p class="label">Cosa faccio fare alla macchina</p>
-            <ul class="voci">
-              {
-                faLaMacchina.map((v) => (
-                  <li data-reveal>
-                    <h3 class="h4">{v.titolo}</h3>
-                    <p>{v.testo}</p>
-                  </li>
-                ))
-              }
-            </ul>
-          </div>
-
-          <div class="colonna" data-reveal-group>
-            <p class="label">Cosa non delego mai</p>
-            <ul class="voci">
-              {
-                restaUmano.map((v) => (
-                  <li data-reveal>
-                    <h3 class="h4">{v.titolo}</h3>
-                    <p>{v.testo}</p>
-                  </li>
-                ))
-              }
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- ======================== PERCHÉ TI CONVIENE ====================== -->
-      <section class="sezione" aria-labelledby="vantaggio">
-        <h2 id="vantaggio" class="h2 titolo-largo" data-reveal>
-          Perché a te, che paghi, questo conviene.
-        </h2>
-
-        <div class="rule-grid cols-3 vantaggi" data-reveal-group>
-          <div class="vantaggio" data-reveal>
-            <span class="num">01</span>
-            <h3 class="h4">Tempi più corti, stessa cura</h3>
-            <p>
-              Un sito su misura richiede settimane, non mesi. Non perché lavoro di fretta,
-              ma perché la parte meccanica occupa una frazione del tempo di prima.
-            </p>
-          </div>
-          <div class="vantaggio" data-reveal>
-            <span class="num">02</span>
-            <h3 class="h4">Più alternative prima di decidere</h3>
-            <p>
-              Vedi tre direzioni possibili e scegli con me, invece di ricevere l'unica che
-              c'era tempo di preparare e doverla accettare.
-            </p>
-          </div>
-          <div class="vantaggio" data-reveal>
-            <span class="num">03</span>
-            <h3 class="h4">Il mio tempo va dove conta</h3>
-            <p>
-              Le ore che non spendo a riscrivere codice banale le spendo a capire il tuo
-              lavoro e a rifinire i dettagli. È lì che si vede la differenza.
-            </p>
-          </div>
-        </div>
-
-        <p class="onesta" data-reveal>
-          <strong>Il rovescio, per onestà:</strong> l'IA sbaglia, e sbaglia in modo convincente.
-          Per questo ogni cosa che consegno l'ho letta, provata e capita riga per riga. Se
-          una parte del lavoro non la so verificare, quella parte non la uso.
+  <section class="sezione percorso" aria-labelledby="percorso">
+    <div class="contenitore">
+      <div class="intestazione">
+        <h2 id="percorso" class="h2">Come ci sono arrivato.</h2>
+        <p class="testo-sm">
+          Tre anni di codice. Non venti, e non provo a farteli sembrare tali — compreso
+          l'anno in cui ho costruito una cosa che non serviva a nessuno.
         </p>
-      </section>
+      </div>
 
-      <!-- ========================== COME LAVORO =========================== -->
-      <section class="sezione" aria-labelledby="come-lavoro">
-        <div class="split-wide come-lavoro">
-          {/* Il titolo si aggancia in alto e accompagna la lettura invece di
-              restare piantato in cima a una colonna vuota alta ottocento
-              pixel. Sotto ai 900px torna un titolo normale. */}
-          <div class="testa-appesa" data-reveal="sfocatura">
-            <h2 id="come-lavoro" class="h2">Come lavoro</h2>
-            <p class="testa-nota">
-              Tre cose che di solito si scoprono strada facendo. Preferisco dirle prima.
-            </p>
-          </div>
-          <ul class="tappe prose" data-reveal-group>
-            <li data-reveal>
-              <span class="label-plain">Da solo</span>
-              <p>
-                Pochi progetti alla volta. Parli sempre con me, e chi scrive il codice è la
-                stessa persona che ti ha ascoltato.
-              </p>
-            </li>
-            <li data-reveal>
-              <span class="label-plain">Fuori orario</span>
-              <p>
-                Ho un lavoro a turni, quindi rispondo la sera e nei fine settimana. Non è un
-                limite nascosto: te lo dico prima, così sai cosa aspettarti sui tempi.
-              </p>
-            </li>
-            <li data-reveal>
-              <span class="label-plain">Se non sono adatto</span>
-              <p>
-                Te lo dico alla prima chiamata, non al terzo incontro. E quando posso ti
-                indico chi contattare al posto mio.
-              </p>
-            </li>
+      <div class="percorso-corpo">
+        <ol class="linea">
+          {
+            tappe.map((t) => (
+              <li class="tappa sfoca-entra" data-anima>
+                <p class="etichetta anno">{t.anno}</p>
+                <p class="h3">{t.titolo}</p>
+                <p class="testo-sm">{t.testo}</p>
+              </li>
+            ))
+          }
+        </ol>
+
+        <figure class="scatto">
+          <Image
+            src={scrivania}
+            alt="La mia scrivania: monitor, tastiera e taccuino, con la luce che entra dalla finestra"
+            widths={[320, 520, 780]}
+            sizes="(max-width: 900px) 100vw, 320px"
+            formats={['avif', 'webp']}
+            loading="lazy"
+          />
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="sezione" aria-labelledby="metodo">
+    <div class="contenitore">
+      <div class="intestazione">
+        <h2 id="metodo" class="h2">Il pezzo che di solito nessuno racconta.</h2>
+        <p class="testo-sm">
+          Quasi tutti quelli che lavorano con l'IA o la nascondono o la usano come slogan.
+          Preferisco dirti come funziona: così puoi giudicare tu se ti conviene.
+        </p>
+      </div>
+
+      <div class="due-colonne">
+        <div class="colonna">
+          <p class="etichetta">Cosa faccio fare alla macchina</p>
+          <ul class="voci">
+            {
+              faLaMacchina.map((v) => (
+                <li class="sfoca-entra" data-anima>
+                  <p class="h4">{v.titolo}</p>
+                  <p class="testo-sm">{v.testo}</p>
+                </li>
+              ))
+            }
           </ul>
         </div>
-      </section>
-  </div>
 
-  <CtaFinale
-    etichetta="Se ti torna"
-    titolo="Vediamo se sono la persona giusta."
-    testo="Il modo più veloce per capirlo è raccontarmi cosa fai e cosa ti blocca oggi. Se il tuo progetto non è nelle mie corde te lo dico subito, e quando posso ti indico chi contattare."
-  />
-</Base>
+        <div class="colonna">
+          <p class="etichetta">Cosa non delego mai</p>
+          <ul class="voci">
+            {
+              restaUmano.map((v) => (
+                <li class="sfoca-entra" data-anima>
+                  <p class="h4">{v.titolo}</p>
+                  <p class="testo-sm">{v.testo}</p>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <p class="onesta">
+        <strong>Il rovescio, per onestà:</strong> l'IA sbaglia, e sbaglia in modo convincente.
+        Per questo ogni cosa che consegno l'ho letta, provata e capita riga per riga. Se una
+        parte del lavoro non la so verificare, quella parte non la uso.
+      </p>
+    </div>
+  </section>
+
+  <section class="sezione come" aria-labelledby="come">
+    <div class="contenitore">
+      <div class="intestazione">
+        <h2 id="come" class="h2">Come lavoro.</h2>
+        <p class="testo-sm">
+          Tre cose che di solito si scoprono strada facendo. Preferisco dirle prima.
+        </p>
+      </div>
+
+      <ul class="tappe-lavoro">
+        {
+          tappeLavoro.map((t) => (
+            <li class="sfoca-entra" data-anima>
+              <p class="etichetta">{t.etichetta}</p>
+              <p class="testo-sm">{t.testo}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Invito />
+</Guscio>
 
 <style>
-  .pagina {
-    padding-block: clamp(44px, 6vw, 88px) clamp(60px, 8vw, 110px);
+  .testata {
+    padding-block: clamp(40px, 6vw, 88px) clamp(32px, 4vw, 56px);
   }
-  .apertura .label {
-    margin-bottom: clamp(26px, 3.5vw, 44px);
-  }
-  .titolo {
-    max-width: 20ch;
-  }
-  /* Il ritratto sta a destra del testo e non sopra: chi legge deve arrivare
-     alla faccia mentre legge chi sono, non prima di sapere di chi si tratta. */
-  .presentazione {
-    margin-top: clamp(32px, 4vw, 52px);
+
+  .dentro {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
     gap: clamp(28px, 4vw, 64px);
     align-items: start;
   }
-  .intro {
-    max-width: 64ch;
-    font-size: 17.5px;
+
+  .apertura .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(24px, 3vw, 40px);
   }
 
+  .riga {
+    display: block;
+    overflow: hidden;
+  }
+
+  .riga > span {
+    display: block;
+  }
+
+  h1 {
+    max-width: 20ch;
+  }
+
+  .intro {
+    display: grid;
+    gap: var(--sp-4);
+    margin-top: clamp(24px, 3vw, 36px);
+  }
+
+  strong {
+    font-weight: 500;
+  }
+
+  /* Il ritratto sta a destra del testo e non sopra: chi legge deve arrivare
+     alla faccia mentre legge chi sei, non prima di sapere di chi si tratta. */
   .ritratto {
     margin: 0;
     display: grid;
-    gap: 12px;
+    gap: var(--sp-3);
     justify-items: start;
-    width: clamp(200px, 24vw, 320px);
-  }
-  .ritratto img {
-    display: block;
-    width: 100%;
-    height: auto;
-    /* monocromatico come tutto il resto: il sito non ha una sola tinta,
-       e una foto a colori qui spaccherebbe la regola in due */
-    filter: grayscale(1) contrast(1.04);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
   }
 
-  @media (max-width: 760px) {
-    .presentazione {
-      grid-template-columns: 1fr;
-    }
-    .ritratto {
-      width: min(220px, 55%);
-    }
+  .ritratto img {
+    width: 100%;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-2);
+    filter: grayscale(1) contrast(1.04);
   }
 
   .sezione {
-    padding-top: clamp(72px, 10vw, 140px);
+    padding-block: var(--section-sm);
   }
+
+  .percorso {
+    background: var(--paper-sunk);
+  }
+
   .intestazione {
-    margin-bottom: clamp(42px, 5vw, 76px);
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(16px, 3vw, 48px);
+    align-items: baseline;
+    padding-bottom: clamp(28px, 3.5vw, 48px);
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: clamp(32px, 4vw, 56px);
   }
 
-  /* ---------------------------- percorso ----------------------------
-     La fascia chiara deve toccare i due bordi dello schermo, altrimenti
-     sembra una scheda posata sul nero invece di un cambio di capitolo.
-     La pagina sta dentro un contenitore centrato con margini laterali:
-     con i margini negativi calcolati sulla larghezza della finestra la
-     sezione esce dal contenitore senza bisogno di spostarla nel markup. */
-  .fascia-chiara {
-    margin-inline: calc(50% - 50vw);
-    padding-inline: max(var(--gutter), calc(50vw - var(--max) / 2));
-    padding-block: clamp(72px, 9vw, 128px);
-    margin-block: clamp(48px, 7vw, 100px);
-  }
-  /* Il padding-top della regola generica sommato al nostro raddoppierebbe
-     lo spazio in cima alla fascia. */
-  .sezione.fascia-chiara {
-    padding-top: clamp(72px, 9vw, 128px);
-  }
-  /* Le immagini dentro la fascia chiara non vanno schiarite: il filtro in
-     bianco e nero le renderebbe smorte su un fondo già chiaro. */
-  .fascia-chiara .scatto img {
-    filter: grayscale(1) contrast(1.08) brightness(0.96);
+  .intestazione h2 {
+    max-width: 16ch;
   }
 
-  /* ---------------------------- percorso ---------------------------- */
+  .intestazione p {
+    max-width: 56ch;
+  }
+
   .percorso-corpo {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: clamp(32px, 5vw, 72px);
     align-items: start;
   }
+
+  .linea {
+    display: grid;
+    border-left: 1px solid var(--rule);
+  }
+
+  .tappa {
+    display: grid;
+    gap: var(--sp-2);
+    padding: 0 0 clamp(28px, 3.5vw, 48px) clamp(20px, 3vw, 40px);
+    position: relative;
+  }
+
+  .tappa::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 6px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+
+  .tappa:last-child {
+    padding-bottom: 0;
+  }
+
+  .tappa p:last-child {
+    max-width: 56ch;
+  }
+
+  .anno {
+    color: var(--ink);
+  }
+
   .scatto {
     margin: 0;
-    width: clamp(240px, 26vw, 340px);
-    /* Si aggancia in alto e resta ferma mentre la linea temporale scorre:
-       la foto fa da punto fisso, che è esattamente il suo compito qui. */
+    width: clamp(240px, 26vw, 320px);
     position: sticky;
-    top: 120px;
+    top: calc(var(--header-h) + var(--sp-6));
   }
+
   .scatto img {
-    display: block;
     width: 100%;
-    height: auto;
-    filter: grayscale(1) contrast(1.04);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-2);
+    filter: grayscale(1) contrast(1.08) brightness(0.98);
   }
-  @media (max-width: 860px) {
-    .percorso-corpo {
+
+  .due-colonne {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(28px, 4vw, 72px);
+  }
+
+  .colonna .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: var(--sp-5);
+  }
+
+  .voci {
+    display: grid;
+    gap: var(--sp-6);
+  }
+
+  .voci li {
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  .voci p:last-child {
+    max-width: 46ch;
+  }
+
+  .onesta {
+    margin-top: clamp(32px, 4vw, 56px);
+    max-width: 66ch;
+    color: var(--ink-2);
+    border-left: 2px solid var(--signal);
+    padding-left: var(--sp-5);
+  }
+
+  .onesta strong {
+    color: var(--ink);
+  }
+
+  .tappe-lavoro {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(24px, 3vw, 48px);
+    border-top: 1px solid var(--ink);
+  }
+
+  .tappe-lavoro li {
+    display: grid;
+    gap: var(--sp-3);
+    align-content: start;
+    padding-top: var(--sp-5);
+  }
+
+  .tappe-lavoro p:last-child {
+    max-width: 40ch;
+  }
+
+  @media (max-width: 900px) {
+    .dentro,
+    .intestazione,
+    .percorso-corpo,
+    .due-colonne,
+    .tappe-lavoro {
       grid-template-columns: 1fr;
     }
+
+    .ritratto {
+      width: min(220px, 55%);
+      order: -1;
+    }
+
     .scatto {
       position: static;
       width: min(280px, 70%);
     }
-  }
-  .colonne {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(34px, 5vw, 76px);
-  }
-  .colonna .label {
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 28px;
-  }
-  .voci {
-    display: grid;
-    gap: 28px;
-  }
-  .voci p {
-    color: var(--text-muted);
-    font-size: 15.5px;
-    margin-top: 8px;
-    max-width: 46ch;
-  }
 
-  .titolo-largo {
-    max-width: 20ch;
-    margin-bottom: clamp(36px, 4.5vw, 60px);
-  }
-  .vantaggio {
-    padding: 30px 26px 34px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .vantaggio p {
-    color: var(--text-muted);
-    font-size: 15px;
-  }
-  .onesta {
-    margin-top: clamp(32px, 4vw, 52px);
-    max-width: 66ch;
-    color: var(--text-muted);
-    font-size: 16px;
-    border-left: 1px solid var(--text-muted);
-    padding-left: 22px;
-  }
-  .onesta strong {
-    color: var(--text);
-    font-weight: 500;
-  }
-
-  .split-wide {
-    align-items: start;
-  }
-  /* ---------------------------- come lavoro ----------------------------
-     `align-items: end` allineava il titolo al fondo della colonna accanto,
-     e siccome quella colonna è alta tre paragrafi si apriva un vuoto sopra
-     al titolo. Ora parte dall'alto e resta agganciato mentre si scorre. */
-  .come-lavoro {
-    align-items: start;
-  }
-  .testa-appesa {
-    display: grid;
-    gap: 16px;
-    align-content: start;
-  }
-  .testa-nota {
-    color: var(--text-muted);
-    font-size: 15px;
-    line-height: 1.6;
-    max-width: 30ch;
-    text-wrap: pretty;
-  }
-  @media (min-width: 901px) {
-    .testa-appesa {
-      position: sticky;
-      top: 128px;
-    }
-  }
-
-  .tappe {
-    display: grid;
-    gap: clamp(30px, 4vw, 46px);
-  }
-  .tappe li {
-    display: grid;
-    gap: 8px;
-    padding-top: 22px;
-    border-top: 1px solid var(--border);
-  }
-
-  @media (max-width: 900px) {
-    .colonne {
-      grid-template-columns: 1fr;
+    .tappe-lavoro {
+      gap: var(--sp-6);
     }
   }
 </style>
