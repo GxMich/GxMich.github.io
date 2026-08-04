@@ -2,139 +2,137 @@
  * Genera le immagini Open Graph, una per pagina, dentro public/og/.
  * Gira da sola prima di ogni build (`npm run build`).
  *
- * Usa gli stessi colori e caratteri del sito. Se cambi la palette in
- * global.css, cambia i valori qui sotto e rilancia `npm run og`.
+ * Usa gli stessi token del sito. Se cambia la palette in src/styles/token.css,
+ * cambiano i valori qui sotto e si rilancia `npm run og`.
+ *
+ * Niente rete. La versione precedente scaricava un .ttf da Google Fonts
+ * fingendosi Android 2.2 — un trucco che funzionava finché funzionava, e che
+ * faceva dipendere una build dalla disponibilità di un servizio esterno. Qui i
+ * caratteri sono quelli che il sito già ospita in public/fonts/: si
+ * decomprimono da woff2 a ttf al volo, perché il disegnatore SVG non legge
+ * woff2, e non tocca nessuno scaricare niente.
  */
-import { mkdir, readFile, writeFile, access } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { Resvg } from '@resvg/resvg-js';
+import { decompress } from 'wawoff2';
+import subsetFont from 'subset-font';
 
 const qui = path.dirname(fileURLToPath(import.meta.url));
 const cartellaFont = path.join(qui, 'fonts');
+const cartellaWoff = path.join(qui, '..', 'public', 'fonts');
 const cartellaOut = path.join(qui, '..', 'public', 'og');
 
+/** Gli stessi valori di src/styles/token.css. */
 const COLORI = {
-  fondo: '#050505',
-  testo: '#FAFAFA',
-  spento: '#8A8A8A',
-  bordo: '#1F1F1F',
+  carta: '#FAFAFA',
+  inchiostro: '#0A0A0B',
+  spento: '#686A70',
+  filetto: '#E2E2E1',
+  segnale: '#FF4A1C',
 };
 
-/** JetBrains Mono serve solo qui: General Sans è già in scripts/fonts. */
-const MONO = {
-  file: 'JetBrainsMono-500.ttf',
-  famiglia: 'JetBrains Mono:500',
-};
-// Android 2.2 è l'unica finestra in cui Google Fonts risponde con un .ttf
-const UA_VECCHIO =
-  'Mozilla/5.0 (Linux; U; Android 2.2; en-us; DROID2 GLOBAL Build/S273) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1';
+const CARATTERI = [
+  { woff2: 'geist-var.woff2', ttf: 'Geist.ttf', peso: 700 },
+  { woff2: 'geist-mono-var.woff2', ttf: 'GeistMono.ttf' },
+];
+
+/** Quello che compare nelle schede: lettere, accenti, punteggiatura, segni. */
+const ALFABETO = [
+  " !\"#$%&'()*+,-./0123456789:;<=>?@",
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`',
+  'abcdefghijklmnopqrstuvwxyz{|}~',
+  'àáâäèéêëìíîïòóôöùúûüçñÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÙÚÛÜÇÑ',
+  '€£©®°·–—…‘’“”«»•→←',
+].join('');
 
 const PAGINE = [
   {
     file: 'home',
-    etichetta: 'Sviluppatore web — Casale Monferrato · Vercelli · Novara',
-    righe: ['Dieci strade esplorate,', 'una scelta a mano.'],
+    etichetta: 'Siti su misura — Vercelli · Casale Monferrato · Novara',
+    righe: ['Il tuo locale ha una faccia.', 'Il sito deve avere quella.'],
   },
   {
     file: 'chi-sono',
     etichetta: 'Chi sono e come lavoro',
-    righe: ['Dove entra la macchina,', 'dove entro io.'],
+    righe: ['Risolvo problemi in magazzino.', 'Poi li risolvo in codice.'],
   },
   {
     file: 'progetti',
-    etichetta: 'Progetti — siti, tool e automazioni',
-    righe: ['Ogni progetto parte', 'da un problema preciso.'],
+    etichetta: 'Lavori — siti e sistemi su misura',
+    righe: ['Sei progetti,', 'raccontati per intero.'],
   },
   {
     file: 'servizi',
-    etichetta: 'Servizi e prezzi',
-    righe: ['Cosa comprende, cosa no,', 'quanto costa.'],
+    etichetta: 'Cosa comprende un sito su misura',
+    righe: ['Cosa comprende.', 'E cosa no.'],
   },
   {
     file: 'contatti',
-    etichetta: 'Contatti',
-    righe: ['Dimmi cosa ti serve,', 'anche se non è chiaro.'],
+    etichetta: 'Contatti — rispondo io',
+    righe: ['Scrivimi.', 'La prima mezz’ora non si paga.'],
   },
 ];
 
-async function esiste(p) {
-  try {
-    await access(p);
-    return true;
-  } catch {
-    return false;
+/**
+ * Il disegnatore SVG legge ttf e otf, non woff2.
+ *
+ * E non applica l'asse dei pesi di un carattere variabile: `font-weight="700"`
+ * nell'SVG viene ignorato e il titolo esce in regolare, che accanto al sito è
+ * un'immagine sbagliata. Quindi il peso lo fisso qui, nel carattere: quello dei
+ * titoli è un'istanza a 700, il mono resta al suo peso normale.
+ */
+async function preparaCaratteri() {
+  await mkdir(cartellaFont, { recursive: true });
+  for (const c of CARATTERI) {
+    const compresso = await readFile(path.join(cartellaWoff, c.woff2));
+    const ttf = Buffer.from(await decompress(compresso));
+
+    const finale = c.peso
+      ? await subsetFont(ttf, ALFABETO, {
+          targetFormat: 'truetype',
+          variationAxes: { wght: { min: c.peso, max: c.peso, default: c.peso } },
+        })
+      : ttf;
+
+    await writeFile(path.join(cartellaFont, c.ttf), finale);
   }
 }
 
-async function assicuraMono() {
-  await mkdir(cartellaFont, { recursive: true });
-  const percorso = path.join(cartellaFont, MONO.file);
-  if (await esiste(percorso)) return;
-
-  console.log(`  scarico ${MONO.file}…`);
-  const css = await fetch(
-    `https://fonts.googleapis.com/css?family=${encodeURIComponent(MONO.famiglia)}`,
-    { headers: { 'User-Agent': UA_VECCHIO } }
-  );
-  if (!css.ok) throw new Error(`CSS HTTP ${css.status}`);
-  const indirizzo = (await css.text()).match(/src:\s*url\(([^)]+)\)/)?.[1];
-  if (!indirizzo) throw new Error('nessun .ttf nella risposta');
-
-  const risposta = await fetch(indirizzo, { headers: { 'User-Agent': UA_VECCHIO } });
-  if (!risposta.ok) throw new Error(`HTTP ${risposta.status}`);
-  await writeFile(percorso, Buffer.from(await risposta.arrayBuffer()));
-}
-
-function esc(t) {
-  return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
+const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 function scheda(pagina) {
   const titolo = pagina.righe
     .map(
       (riga, i) =>
-        `<text x="72" y="${300 + i * 96}" font-family="General Sans" font-weight="700" font-size="82" letter-spacing="-3.4" fill="${COLORI.testo}">${esc(riga)}</text>`
+        `<text x="80" y="${312 + i * 92}" font-family="Geist" font-weight="700" font-size="76" letter-spacing="-3.4" fill="${COLORI.inchiostro}">${esc(riga)}</text>`
     )
     .join('\n  ');
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="${COLORI.fondo}"/>
-  <defs>
-    <radialGradient id="alone" cx="0.5" cy="0" r="0.85">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.10"/>
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect width="1200" height="630" fill="url(#alone)"/>
+  <rect width="1200" height="630" fill="${COLORI.carta}"/>
 
-  <rect x="72" y="72" width="26" height="1" fill="${COLORI.spento}"/>
-  <text x="112" y="77" font-family="JetBrains Mono" font-size="18" letter-spacing="2.2" fill="${COLORI.spento}">${esc(pagina.etichetta.toUpperCase())}</text>
+  <rect x="80" y="72" width="8" height="8" fill="${COLORI.segnale}"/>
+  <text x="104" y="80" font-family="GeistMono" font-size="17" letter-spacing="2.2" fill="${COLORI.spento}">${esc(pagina.etichetta.toUpperCase())}</text>
+  <rect x="80" y="108" width="1040" height="1" fill="${COLORI.filetto}"/>
 
   ${titolo}
 
-  <rect x="72" y="470" width="1056" height="1" fill="${COLORI.bordo}"/>
-  <rect x="72" y="464" width="1" height="14" fill="${COLORI.testo}"/>
-
-  <text x="72" y="536" font-family="JetBrains Mono" font-size="18" letter-spacing="2" fill="${COLORI.spento}">MICHELE — SVILUPPATORE WEB &amp; SOFTWARE</text>
-  <text x="1128" y="536" text-anchor="end" font-family="JetBrains Mono" font-size="18" letter-spacing="2" fill="${COLORI.spento}">SITI · TOOL · AUTOMAZIONI</text>
+  <rect x="80" y="486" width="1040" height="1" fill="${COLORI.inchiostro}"/>
+  <text x="80" y="540" font-family="GeistMono" font-size="17" letter-spacing="2" fill="${COLORI.spento}">MICHELE MODICA — TRINO (VC)</text>
+  <text x="1120" y="540" text-anchor="end" font-family="GeistMono" font-size="17" letter-spacing="2" fill="${COLORI.spento}">SITI · SISTEMI · AUTOMAZIONI</text>
 </svg>`;
 }
 
 async function main() {
   console.log('Immagini Open Graph:');
-  try {
-    await assicuraMono();
-  } catch (e) {
-    console.warn(`  ! font mono non disponibile (${e.message}). Salto la generazione.`);
-    return;
-  }
-
+  await preparaCaratteri();
   await mkdir(cartellaOut, { recursive: true });
 
   for (const pagina of PAGINE) {
     const png = new Resvg(scheda(pagina), {
-      font: { fontDirs: [cartellaFont], loadSystemFonts: false, defaultFontFamily: 'General Sans' },
+      font: { fontDirs: [cartellaFont], loadSystemFonts: false, defaultFontFamily: 'Geist' },
       fitTo: { mode: 'width', value: 1200 },
     })
       .render()

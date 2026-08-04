@@ -11,7 +11,8 @@
     "astro": "astro",
     "og": "node scripts/generate-og.mjs",
     "contrasti": "node scripts/contrasti.mjs",
-    "peso": "node scripts/peso-js.mjs"
+    "peso": "node scripts/peso-js.mjs",
+    "caratteri": "node scripts/caratteri.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",
@@ -20,6 +21,8 @@
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
-    "satori": "^0.12.1"
+    "satori": "^0.12.1",
+    "subset-font": "^2.5.0",
+    "wawoff2": "^2.0.1"
   }
 }

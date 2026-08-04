@@ -1,4 +1,4 @@
-# Portfolio — versione cinematica
+# Portfolio — Michele Modica
 
 Sito statico costruito con [Astro](https://astro.build). Niente CMS, niente pannello di
 amministrazione: i contenuti sono file di testo nel progetto, e ogni modifica passa da una
@@ -6,68 +6,79 @@ build.
 
 ```bash
 npm install
-npm run dev      # sviluppo su http://localhost:4321
-npm run build    # genera il sito in dist/ (rigenera anche le immagini social)
-npm run preview  # controlla il risultato finale prima di pubblicare
+npm run dev        # sviluppo su http://localhost:4321
+npm run build      # genera il sito in dist/ (rigenera anche le immagini social)
+npm run preview    # controlla il risultato finale prima di pubblicare
 ```
 
-La direzione precedente — quella chiara, "gesso e inchiostro" — è conservata per intero in
-`.backup-gesso-inchiostro/`. Non serve alla build: è lì solo se un giorno vuoi rivederla.
+Tre controlli che si possono rilanciare in qualsiasi momento:
+
+```bash
+npm run contrasti  # rapporti di contrasto dei token — esce in errore se uno scende sotto soglia
+npm run peso       # budget di JavaScript per pagina — distingue carico iniziale e su richiesta
+npm run caratteri  # riduce i woff2 in public/fonts al latino (già fatto: rilanciarlo è idempotente)
+```
+
+La direzione precedente è conservata per intero in `archive/`, insieme a uno snapshot
+completo del progetto prima del redesign.
 
 ---
 
 ## 1. Le cose da cambiare prima di pubblicare
 
-Sono tutte in un file solo: **`src/config.js`**.
+Sono tutte in un file solo: **`src/config.js`** — dominio, email, WhatsApp, chiave del
+modulo contatti, zone servite, orari, profili. Poi due file fuori da lì: **`public/robots.txt`**
+(il dominio vero nella riga della sitemap) e **`src/pages/privacy.astro`**, che è ancora una
+traccia marcata come da completare.
 
-| Valore | Cosa metterci |
-|---|---|
-| `url` | Il dominio finale, senza slash finale. Serve a canonical, sitemap e anteprime social. |
-| `email` | L'indirizzo dove vuoi ricevere i contatti. |
-| `whatsapp` / `whatsappLabel` | Numero con prefisso internazionale, solo cifre, e la versione leggibile. |
-| `vat` | Partita IVA per il piè di pagina. |
-| `formAccessKey` | La chiave del servizio che riceve il form (vedi sotto). |
-
-Poi due file fuori da lì: **`public/robots.txt`** (metti il dominio vero nella riga della
-sitemap) e **`src/pages/privacy.astro`**, che ora è una traccia marcata come da completare.
-
-### Il form dei contatti
-
-Il sito è statico, quindi il modulo ha bisogno di un servizio esterno che riceva il POST e
-ti giri la mail. È già predisposto per **[Web3Forms](https://web3forms.com)**: crei una
-access key gratuita col tuo indirizzo, la incolli in `formAccessKey`, e funziona.
-
-Il form funziona anche senza JavaScript. Con JavaScript attivo mostra la conferma sul posto
-e, in caso di errore, propone email e WhatsApp. C'è una trappola anti-robot nascosta.
+Il modulo dei contatti è predisposto per [Web3Forms](https://web3forms.com): access key
+gratuita in `formAccessKey` e funziona. Funziona anche senza JavaScript — fa un POST normale
+— e con JavaScript mostra la conferma sul posto, rimandando a email e WhatsApp se qualcosa
+va storto. C'è una trappola anti-robot nascosta.
 
 ---
 
 ## 2. Aggiungere un progetto
 
-Crea un file markdown in `src/content/progetti/`. Il nome del file diventa l'indirizzo:
-`teatro-26.md` → `/progetti/teatro-26`.
+Un file markdown in `src/content/progetti/`. Il nome del file diventa l'indirizzo:
+`teatro-26.md` → `/progetti/teatro-26`. I campi obbligatori sono controllati alla build: se
+ne manca uno, `npm run build` si ferma e dice quale.
 
-Copia `progetto-dimostrativo.md` e sostituisci i contenuti. I campi obbligatori sono
-controllati alla build: se ne dimentichi uno, `npm run build` si ferma e ti dice quale. È
-voluto — evita che fra un anno i progetti siano raccontati in cinque modi diversi.
+**Il campo `tipo` decide il template.**
 
-I cinque blocchi del racconto sono sempre gli stessi: contesto, problema, direzione scelta
-e **perché quella**, risultato in fatti concreti, e la chiamata all'azione finale che è già
-nel template.
+| `tipo` | Come si presenta | Dove finisce in `/progetti` |
+|---|---|---|
+| `sito` | apre con la schermata a piena larghezza sul palco scuro; le altre schermate scorrono di lato | famiglia **Siti**, in alto |
+| `tool` | apre senza immagine, perché non c'è un'interfaccia da mostrare; le schermate restano impilate | famiglia **Sistemi**, sotto |
 
-**Il campo `tipo` decide come si vede il risultato.** Con `tipo: sito` la prima schermata
-finisce dentro il mockup del laptop che si apre mentre scorri. Con `tipo: tool` no: dentro
-un portatile un'automazione racconterebbe la cosa sbagliata, quindi le schermate restano
-schermate.
+I siti stanno sempre sopra i sistemi, anche quando sono uno solo e i sistemi cinque: l'ordine
+segue chi paga, non la quantità.
 
-Quando aggiungi un progetto vero: togli `segnaposto: true`, elimina
-`progetto-dimostrativo.md` insieme alla cartella `src/assets/progetti/dimostrativo/`, e
-togli il filtro `progetto-dimostrativo` da `astro.config.mjs`.
+### I cinque blocchi
+
+| Campo | Blocco | Obbligatorio |
+|---|---|---|
+| `contesto` + `problema` | 01 · Problema | sì |
+| `ricerca` | 02 · Ricerca — **la strada scartata e perché non reggeva** | no |
+| `soluzione` | 03 · UX/UI — la direzione scelta, dal lato di chi la usa | sì |
+| `tecnica` | 04 · Codice — la decisione tecnica, separata da quella di prodotto | no |
+| `risultato[]` | 05 · Risultati | no |
+
+I numeri contano i blocchi che quella scheda ha davvero: una senza `ricerca` fa 01→04, non
+salta da 01 a 03.
+
+**`ricerca` è il campo che conviene riempire per primo.** Mostrare il tentativo sbagliato è
+l'unica prova di competenza che non si può fingere, e senza quel blocco il racconto salta dal
+problema alla soluzione come se la soluzione fosse ovvia. SuiteFit è l'esempio già fatto.
+
+Una voce dei risultati che contenga «Cosa manca» prende automaticamente il contorno
+tratteggiato: il limite dichiarato è un elemento di interfaccia, non una nota in fondo.
 
 ### Le immagini
 
 Vanno in **`src/assets/progetti/`** (non in `public/`). Astro le converte in WebP e le
-ridimensiona; il percorso nel markdown è relativo a quella cartella.
+ridimensiona; il percorso nel markdown è relativo a quella cartella. Gli SVG passano senza
+essere convertiti in pixel.
 
 ```yaml
 anteprima: teatro-26/vetrina.jpg
@@ -76,128 +87,124 @@ schermate:
     alt: La pagina del menù sul telefono
 ```
 
-Il testo di `alt` non è un dettaglio: è quello che leggono i lettori di schermo e Google.
+Il testo di `alt` non è un dettaglio: è quello che leggono i lettori di schermo e Google, ed
+è anche la didascalia che compare sotto l'immagine.
 
 ---
 
 ## 3. Il design
 
-Monocromatico, senza eccezioni. **Non esiste un colore d'accento**: se qualcosa deve
-emergere, emerge per luminosità, contrasto o dimensione.
+Il sistema sta in **`src/styles/token.css`**, che è l'unica fonte di verità. Se un colore o
+una misura compare scritto a mano da qualche altra parte, è un errore.
+La guida viva è su **`/stile`** (noindex, fuori dalla sitemap).
 
-| Token | Valore | Dove |
+### Colore
+
+Superficie chiara, un solo accento, e l'accento significa **azione**.
+
+| Token | Valore | Ruolo | Contrasto |
+|---|---|---|---|
+| `--paper` | `#FAFAFA` | fondo | — |
+| `--paper-sunk` | `#F1F1F0` | tabelle, strisce | — |
+| `--ink` | `#0A0A0B` | titoli, testo pieno | 18,96:1 AAA |
+| `--ink-2` | `#55565A` | corpo secondario | 7,02:1 AAA |
+| `--ink-3` | `#686A70` | etichette, meta | 5,18:1 AA |
+| `--rule` | `#E2E2E1` | filetti | decorativo |
+| `--signal` | `#FF4A1C` | **superficie**: bottone, anello di focus | 3,22:1 grafico |
+| `--signal-ink` | `#CE320C` | **inchiostro**: link, enfasi | 4,92:1 AA |
+
+I due arancioni non si scambiano mai. Il testo sul bottone è **inchiostro su arancio**
+(5,89:1): il bianco dava 3,36:1, sotto la soglia.
+
+Le sezioni scure non sono un tema: la classe `.su-palco` ridefinisce i nomi dei token, e i
+componenti dentro si ricolorano da soli senza una variante ciascuno.
+
+**Gli stati dei progetti non hanno colore.** Pieno = in uso, vuoto = in corso, tratteggiato =
+beta. La distinzione regge anche in bianco e nero, e l'accento resta libero di significare
+una cosa sola.
+
+### Caratteri
+
+Ospitati in locale, nessuna chiamata a terzi. Tutti con licenza aperta.
+
+| Ruolo | Famiglia | Peso |
 |---|---|---|
-| `--bg` | `#050505` | fondo di tutto |
-| `--bg-elevated` | `#0D0D0D` | card, bande sollevate |
-| `--text` | `#FAFAFA` | testo e superfici piene |
-| `--text-muted` | `#8A8A8A` | testo secondario |
-| `--border` | `#1F1F1F` | hairline |
-| `--glow` | `rgba(255,255,255,0.08)` | bagliori radiali |
+| Display e interfaccia | **Geist** variabile | 27 KB |
+| Dati, etichette, numeri | **Geist Mono** variabile | 29 KB |
+| Voce — le frasi di Michele | **Instrument Serif** tondo e corsivo | 17 + 18 KB |
 
-Il muted è `#8A8A8A` e non `#7A7A7A` come nella prima stesura: sul fondo delle card il
-primo dà **5.63:1** contro **4.53:1**, cioè AA con margine invece che AA per tre centesimi.
-Resta un grigio, quindi il vincolo monocromatico è intatto. Bianco su nero è **19.5:1**.
-
-**Caratteri**, ospitati sul sito, nessuna chiamata a terzi:
-
-- **General Sans** (Fontshare, gratuito anche per uso commerciale) — titoli e marchio, pesi
-  400/500/700, tracking molto stretto sulle dimensioni grandi.
-- **Inter** — corpo del testo.
-- **JetBrains Mono** — etichette, numeri, contatore del preloader.
-
-> Neue Montreal, citato come alternativa, è un font commerciale di Pangram Pangram: non è
-> installato. Se compri la licenza, i file vanno in `public/fonts/` e basta cambiare
-> `--font-display` in `global.css`.
+I file in `public/fonts/` sono già i sottoinsiemi latini: 180 KB ridotti a 91. Il corsivo
+serif è riservato alle frasi sue e a una riga sola per volta — è la misura in cui quel
+carattere funziona. Su un paragrafo intero è illeggibile.
 
 ---
 
-## 4. Gli effetti, dove stanno e come degradano
+## 4. Il movimento
 
-I cinque componenti di [Aceternity UI](https://ui.aceternity.com) sono installati davvero
-dalla loro registry (`npx shadcn@latest add https://ui.aceternity.com/registry/<nome>.json`)
-e vivono in `src/components/ui/`. Sono stati **neutralizzati**: i demo originali usano
-ciano, indaco, viola, smeraldo e azzurro, qui è tutta luce bianca. Le modifiche sono
-commentate riga per riga nei file.
+Regola unica: **scorrimento → GSAP; micro-interazioni → CSS.** Non ci sono altre librerie di
+animazione, e nessun componente usa due motori per lo stesso lavoro.
 
-I miei involucri stanno in `src/components/react/` e servono a una cosa sola: decidere
-quando l'effetto pesante non deve partire.
-
-| Effetto | Dove | Su mobile / con "riduci animazioni" |
+| Meccanica | Dove | Sotto 768px |
 |---|---|---|
-| **Preloader** con contatore e linea che cade | solo home, una volta per sessione | non parte affatto |
-| **Background Beams** (50 tracciati animati) | hero | sostituiti da due bagliori radiali statici |
-| **Titolo parola per parola** | hero | compare senza animazione |
-| **Cursore custom** | tutto il sito | non esiste (serve un mouse vero) |
-| **3D Card tilt** | card progetto | solo un cedimento al tocco |
-| **Moving Border** | CTA principali | invariato, è leggero |
-| **Tracing Beam** | chi sono, progetti | nascosto sotto i 768px |
-| **Macbook Scroll** | dettaglio progetto, solo `tipo: sito` | schermata in cornice |
-| **Comparsa allo scroll** | tutto il resto | contenuto già visibile |
+| Scorrimento orizzontale agganciato | vetrina in home | elenco verticale |
+| Carte impilate (`scale: 0.95`) | i quattro passi del metodo | elenco |
+| Parallasse | due strade, ritratto | ferma |
+| Sfocatura in entrata | paragrafi, ovunque | invariata |
+| Otturatore `clip-path` | solo H1 e H2 | invariato |
+| Menu a schermo intero | sotto 1024px | è il suo posto |
 
-Tre scelte che vale la pena conoscere, perché non sono ovvie:
+**GSAP entra con un import dinamico**: le pagine senza sezioni agganciate non lo scaricano
+mai. Il carico iniziale è 6,7 KB compressi su tutte le pagine tranne la home, che ne fa 8,3.
 
-**Il preloader sta solo in home.** Chi arriva da una ricerca su `/servizi` o `/progetti`
-vuole leggere, non guardare un contatore — e misurando si vedeva anche il costo: montarlo
-su `/progetti` portava l'LCP a 3,3 secondi su mobile rallentato, contro 2,6 senza.
+Tre cose che non sono ovvie e che conviene non disfare:
 
-**Il titolo dell'hero parte quando la linea inizia a cadere, non quando il preloader è
-sparito.** Le parole si compongono dietro la caduta invece che dopo. Non è solo estetica:
-aspettare la fine dell'uscita spostava l'LCP avanti di mezzo secondo.
+- **Il contenuto si nasconde solo se qualcuno può rivelarlo.** La classe `puo-animare` la
+  mette uno script in linea prima del primo disegno: se quello script non gira, il testo è
+  già al suo posto. C'è anche una rete di sicurezza a tre secondi, perché in una scheda di
+  sfondo l'osservatore non scatta affatto.
+- **La vetrina parte con lo scorrimento nativo**, `tabindex` e `role`. L'aggancio glieli
+  toglie solo dopo aver montato davvero: senza, un errore di GSAP renderebbe irraggiungibile
+  metà della sezione.
+- **Niente Lenis.** `scrub: 1` interpola già il movimento senza prendere il controllo dello
+  scorrimento della pagina, che è la parte che su telefono dà fastidio.
 
-**Il Macbook Scroll sparisce sotto i 768px.** L'originale occupa due schermate intere di
-scorrimento per disegnare un laptop ridotto al 35%: si paga tutto lo scroll e non si vede
-niente. Al suo posto va la schermata in una cornice, che su un telefono è esattamente ciò
-che si voleva mostrare.
-
-### Cosa ho corretto nei componenti originali
-
-- **Tracing Beam** misurava l'altezza del contenuto una volta sola al montaggio: su una
-  pagina lunga, con font e immagini che arrivano dopo, la linea restava della lunghezza
-  sbagliata per sempre. Ora c'è un `ResizeObserver`.
-- **3D Card** non aveva alcun controllo sul tipo di puntatore: su touch il tilt seguiva
-  eventi mouse emulati e scattava. Ora si attiva solo con `(pointer: fine)`.
-- Le varianti `dark:` dei componenti sono legate alla classe sull'`<html>`, non alle
-  preferenze di sistema: altrimenti chi ha il sistema operativo in tema chiaro vedrebbe il
-  mockup del laptop grigio chiaro in mezzo a una pagina nera.
-
-### Accessibilità
-
-Il cursore custom **non sostituisce mai** il contorno di messa a fuoco: chi naviga da
-tastiera vede l'outline nativo, sempre, sopra ogni effetto. Il cursore di sistema viene
-nascosto solo dove esiste un mouse e solo se l'utente non ha chiesto meno movimento.
+Con `prefers-reduced-motion` tutto parte già nello stato finale: il sito resta completo,
+solo fermo.
 
 ---
 
 ## 5. Prestazioni
 
-Misurate su Chrome vero, viewport 390px, rete 4G lenta e CPU rallentata 4×:
+| Pagina | JavaScript iniziale | Su richiesta | Totale |
+|---|---|---|---|
+| Home | 8,3 KB | 45,1 KB (GSAP) | 53,5 KB |
+| Tutte le altre | 6,7 KB | 45,1 KB solo se serve | ≤ 51,9 KB |
 
-| Pagina | Prima visita | Visita successiva |
-|---|---|---|
-| Home | 1,5 s | 2,3 s |
-| Progetti | 2,7 s | 1,6 s |
-
-Il costo di questa direzione è il JavaScript: circa **100 KB compressi** sulle pagine con
-isole (React, Motion e i componenti), contro i 24 KB della versione precedente. È il
-prezzo dichiarato degli effetti richiesti. Dove le isole non servono — piè di pagina,
-privacy, 404 — React non viene caricato affatto, e la comparsa allo scroll gira in vanilla
-(`src/scripts/ui.ts`) proprio per non trascinare React su ogni pagina.
-
-Altre scelte a favore della velocità: caratteri ospitati in locale con `preload` sui due
-che si vedono per primi, immagini in WebP con la prima card in `eager`, e il titolo
-dell'hero animato in CSS invece che in JavaScript, così l'elemento che Google misura non
-aspetta nessuna libreria.
+`npm run peso` lo verifica a ogni build e esce in errore se una pagina sfora. I due numeri
+vanno tenuti separati: sommarli dà una risposta sbagliata, perché su `/servizi` GSAP è
+referenziato ma non viene mai scaricato.
 
 ---
 
 ## 6. Pubblicare
 
-`npm run build` produce la cartella `dist/`, che è tutto il sito. Va bene qualunque hosting
-statico — Netlify, Vercel, Cloudflare Pages, o anche uno spazio FTP.
+`npm run build` produce `dist/`, che è tutto il sito. Va bene qualunque hosting statico.
 
 - comando di build: `npm run build`
 - cartella da pubblicare: `dist`
 
-Le immagini social vengono rigenerate a ogni build da `scripts/generate-og.mjs`, che usa
-gli stessi colori e caratteri del sito. La prima volta scarica JetBrains Mono in
-`scripts/fonts/`; se la rete non c'è, avvisa e lascia proseguire la build.
+Le immagini social vengono rigenerate a ogni build da `scripts/generate-og.mjs`, che usa gli
+stessi token e gli stessi caratteri del sito, senza scaricare niente da internet.
+
+---
+
+## 7. Cosa manca ancora
+
+- **Altri siti nel portfolio.** Ne c'è uno solo, e non è commissionato. Chi cerca un sito per
+  la sua attività vuole vederne tre o quattro: è la cosa che sblocca la conversione, e nessuna
+  scelta di design può sostituirla.
+- **Il video del banco olografico.** Lo slot esiste già nello schema (`video`), la scheda
+  regge anche senza.
+- **Testimonianze.** Zero, per scelta: meglio nessuna che una inventata.
+- **Teatro 26**, congelato in `.md.rimosso` finché non è anonimizzato.
+- **`/stile`** si toglie quando il lavoro è chiuso. Finché si tocca il sistema, serve.
