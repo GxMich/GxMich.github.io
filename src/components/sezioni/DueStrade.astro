@@ -1,0 +1,130 @@
+---
+/**
+ * Frame 03 — le due strade.
+ *
+ * Sfalsate sull'asse Y, non affiancate simmetriche. La simmetria direbbe che
+ * le due offerte pesano uguale: non è così, e il pubblico di questo sito arriva
+ * quasi sempre dalla prima.
+ */
+---
+
+<section class="strade" aria-labelledby="strade-titolo">
+  <div class="contenitore dentro">
+    <h2 id="strade-titolo" class="solo-lettori">Cosa faccio</h2>
+
+    <a class="strada prima sfoca-entra" href="/servizi" data-anima>
+      <p class="etichetta">Hai un'attività</p>
+      <p class="h2 titolo">Un sito che ti somiglia</p>
+      <p class="testo-sm corpo">
+        Non un modello riempito con le tue foto. Il tuo locale ha una faccia: il sito deve
+        avere quella, non quella di altri mille.
+      </p>
+      <span class="freccia">Cosa comprende <span aria-hidden="true">→</span></span>
+    </a>
+
+    <a class="strada seconda sfoca-entra" href="/progetti" data-anima data-parallasse>
+      <p class="etichetta">Hai un processo che si inceppa</p>
+      <p class="h2 titolo">Uno strumento su misura</p>
+      <p class="testo-sm corpo">
+        Quella cosa che rifai a mano ogni settimana e che ogni volta ti mangia un
+        pomeriggio. Quella lì si può automatizzare.
+      </p>
+      <span class="freccia">Guarda gli strumenti <span aria-hidden="true">→</span></span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .strade {
+    padding-block: var(--section);
+  }
+
+  .dentro {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(24px, 4vw, 64px);
+    align-items: start;
+  }
+
+  .strada {
+    display: grid;
+    gap: var(--sp-4);
+    align-content: start;
+    text-decoration: none;
+    padding: clamp(28px, 3vw, 44px) 0 clamp(28px, 3vw, 44px);
+    border-top: 1px solid var(--ink);
+  }
+
+  /* Lo sfalsamento è la sezione: senza, sono due schede uguali. */
+  .seconda {
+    margin-top: clamp(48px, 9vw, 120px);
+  }
+
+  .titolo {
+    max-width: 14ch;
+  }
+
+  .corpo {
+    max-width: 38ch;
+  }
+
+  .freccia {
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    color: var(--signal-ink);
+    margin-top: var(--sp-3);
+    display: inline-flex;
+    gap: var(--sp-2);
+  }
+
+  .strada:hover .freccia span {
+    transform: translateX(4px);
+  }
+
+  .freccia span {
+    transition: transform var(--dur-1) var(--ease-out);
+  }
+
+  @media (max-width: 767px) {
+    .dentro {
+      grid-template-columns: 1fr;
+    }
+
+    .seconda {
+      margin-top: 0;
+    }
+  }
+</style>
+
+<script>
+  import { caricaGsap, movimentoRiccoAmmesso } from '../../lib/movimento.ts';
+
+  function montaParallasse() {
+    const veloce = document.querySelector<HTMLElement>('[data-parallasse]');
+    if (!veloce || veloce.dataset.montato !== undefined) return;
+    if (!movimentoRiccoAmmesso()) return;
+
+    veloce.dataset.montato = 'si';
+
+    caricaGsap().then(({ gsap }) => {
+      gsap.fromTo(
+        veloce,
+        { y: 40 },
+        {
+          y: -40,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: veloce.parentElement,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        }
+      );
+    });
+  }
+
+  montaParallasse();
+  document.addEventListener('astro:page-load', montaParallasse);
+</script>

@@ -216,53 +216,14 @@ const stati = [
 </Guscio>
 
 <script>
-      const bersagli = Array.from(document.querySelectorAll('[data-anima]'));
-
-      if (document.documentElement.classList.contains('puo-animare')) {
-        const osservatore = new IntersectionObserver(
-          (voci) => {
-            voci.forEach((v) => {
-              if (v.isIntersecting) {
-                v.target.classList.add('visibile');
-                osservatore.unobserve(v.target);
-              }
-            });
-          },
-          { threshold: 0.35, rootMargin: '0px 0px -8% 0px' }
-        );
-
-        // Chi al caricamento è già passato sopra la piega non entrerà mai in
-        // intersezione: va mostrato subito, altrimenti resta invisibile per
-        // sempre a chi apre la pagina con un'ancora o ricarica a metà.
-        bersagli.forEach((el) => {
-          if (el.getBoundingClientRect().bottom < 0) el.classList.add('visibile');
-          else osservatore.observe(el);
-        });
-
-        // Rete di sicurezza. L'osservatore non scatta finché il documento non
-        // viene disegnato: una pagina aperta in una scheda di sfondo ha
-        // `visibilityState === 'hidden'` e resta ferma. Al ritorno in primo
-        // piano riparte da sola, ma se per qualunque ragione non lo facesse,
-        // un sito il cui contenuto principale è testo non può restare bianco.
-        window.addEventListener('load', () => {
-          setTimeout(() => {
-            bersagli.forEach((el) => {
-              if (el.getBoundingClientRect().top < window.innerHeight * 1.5) {
-                el.classList.add('visibile');
-              }
-            });
-          }, 2500);
-        });
-      } else {
-        bersagli.forEach((el) => el.classList.add('visibile'));
-      }
-
-      document.getElementById('rigioca')?.addEventListener('click', () => {
-        bersagli.forEach((el) => el.classList.remove('visibile'));
-        void document.body.offsetHeight;
-        setTimeout(() => bersagli.forEach((el) => el.classList.add('visibile')), 60);
-      });
-    </script>
+  // Le comparse le monta il guscio: qui resta solo il pulsante di prova.
+  document.getElementById('rigioca')?.addEventListener('click', () => {
+    const bersagli = document.querySelectorAll('[data-anima]');
+    bersagli.forEach((el) => el.classList.remove('visibile'));
+    void document.body.offsetHeight;
+    setTimeout(() => bersagli.forEach((el) => el.classList.add('visibile')), 60);
+  });
+</script>
 
     <style>
       .pagina {

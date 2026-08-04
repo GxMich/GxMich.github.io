@@ -1,0 +1,56 @@
+---
+/**
+ * Bottone.
+ *
+ * Il pieno ha testo quasi nero su arancio e non bianco: il bianco sull'arancio
+ * dà 3,36:1, sotto la soglia. L'inchiostro ne dà 5,89:1, ed è anche più
+ * distintivo del bianco-su-arancio che usano tutti.
+ */
+interface Props {
+  href: string;
+  variante?: 'pieno' | 'fantasma';
+  class?: string;
+}
+
+const { href, variante = 'pieno', class: classe } = Astro.props;
+---
+
+<a href={href} class:list={['bottone', variante, classe]}>
+  <slot />
+</a>
+
+<style>
+  .bottone {
+    display: inline-block;
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    border-radius: var(--radius-1);
+    padding: 12px 20px;
+    white-space: nowrap;
+    transition:
+      background-color var(--dur-1) var(--ease-out),
+      border-color var(--dur-1) var(--ease-out),
+      color var(--dur-1) var(--ease-out);
+  }
+
+  .pieno {
+    background: var(--signal);
+    color: var(--signal-on);
+  }
+
+  .pieno:hover {
+    background: var(--signal-ink);
+    color: var(--paper);
+  }
+
+  .fantasma {
+    border: 1px solid var(--rule);
+    color: var(--ink);
+  }
+
+  .fantasma:hover {
+    border-color: var(--ink);
+  }
+</style>

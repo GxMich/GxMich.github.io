@@ -99,5 +99,14 @@ const passaggio = {
     </main>
 
     <Piede transition:animate="none" />
+
+    <script>
+      // Le comparse valgono per ogni pagina: montarle qui evita che ogni
+      // sezione si porti dietro il proprio osservatore.
+      import { montaComparse } from '../lib/movimento.ts';
+
+      montaComparse();
+      document.addEventListener('astro:page-load', () => montaComparse());
+    </script>
   </body>
 </html>

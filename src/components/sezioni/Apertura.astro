@@ -1,0 +1,156 @@
+---
+/**
+ * Frame 01 — l'apertura.
+ *
+ * Ha un compito solo: in tre secondi, a chi ha un'attività e cerca un sito,
+ * dire che è nel posto giusto. Per questo l'immagine di un sito vero sta sopra
+ * la piega su schermo largo, e non due schermate più in basso.
+ *
+ * Il titolo è testo vero nel DOM dal primo disegno: l'otturatore lavora sul
+ * ritaglio, non sull'opacità del contenuto, così l'elemento che Google misura
+ * non aspetta nessuna animazione.
+ */
+import { Image } from 'astro:assets';
+import Bottone from '../comuni/Bottone.astro';
+import { originale } from '../../lib/immagini.ts';
+
+interface Props {
+  immagine?: string;
+  didascalia?: string;
+  alt?: string;
+}
+
+const { immagine, didascalia, alt } = Astro.props;
+const scatto = originale(immagine);
+---
+
+<section class="apertura">
+  <div class="contenitore dentro">
+    <div class="testo">
+      <p class="etichetta zona">
+        Siti su misura — Vercelli · Casale Monferrato · Novara · Chivasso
+      </p>
+
+      <h1 class="display-xl otturatore" data-anima>
+        <span class="riga"><span>Il tuo locale ha una faccia.</span></span>
+        <span class="riga"><span>Il sito deve avere quella.</span></span>
+      </h1>
+
+      <p class="lede sfoca-entra" data-anima>
+        Non un modello riempito con le tue foto. Vengo a vedere il posto, capisco cosa ti
+        fa perdere tempo, e costruisco una cosa sola: la tua.
+      </p>
+
+      <div class="inviti sfoca-entra" data-anima>
+        <Bottone href="/contatti">Parliamo del tuo progetto</Bottone>
+        <Bottone href="/progetti" variante="fantasma">Guarda i lavori</Bottone>
+        <span class="etichetta gratis">La prima mezz'ora non si paga</span>
+      </div>
+    </div>
+
+    {
+      scatto && (
+        <figure class="palco">
+          <Image
+            src={scatto}
+            alt={alt ?? ''}
+            widths={[540, 900, 1280]}
+            sizes="(max-width: 900px) 100vw, 46vw"
+            formats={['avif', 'webp']}
+            loading="eager"
+            fetchpriority="high"
+          />
+          {didascalia && <figcaption class="etichetta">{didascalia}</figcaption>}
+        </figure>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .apertura {
+    padding-block: clamp(40px, 6vw, 88px) 0;
+  }
+
+  /* Layout spezzato: il testo occupa le prime sei colonne, l'immagine parte
+     dalla settima e sfonda il margine destro. La simmetria qui direbbe che le
+     due cose pesano uguale, e non è vero. */
+  .dentro {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+  }
+
+  .testo {
+    display: grid;
+    gap: clamp(24px, 3vw, 36px);
+  }
+
+  .zona {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  h1 {
+    max-width: 15ch;
+  }
+
+  .riga {
+    display: block;
+    overflow: hidden;
+  }
+
+  .riga > span {
+    display: block;
+  }
+
+  .inviti {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-3) var(--sp-4);
+  }
+
+  .gratis {
+    color: var(--ink-3);
+  }
+
+  /* Il fondo scuro non fa atmosfera: fa da cornice perché una schermata chiara
+     brilli. Sfonda il margine destro fino al bordo dello schermo. */
+  .palco {
+    background: var(--stage);
+    padding: clamp(20px, 2.6vw, 40px);
+    border-radius: var(--radius-2) 0 0 var(--radius-2);
+    margin-right: calc(var(--gutter) * -1);
+    display: grid;
+    gap: var(--sp-3);
+  }
+
+  .palco img {
+    width: 100%;
+    border: 1px solid var(--edge);
+    border-radius: var(--radius-2);
+    box-shadow: var(--shadow-stage);
+  }
+
+  .palco figcaption {
+    color: var(--light-2);
+  }
+
+  @media (max-width: 900px) {
+    .dentro {
+      grid-template-columns: 1fr;
+      gap: clamp(32px, 7vw, 56px);
+    }
+
+    .palco {
+      margin-right: 0;
+      border-radius: var(--radius-2);
+    }
+
+    h1 {
+      max-width: 18ch;
+    }
+  }
+</style>

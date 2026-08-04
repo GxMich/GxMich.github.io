@@ -1,0 +1,196 @@
+---
+/**
+ * Frame 04 — come si lavora, a carte impilate.
+ *
+ * L'impilamento non è un vezzo: i quattro passi sono una sequenza, e la carta
+ * che resta sotto è la fase già superata. È l'unica sezione del sito dove
+ * "deck of cards" dice qualcosa di vero sul contenuto.
+ *
+ * Quattro e non sette: sette sarebbero un'infografica, quattro sono un impegno.
+ */
+const passi = [
+  {
+    n: '01',
+    titolo: 'Capire il problema',
+    testo:
+      'Una conversazione vera su cosa fai, chi sono i tuoi clienti e cosa ti fa perdere tempo oggi. Senza questa parte tutto il resto è arredamento.',
+    chi: 'Solo io',
+  },
+  {
+    n: '02',
+    titolo: 'Esplorare direzioni',
+    testo:
+      'Metto in piedi più impostazioni diverse di struttura e design nello stesso tempo in cui, da solo, ne avrei fatta una.',
+    chi: 'Io + macchina',
+  },
+  {
+    n: '03',
+    titolo: 'Decidere e rifinire',
+    testo:
+      'Quale direzione tenere, cosa togliere, che parole usare. Qui la macchina non decide niente: propone, e spesso propone la cosa media.',
+    chi: 'Solo io',
+  },
+  {
+    n: '04',
+    titolo: 'Costruire e consegnare',
+    testo:
+      'Codice, controlli, velocità, accessibilità, indicizzazione. Poi ti spiego come si aggiorna, così non dipendi da me per una virgola.',
+    chi: 'Io + macchina',
+  },
+];
+---
+
+<section class="metodo" aria-labelledby="metodo-titolo">
+  <div class="contenitore">
+    <div class="intestazione">
+      <h2 id="metodo-titolo" class="h2 sfoca-entra" data-anima>Come si lavora.</h2>
+      <p class="lede sfoca-entra" data-anima>
+        Non uso l'intelligenza artificiale per fare le cose in fretta e peggio. La uso per
+        esplorare più direzioni di quante ne esplorerei da solo, e per non sprecare tempo
+        umano su lavoro meccanico.
+      </p>
+    </div>
+
+    <ol class="pila" data-pila>
+      {
+        passi.map((p, i) => (
+          <li class="carta" data-carta style={`--i:${i}`}>
+            <div class="carta-dentro">
+              <p class="etichetta numero">{p.n}</p>
+              <p class="h3 carta-titolo">{p.titolo}</p>
+              <p class="testo-sm carta-testo">{p.testo}</p>
+              <p class="etichetta chi">{p.chi}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .metodo {
+    padding-block: var(--section) 0;
+  }
+
+  .intestazione {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(24px, 4vw, 64px);
+    align-items: start;
+    padding-bottom: clamp(32px, 5vw, 72px);
+  }
+
+  .intestazione h2 {
+    max-width: 12ch;
+  }
+
+  .pila {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  .carta {
+    position: sticky;
+    /* L'offset progressivo lascia visibile il bordo delle carte sotto: senza,
+       sembra una carta sola che si restringe. */
+    top: calc(var(--header-h) + var(--sp-5) + var(--i) * 12px);
+  }
+
+  .carta-dentro {
+    background: var(--paper-sunk);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-2);
+    padding: clamp(24px, 3vw, 44px);
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) auto;
+    gap: var(--sp-3) clamp(16px, 3vw, 40px);
+    align-items: start;
+    transform-origin: center top;
+    will-change: transform;
+  }
+
+  .numero {
+    grid-row: 1 / 3;
+    color: var(--ink-3);
+  }
+
+  .carta-titolo {
+    grid-column: 2;
+  }
+
+  .carta-testo {
+    grid-column: 2;
+    max-width: 52ch;
+  }
+
+  .chi {
+    grid-column: 3;
+    grid-row: 1;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 767px) {
+    /* Niente aggancio sotto i 768px: diventa un elenco. */
+    .carta {
+      position: static;
+    }
+
+    .carta-dentro {
+      grid-template-columns: 1fr;
+      gap: var(--sp-2);
+    }
+
+    .numero,
+    .carta-titolo,
+    .carta-testo,
+    .chi {
+      grid-column: 1;
+      grid-row: auto;
+    }
+
+    .chi {
+      margin-top: var(--sp-2);
+    }
+  }
+</style>
+
+<script>
+  import { caricaGsap, movimentoRiccoAmmesso } from '../../lib/movimento.ts';
+
+  function montaPila() {
+    const pila = document.querySelector<HTMLElement>('[data-pila]');
+    if (!pila || pila.dataset.montato !== undefined) return;
+    if (!movimentoRiccoAmmesso()) return;
+
+    pila.dataset.montato = 'si';
+
+    const carte = Array.from(pila.querySelectorAll<HTMLElement>('[data-carta]'));
+
+    caricaGsap().then(({ gsap }) => {
+      carte.forEach((carta, i) => {
+        // L'ultima non ha nessuno che le salga sopra: resta com'è.
+        if (i === carte.length - 1) return;
+        const dentro = carta.querySelector<HTMLElement>('.carta-dentro');
+        if (!dentro) return;
+
+        gsap.to(dentro, {
+          scale: 0.95,
+          filter: 'brightness(0.82)',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: carte[i + 1],
+            start: 'top bottom',
+            end: 'top top',
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        });
+      });
+    });
+  }
+
+  montaPila();
+  document.addEventListener('astro:page-load', montaPila);
+</script>

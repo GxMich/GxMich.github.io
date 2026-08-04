@@ -1,0 +1,126 @@
+---
+/**
+ * Frame 05 — cosa costa e cosa non costa.
+ *
+ * Movimento minimo, di proposito: qui si sta valutando una spesa e si legge
+ * fermi. Un'animazione in questo punto lavora contro chi la guarda.
+ *
+ * Sale in home da /servizi perché è la seconda obiezione in ordine di
+ * frequenza, e oggi è sepolta due clic più in là.
+ */
+const patti = [
+  {
+    titolo: 'Il prezzo lo sai prima',
+    testo:
+      'Te lo dico nella prima risposta, non al terzo incontro. Una cifra, non una forbice larga come una casa. E se cambia strada lo ridiscutiamo prima, non dopo.',
+  },
+  {
+    titolo: 'Dominio e hosting intestati a te',
+    testo:
+      'Li paghi tu, direttamente al fornitore, e restano tuoi. Se un domani vuoi cambiare persona, porti via tutto senza chiedermi il permesso.',
+  },
+  {
+    titolo: 'Nessun canone obbligatorio',
+    testo:
+      'Il lavoro si paga una volta. La manutenzione è un accordo separato che fai solo se la vuoi, non una condizione per lavorare insieme.',
+  },
+];
+---
+
+<section class="prezzo" aria-labelledby="prezzo-titolo">
+  <div class="contenitore">
+    <h2 id="prezzo-titolo" class="h2 sfoca-entra" data-anima>Cosa costa, cosa non costa.</h2>
+
+    <ul class="patti">
+      {
+        patti.map((p) => (
+          <li class="patto sfoca-entra" data-anima>
+            <h3 class="h3">{p.titolo}</h3>
+            <p class="testo-sm">{p.testo}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="testo-sm fuori sfoca-entra" data-anima>
+      Fuori dal prezzo restano solo dominio e hosting — circa 50–120 € l'anno, pagati da te
+      direttamente al fornitore, così restano intestati a te.
+    </p>
+  </div>
+</section>
+
+<style>
+  .prezzo {
+    padding-block: var(--section);
+  }
+
+  h2 {
+    max-width: 16ch;
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+
+  .patti {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--ink);
+  }
+
+  .patto {
+    display: grid;
+    gap: var(--sp-3);
+    align-content: start;
+    padding: clamp(24px, 3vw, 40px) clamp(20px, 2.4vw, 36px) clamp(28px, 3vw, 44px);
+    border-right: 1px solid var(--rule);
+  }
+
+  .patto:first-child {
+    padding-left: 0;
+  }
+
+  .patto:last-child {
+    border-right: 0;
+    padding-right: 0;
+  }
+
+  .patto p {
+    max-width: 34ch;
+  }
+
+  .fuori {
+    margin-top: clamp(28px, 3.5vw, 44px);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--rule);
+    max-width: 58ch;
+  }
+
+  /* Lo sfalsamento della comparsa: le tre colonne non devono entrare insieme,
+     ma nemmeno una alla volta con una pausa che si nota. */
+  .patto:nth-child(2) {
+    transition-delay: 90ms;
+  }
+
+  .patto:nth-child(3) {
+    transition-delay: 180ms;
+  }
+
+  @media (max-width: 860px) {
+    .patti {
+      grid-template-columns: 1fr;
+    }
+
+    .patto {
+      padding-inline: 0;
+      border-right: 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .patto:last-child {
+      border-bottom: 0;
+    }
+
+    .patto:nth-child(2),
+    .patto:nth-child(3) {
+      transition-delay: 0ms;
+    }
+  }
+</style>

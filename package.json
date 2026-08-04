@@ -10,7 +10,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "og": "node scripts/generate-og.mjs",
-    "contrasti": "node scripts/contrasti.mjs"
+    "contrasti": "node scripts/contrasti.mjs",
+    "peso": "node scripts/peso-js.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.2",
