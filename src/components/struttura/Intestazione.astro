@@ -142,13 +142,44 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     padding-top: var(--sp-3);
   }
 
+  /* L'isola è più stretta della pagina: una pastiglia larga quanto il
+     contenuto non è un'isola, è ancora una barra con gli angoli tondi. */
   .intestazione[data-scorsa] .barra {
-    height: 62px;
-    padding-inline: var(--sp-5);
+    max-width: 880px;
+    margin-inline: auto;
+    height: 54px;
+    padding-inline: 8px 8px;
+    gap: var(--sp-4);
     border-radius: 999px;
     background: var(--ink);
     color: var(--paper);
     box-shadow: 0 12px 34px -18px rgba(0, 0, 0, 0.55);
+  }
+
+  .intestazione[data-scorsa] .marchio {
+    padding-left: 8px;
+  }
+
+  /* Nell'isola la sigla sparisce: resta il bollo, che basta a farsi
+     riconoscere e recupera lo spazio che serve alle voci. */
+  .intestazione[data-scorsa] .sigla {
+    display: none;
+  }
+
+  .intestazione[data-scorsa] .bollo {
+    width: 22px;
+    height: 22px;
+  }
+
+  .intestazione[data-scorsa] .invito {
+    padding: 8px 6px 8px 16px;
+  }
+
+  /* `:global` perché il bottone del tema è un componente a sé: i suoi stili
+     sono confinati là dentro e da qui non li raggiungerei. */
+  .intestazione[data-scorsa] :global(.tema) {
+    width: 34px;
+    height: 34px;
   }
 
   .marchio {

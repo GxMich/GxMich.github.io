@@ -2,10 +2,16 @@
 /**
  * Frame 03 — le due strade.
  *
- * Sfalsate sull'asse Y, non affiancate simmetriche. La simmetria direbbe che
- * le due offerte pesano uguale: non è così, e il pubblico di questo sito arriva
- * quasi sempre dalla prima.
+ * Sfalsate e non affiancate simmetriche: la simmetria direbbe che le due
+ * offerte pesano uguale, e il pubblico di questo sito arriva quasi sempre
+ * dalla prima.
+ *
+ * La versione precedente erano due blocchi di testo con un filetto sopra, e si
+ * vedeva: due link travestiti da sezione. Ora sono due schede vere, una chiara
+ * e una scura, ognuna con il suo segno e il suo numero — la differenza fra le
+ * due strade si vede prima di leggerle.
  */
+import Icona from '../comuni/Icona.astro';
 ---
 
 <section class="strade" aria-labelledby="strade-titolo">
@@ -13,23 +19,39 @@
     <h2 id="strade-titolo" class="solo-lettori">Cosa faccio</h2>
 
     <a class="strada prima sfoca-entra" href="/servizi" data-anima>
-      <p class="etichetta">Hai un'attività</p>
-      <p class="h2 titolo">Un sito che ti somiglia</p>
-      <p class="testo-sm corpo">
+      <span class="riga-alta" aria-hidden="true"></span>
+      <span class="testa">
+        <span class="indice dato">01</span>
+        <span class="segno"><Icona nome="finestra" dimensione={22} /></span>
+      </span>
+      <span class="etichetta">Hai un'attività</span>
+      <span class="h2 titolo">Un sito che ti somiglia</span>
+      <span class="testo-sm corpo">
         Non un modello riempito con le tue foto. Il tuo locale ha una faccia: il sito deve
         avere quella, non quella di altri mille.
-      </p>
-      <span class="freccia">Cosa comprende <span aria-hidden="true">→</span></span>
+      </span>
+      <span class="vai">
+        Cosa comprende
+        <Icona nome="freccia" dimensione={16} />
+      </span>
     </a>
 
-    <a class="strada seconda sfoca-entra" href="/progetti" data-anima data-parallasse>
-      <p class="etichetta">Hai un processo che si inceppa</p>
-      <p class="h2 titolo">Uno strumento su misura</p>
-      <p class="testo-sm corpo">
+    <a class="strada seconda su-palco sfoca-entra" href="/progetti" data-anima data-parallasse>
+      <span class="riga-alta" aria-hidden="true"></span>
+      <span class="testa">
+        <span class="indice dato">02</span>
+        <span class="segno"><Icona nome="flusso" dimensione={22} /></span>
+      </span>
+      <span class="etichetta">Hai un processo che si inceppa</span>
+      <span class="h2 titolo">Uno strumento su misura</span>
+      <span class="testo-sm corpo">
         Quella cosa che rifai a mano ogni settimana e che ogni volta ti mangia un
         pomeriggio. Quella lì si può automatizzare.
-      </p>
-      <span class="freccia">Guarda gli strumenti <span aria-hidden="true">→</span></span>
+      </span>
+      <span class="vai">
+        Guarda gli strumenti
+        <Icona nome="freccia" dimensione={16} />
+      </span>
     </a>
   </div>
 </section>
@@ -42,47 +64,141 @@
   .dentro {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(24px, 4vw, 64px);
+    gap: clamp(20px, 3vw, 40px);
     align-items: start;
   }
 
   .strada {
+    position: relative;
     display: grid;
     gap: var(--sp-4);
     align-content: start;
     text-decoration: none;
-    padding: clamp(28px, 3vw, 44px) 0 clamp(28px, 3vw, 44px);
-    border-top: 1px solid var(--ink);
+    padding: clamp(28px, 3.4vw, 48px);
+    border-radius: var(--radius-2);
+    border: 1px solid var(--rule);
+    background: var(--paper-sunk);
+    color: var(--ink);
+    overflow: hidden;
+    transition:
+      border-color var(--dur-2) var(--ease-out),
+      transform var(--dur-2) var(--ease-out);
   }
 
-  /* Lo sfalsamento è la sezione: senza, sono due schede uguali. */
   .seconda {
-    margin-top: clamp(48px, 9vw, 120px);
+    background: var(--stage);
+    border-color: var(--edge);
+    /* Lo sfalsamento è la sezione: senza, sono due schede uguali. */
+    margin-top: clamp(40px, 7vw, 96px);
+  }
+
+  .strada:hover {
+    transform: translateY(-4px);
+    border-color: var(--signal);
+  }
+
+  /* Un filo d'accento che si tira da sinistra a destra sul bordo alto:
+     è il segno che dice «questa è la scheda che stai guardando». */
+  .riga-alta {
+    position: absolute;
+    inset: 0 auto auto 0;
+    height: 2px;
+    width: 100%;
+    background: var(--signal);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--dur-3) var(--ease-out);
+  }
+
+  .strada:hover .riga-alta {
+    transform: scaleX(1);
+  }
+
+  .testa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--sp-4);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .indice {
+    color: var(--ink-3);
+    letter-spacing: 0.14em;
+  }
+
+  .segno {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
+    color: var(--ink-2);
+    transition:
+      color var(--dur-2) var(--ease-out),
+      border-color var(--dur-2) var(--ease-out),
+      transform var(--dur-2) var(--ease-out);
+  }
+
+  .strada:hover .segno {
+    color: var(--signal);
+    border-color: var(--signal);
+    transform: rotate(-6deg);
+  }
+
+  /* Le righe dentro la finestra si allungano, i rami del flusso si disegnano:
+     ogni segno racconta la sua strada invece di stare fermo. */
+  .strada .segno :global(.riga) {
+    transform: scaleX(0.45);
+  }
+
+  .strada:hover .segno :global(.riga) {
+    transform: scaleX(1);
+  }
+
+  .strada .segno :global(.ramo) {
+    stroke-dashoffset: 14;
+  }
+
+  .strada:hover .segno :global(.ramo) {
+    stroke-dashoffset: 0;
+  }
+
+  .strada:hover .segno :global(.secondo) {
+    transform: scale(1.25);
   }
 
   .titolo {
     max-width: 14ch;
+    display: block;
   }
 
   .corpo {
-    max-width: 38ch;
+    max-width: 40ch;
+    display: block;
   }
 
-  .freccia {
+  .vai {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
     font-size: var(--t-body-sm);
     font-weight: 500;
     color: var(--signal-ink);
-    margin-top: var(--sp-3);
-    display: inline-flex;
-    gap: var(--sp-2);
+    margin-top: var(--sp-2);
   }
 
-  .strada:hover .freccia span {
-    transform: translateX(4px);
+  .vai :global(.asta) {
+    transform: scaleX(0.4);
   }
 
-  .freccia span {
-    transition: transform var(--dur-1) var(--ease-out);
+  .strada:hover .vai :global(.asta) {
+    transform: scaleX(1);
+  }
+
+  .strada:hover .vai :global(.punta) {
+    transform: translateX(3px);
   }
 
   @media (max-width: 767px) {
@@ -92,6 +208,13 @@
 
     .seconda {
       margin-top: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .strada:hover,
+    .strada:hover .segno {
+      transform: none;
     }
   }
 </style>
@@ -109,9 +232,9 @@
     caricaGsap().then(({ gsap }) => {
       gsap.fromTo(
         veloce,
-        { y: 40 },
+        { y: 44 },
         {
-          y: -40,
+          y: -44,
           ease: 'none',
           scrollTrigger: {
             trigger: veloce.parentElement,

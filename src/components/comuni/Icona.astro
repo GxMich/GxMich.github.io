@@ -11,7 +11,16 @@
  * non qui — la stessa freccia scorre in un bottone e ruota in un accordion.
  */
 interface Props {
-  nome: 'freccia' | 'freccia-giu' | 'sole' | 'luna' | 'menu' | 'chiudi' | 'segno';
+  nome:
+    | 'freccia'
+    | 'freccia-giu'
+    | 'sole'
+    | 'luna'
+    | 'menu'
+    | 'chiudi'
+    | 'segno'
+    | 'finestra'
+    | 'flusso';
   dimensione?: number;
   class?: string;
 }
@@ -94,6 +103,30 @@ const comuni = {
 }
 
 {
+  nome === 'finestra' && (
+    <svg {...comuni} class:list={['icona', 'finestra', classe]}>
+      <rect class="telaio" x="3" y="4.5" width="18" height="15" rx="2" />
+      <line class="barra" x1="3" y1="9" x2="21" y2="9" />
+      <circle class="bollo" cx="6.4" cy="6.8" r="0.6" fill="currentColor" stroke="none" />
+      <line class="riga uno" x1="6.5" y1="13" x2="15" y2="13" />
+      <line class="riga due" x1="6.5" y1="16" x2="11.5" y2="16" />
+    </svg>
+  )
+}
+
+{
+  nome === 'flusso' && (
+    <svg {...comuni} class:list={['icona', 'flusso', classe]}>
+      <circle class="nodo primo" cx="5" cy="6" r="2.2" />
+      <circle class="nodo secondo" cx="19" cy="12" r="2.2" />
+      <circle class="nodo terzo" cx="5" cy="18" r="2.2" />
+      <path class="ramo alto" d="M7.2 6h5.3a4 4 0 0 1 4 4v.2" />
+      <path class="ramo basso" d="M7.2 18h5.3a4 4 0 0 0 4-4v-.2" />
+    </svg>
+  )
+}
+
+{
   nome === 'segno' && (
     <svg {...comuni} class:list={['icona', classe]} fill="currentColor" stroke="none">
       <rect x="9" y="9" width="6" height="6" />
@@ -128,5 +161,23 @@ const comuni = {
   .sole .corpo,
   .luna .corpo {
     transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  /* Le due righe dentro la finestra si allungano: la pagina "si riempie". */
+  .finestra .riga {
+    transform-origin: 6.5px center;
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  /* I due rami si disegnano da sinistra verso il nodo di destra. */
+  .flusso .ramo {
+    stroke-dasharray: 14;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset var(--dur-3) var(--ease-out);
+  }
+
+  .flusso .nodo {
+    transition: transform var(--dur-2) var(--ease-out);
+    transform-origin: center;
   }
 </style>

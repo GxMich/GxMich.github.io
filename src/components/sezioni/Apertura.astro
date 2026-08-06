@@ -50,12 +50,12 @@ import Icona from '../comuni/Icona.astro';
 
 <style>
   .apertura {
-    padding-block: clamp(48px, 9vw, 120px) clamp(32px, 5vw, 64px);
+    padding-block: clamp(24px, 3.5vw, 52px) clamp(32px, 5vw, 64px);
   }
 
   .dentro {
     display: grid;
-    gap: clamp(28px, 4vw, 52px);
+    gap: clamp(20px, 3vw, 40px);
   }
 
   .zona {
@@ -91,13 +91,19 @@ import Icona from '../comuni/Icona.astro';
   }
 
   /* Più grande della scala: l'apertura è l'unico punto del sito dove il titolo
-     ha il permesso di essere enorme, e senza immagine accanto se lo può
-     permettere davvero. */
+     ha il permesso di essere enorme.
+
+     La dimensione è legata anche all'altezza della finestra, non solo alla
+     larghezza. Con la sola larghezza, su uno schermo largo e basso — cioè
+     qualunque portatile — quattro righe da 148px non ci stavano e l'ultima
+     finiva sotto la piega: un titolo tagliato a metà è peggio di un titolo
+     più piccolo. `11svh` per riga, quattro righe, fa il 40% dell'altezza:
+     resta spazio per l'occhiello, il sommario e i bottoni. */
   .titolo {
     font-family: var(--font-ui);
     font-weight: 700;
-    font-size: clamp(46px, 10.5vw, 148px);
-    line-height: 0.9;
+    font-size: clamp(38px, min(9.2vw, 9.6svh), 132px);
+    line-height: 0.92;
     letter-spacing: -0.05em;
     max-width: 14ch;
     margin: 0;
@@ -144,12 +150,21 @@ import Icona from '../comuni/Icona.astro';
     color: var(--ink-3);
   }
 
+  /* Sta sul bordo della piega di proposito: è l'invito a scorrere, e se
+     stesse comodamente dentro non inviterebbe a niente. Su finestre basse
+     sparisce, perché lì lo spazio serve al titolo. */
   .scendi {
     display: flex;
     align-items: center;
     gap: var(--sp-2);
     color: var(--ink-3);
-    margin-top: clamp(20px, 3vw, 40px);
+    margin-top: var(--sp-3);
+  }
+
+  @media (max-height: 720px) {
+    .scendi {
+      display: none;
+    }
   }
 
   .scendi :global(.icona) {
