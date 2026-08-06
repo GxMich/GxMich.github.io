@@ -34,35 +34,30 @@ const primo = siti[0];
 const pagine = primo?.data.schermate ?? [];
 
 /**
- * Con due o più siti in elenco la vetrina mostra un pannello per sito. Con uno
- * solo mostra le sue pagine, dichiarate come tali: è la degradazione onesta —
- * non finge un portfolio più ricco di quello che è, e intanto fa vedere più di
- * una schermata.
+ * La vetrina in home mostra i lavori, tutti, siti per primi.
  *
- * Il giorno in cui i siti diventano tre, questo blocco cambia da solo.
+ * La divisione stretta in due famiglie resta su /progetti, dove serve a chi sta
+ * cercando qualcosa di preciso. Qui il compito è diverso: far vedere che c'è
+ * roba da guardare, e dare una porta d'ingresso a ciascuna.
  */
-const pannelli =
-  siti.length >= 2
-    ? siti.map((p) => ({
-        immagine: p.data.anteprima!,
-        titolo: p.data.titolo,
-        nota: p.data.cliente,
-        alt: p.data.riassunto,
-      }))
-    : pagine.map((s) => ({
-        immagine: s.src,
-        titolo: primo!.data.titolo,
-        nota: primo!.data.cliente,
-        alt: s.alt,
-      }));
+const nature = {
+  cliente: 'Per un cliente',
+  iniziativa: 'Su iniziativa',
+  interno: 'Lavoro interno',
+} as const;
 
-const occhielloVetrina =
-  siti.length >= 2 ? 'Siti messi online' : 'Il lavoro, pagina per pagina';
-
-const titoloVetrina =
-  siti.length >= 2
-    ? 'Qualche sito che ho messo online.'
-    : 'Un sito che si aggiorna aprendo un file di testo.';
+/* Ordinati per `ordine`, non per famiglia: qual e' il lavoro che apre la fila
+   e' una decisione editoriale, e sta nel frontmatter dove Michele la controlla.
+   La divisione stretta in siti e sistemi resta su /progetti. */
+const lavori = [...progetti]
+  .sort((a, b) => a.data.ordine - b.data.ordine)
+  .map((p) => ({
+    href: `/progetti/${p.id}`,
+    titolo: p.data.titolo,
+    nota: `${nature[p.data.natura]} · ${p.data.anno}`,
+    immagine: p.data.anteprima,
+    alt: p.data.riassunto,
+  }));
 
 /* L'apertura mostra l'ultima pagina disponibile: fra le due del Carnevale è
    quella che si legge meglio in piccolo. Diventa una scelta automatica quando
@@ -84,9 +79,15 @@ const jsonLd = [persona, attivita, sitoWeb];
     didascalia={primo ? `${primo.data.titolo} — una pagina, così com'è online` : undefined}
   />
 
-  {pannelli.length > 0 && (
-    <Vetrina pannelli={pannelli} occhiello={occhielloVetrina} titolo={titoloVetrina} />
-  )}
+  {
+    lavori.length > 0 && (
+      <Vetrina
+        lavori={lavori}
+        occhiello="I lavori"
+        titolo="Sei progetti, e cosa risolve ognuno."
+      />
+    )
+  }
 
   <DueStrade />
 

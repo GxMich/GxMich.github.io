@@ -97,9 +97,12 @@ const passi = [
     top: calc(var(--header-h) + var(--sp-5) + var(--i) * 12px);
   }
 
+  /* Il fondo è pieno e non incassato: una carta che si sovrappone a un'altra
+     deve coprirla, altrimenti si legge il testo di sotto in trasparenza. */
   .carta-dentro {
-    background: var(--paper-sunk);
+    background: var(--paper);
     border: 1px solid var(--rule);
+    box-shadow: 0 -1px 0 var(--rule), 0 -18px 30px -24px rgba(0, 0, 0, 0.4);
     border-radius: var(--radius-2);
     padding: clamp(24px, 3vw, 44px);
     display: grid;
@@ -175,9 +178,13 @@ const passi = [
         const dentro = carta.querySelector<HTMLElement>('.carta-dentro');
         if (!dentro) return;
 
+        /* Niente scurimento. La versione precedente portava la prima carta a
+           brightness 0,18: la profondità si vedeva benissimo e il testo non si
+           leggeva più. La pila si capisce dal bordo che sbuca e dalla scala —
+           che restano leggibili anche a chi ha poca vista, cosa che un testo
+           grigio su grigio non fa. */
         gsap.to(dentro, {
           scale: 0.95,
-          filter: 'brightness(0.82)',
           ease: 'none',
           scrollTrigger: {
             trigger: carte[i + 1],

@@ -13,6 +13,7 @@
 import { Image } from 'astro:assets';
 import Guscio from '../layouts/Guscio.astro';
 import Invito from '../components/sezioni/Invito.astro';
+import SequenzaTesti from '../components/comuni/SequenzaTesti.astro';
 import ritratto from '../assets/michele.png';
 import scrivania from '../assets/me/scrivania.jpg';
 import { SITE } from '../config.js';
@@ -57,6 +58,16 @@ const restaUmano = [
   { titolo: 'Il gusto', testo: "L'IA, se le lasci scegliere, converge sempre sulla media di quello che ha visto. La media è il motivo per cui tanti siti si somigliano. Scegliere cosa togliere è un lavoro di gusto, e il gusto non si delega." },
   { titolo: 'Le decisioni di prodotto', testo: 'Cosa mettere in home e cosa no, quali funzioni valgono il loro costo, quando dirti che una cosa che hai chiesto ti farà perdere clienti.' },
   { titolo: 'Il rapporto con te', testo: 'Rispondere al telefono, spiegarti le scelte senza gergo, esserci quando qualcosa non va. Il pezzo più importante e quello meno automatizzabile.' },
+];
+
+/**
+ * Le due colonne diventano una sequenza sola: l'etichetta dice da che parte
+ * sta ogni voce, quindi la distinzione resta senza bisogno di due colonne che
+ * su telefono si impilano comunque una sotto l'altra.
+ */
+const metodoIA = [
+  ...faLaMacchina.map((v) => ({ ...v, nota: 'Lo fa la macchina' })),
+  ...restaUmano.map((v) => ({ ...v, nota: 'Non lo delego mai' })),
 ];
 
 const tappeLavoro = [
@@ -162,46 +173,19 @@ const jsonLd = [
     </div>
   </section>
 
-  <section class="sezione" aria-labelledby="metodo">
+  {/*
+    Otto voci su due colonne erano un muro di testo che si legge solo se uno ha
+    già deciso di leggerlo — e da telefono nemmeno quello. Una alla volta, con
+    l'etichetta che dice da che parte sta, fa la stessa cosa in metà fatica.
+  */}
+  <SequenzaTesti
+    occhiello="Il pezzo che di solito nessuno racconta"
+    titolo="Dove entra la macchina, e dove non la lascio entrare."
+    voci={metodoIA}
+  />
+
+  <section class="sezione">
     <div class="contenitore">
-      <div class="intestazione">
-        <h2 id="metodo" class="h2">Il pezzo che di solito nessuno racconta.</h2>
-        <p class="testo-sm">
-          Quasi tutti quelli che lavorano con l'IA o la nascondono o la usano come slogan.
-          Preferisco dirti come funziona: così puoi giudicare tu se ti conviene.
-        </p>
-      </div>
-
-      <div class="due-colonne">
-        <div class="colonna">
-          <p class="etichetta">Cosa faccio fare alla macchina</p>
-          <ul class="voci">
-            {
-              faLaMacchina.map((v) => (
-                <li class="sfoca-entra" data-anima>
-                  <p class="h4">{v.titolo}</p>
-                  <p class="testo-sm">{v.testo}</p>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-
-        <div class="colonna">
-          <p class="etichetta">Cosa non delego mai</p>
-          <ul class="voci">
-            {
-              restaUmano.map((v) => (
-                <li class="sfoca-entra" data-anima>
-                  <p class="h4">{v.titolo}</p>
-                  <p class="testo-sm">{v.testo}</p>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-      </div>
-
       <p class="onesta">
         <strong>Il rovescio, per onestà:</strong> l'IA sbaglia, e sbaglia in modo convincente.
         Per questo ogni cosa che consegno l'ho letta, provata e capita riga per riga. Se una

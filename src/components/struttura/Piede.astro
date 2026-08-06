@@ -1,16 +1,23 @@
 ---
 /**
- * Piede. Zero effetti, per scelta.
+ * Piede.
  *
- * È l'ultima cosa che vede chi non ha ancora deciso: deve dare i contatti e la
- * zona senza chiedere niente in cambio, e senza far aspettare un'animazione.
+ * Nero, con il nome in grande sul fondo: è la firma, e sta dietro al contenuto
+ * invece che accanto, così non ruba spazio a quello che serve davvero — i
+ * recapiti. Il nome è decorativo, quindi sparisce ai lettori di schermo: il
+ * nome vero, leggibile, sta nella riga in fondo.
+ *
+ * Zero effetti sul contenuto: è l'ultima cosa che vede chi non ha ancora
+ * deciso, e deve dare i contatti senza far aspettare niente.
  */
 import { SITE, NAVIGAZIONE } from '../../config.js';
 
 const anno = new Date().getFullYear();
 ---
 
-<footer class="piede">
+<footer class="piede su-palco">
+  <span class="firma" aria-hidden="true">Modica Michele</span>
+
   <div class="contenitore dentro">
     <div class="colonna primaria">
       <p class="etichetta">Parliamone</p>
@@ -26,6 +33,7 @@ const anno = new Date().getFullYear();
     <div class="colonna">
       <p class="etichetta">Pagine</p>
       <ul class="elenco">
+        <li><a href="/">Home</a></li>
         {NAVIGAZIONE.map((v) => <li><a href={v.href}>{v.etichetta}</a></li>)}
       </ul>
     </div>
@@ -65,9 +73,33 @@ const anno = new Date().getFullYear();
 
 <style>
   .piede {
-    border-top: 1px solid var(--ink);
+    position: relative;
+    isolation: isolate;
+    background: var(--stage);
+    color: var(--light);
     margin-top: var(--section);
-    padding-block: var(--sp-8) var(--sp-6);
+    padding-block: var(--sp-9) var(--sp-6);
+    overflow: hidden;
+  }
+
+  /* Il nome riempie l'altezza del piede e resta dietro a tutto. `1lh` di
+     interlinea con la dimensione legata alla larghezza della finestra: cresce
+     con lo schermo senza mai andare a capo. */
+  .firma {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: clamp(52px, 15.5vw, 250px);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    white-space: nowrap;
+    color: var(--light);
+    opacity: 0.07;
+    user-select: none;
   }
 
   .dentro {
@@ -84,7 +116,7 @@ const anno = new Date().getFullYear();
 
   .colonna .etichetta {
     padding-bottom: var(--sp-3);
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 1px solid var(--edge);
     margin-bottom: var(--sp-1);
   }
 
@@ -96,13 +128,13 @@ const anno = new Date().getFullYear();
 
   .contatto a {
     text-decoration: none;
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 1px solid var(--edge);
     padding-bottom: 2px;
     transition: border-color var(--dur-1) var(--ease-out);
   }
 
   .contatto a:hover {
-    border-bottom-color: var(--ink);
+    border-bottom-color: var(--signal);
   }
 
   .nota {
@@ -117,16 +149,16 @@ const anno = new Date().getFullYear();
 
   .elenco a {
     text-decoration: none;
-    color: var(--ink-2);
+    color: var(--light-2);
     transition: color var(--dur-1) var(--ease-out);
   }
 
   .elenco a:hover {
-    color: var(--ink);
+    color: var(--light);
   }
 
   .elenco.spento {
-    color: var(--ink-2);
+    color: var(--light-2);
   }
 
   .coda {
@@ -134,9 +166,9 @@ const anno = new Date().getFullYear();
     flex-wrap: wrap;
     justify-content: space-between;
     gap: var(--sp-4);
-    margin-top: var(--sp-8);
+    margin-top: var(--sp-9);
     padding-top: var(--sp-5);
-    border-top: 1px solid var(--rule);
+    border-top: 1px solid var(--edge);
   }
 
   .coda a {
@@ -153,6 +185,15 @@ const anno = new Date().getFullYear();
     .dentro {
       grid-template-columns: 1fr;
       gap: var(--sp-7);
+    }
+
+    .firma {
+      /* Su telefono il nome intero su una riga sola diventa illeggibilmente
+         piccolo: va a capo, e l'interlinea stretta lo tiene compatto. */
+      white-space: normal;
+      font-size: clamp(56px, 22vw, 120px);
+      line-height: 0.86;
+      text-align: center;
     }
   }
 </style>

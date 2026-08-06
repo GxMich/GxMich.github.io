@@ -12,6 +12,7 @@
  */
 import Guscio from '../layouts/Guscio.astro';
 import Invito from '../components/sezioni/Invito.astro';
+import SequenzaTesti from '../components/comuni/SequenzaTesti.astro';
 import { SITE } from '../config.js';
 import { ID, domande, briciole } from '../lib/schema.ts';
 
@@ -113,25 +114,16 @@ const jsonLd = [
     </div>
   </header>
 
-  <section class="sezione" aria-labelledby="sito">
-    <div class="contenitore">
-      <div class="intestazione">
-        <p class="etichetta">01 · Il servizio principale</p>
-        <h2 id="sito" class="h2">Sito su misura per attività locali</h2>
-      </div>
-
-      <ul class="voci quattro">
-        {
-          incluso.map((v) => (
-            <li class="sfoca-entra" data-anima>
-              <p class="h4">{v.titolo}</p>
-              <p class="testo-sm">{v.testo}</p>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
+  {/*
+    Otto voci su una griglia sono otto cose che nessuno legge. Una alla volta,
+    al centro, su fondo scuro: chi scorre le legge davvero, e su telefono la
+    differenza è ancora più netta.
+  */}
+  <SequenzaTesti
+    occhiello="01 · Il servizio principale — cosa comprende"
+    titolo="Sito su misura per attività locali"
+    voci={incluso}
+  />
 
   <section class="sezione escluso" aria-labelledby="escluso">
     <div class="contenitore">

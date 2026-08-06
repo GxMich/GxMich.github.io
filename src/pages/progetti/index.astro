@@ -196,11 +196,9 @@ const jsonLd = [
     gap: clamp(32px, 4vw, 64px);
   }
 
-  /* Con un sito solo la griglia a due colonne lascia mezza pagina vuota, e il
-     vuoto accanto a una scheda si legge come "gliene manca una". */
-  .griglia-siti:has(> :only-child) {
-    grid-template-columns: minmax(0, 8fr);
-  }
+  /* Un sito solo resta della sua misura: allargarlo a mezza pagina lo
+     promuoveva a lavoro di punta, che e' una scelta editoriale e non una
+     conseguenza del fatto che per ora e' l'unico. */
 
   .elenco {
     border-top: 1px solid var(--ink);

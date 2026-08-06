@@ -54,12 +54,23 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
 </header>
 
 <div class="menu" id="menu-principale" data-menu inert>
+  <button class="chiudi" type="button" data-chiudi>
+    <span class="solo-lettori">Chiudi il menu</span>
+    <span class="ics" aria-hidden="true"><i></i><i></i></span>
+  </button>
+
   <div class="contenitore menu-dentro">
     <nav aria-label="Menu">
       <ul class="menu-voci">
+        {/* La home è la voce che manca in ogni menu fatto male: chi ci è
+            arrivato da una pagina interna deve poterci tornare senza cercare
+            il marchio in un angolo. */}
+        <li class="riga" style="--i:0">
+          <a href="/" aria-current={percorso === '/' ? 'page' : undefined}>Home</a>
+        </li>
         {
           NAVIGAZIONE.map((v, i) => (
-            <li class="riga" style={`--i:${i}`}>
+            <li class="riga" style={`--i:${i + 1}`}>
               <a href={v.href} aria-current={attiva(v.href) ? 'page' : undefined}>
                 {v.etichetta}
               </a>
@@ -69,7 +80,7 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
       </ul>
     </nav>
 
-    <div class="menu-piede" style={`--i:${NAVIGAZIONE.length}`}>
+    <div class="menu-piede" style={`--i:${NAVIGAZIONE.length + 1}`}>
       <p class="riga">
         <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
       </p>
@@ -220,6 +231,51 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
       visibility 0s;
   }
 
+  /* La X sta dentro il menu e non dipende dal bottone che l'ha aperto: sopra
+     il fondo nero l'hamburger trasformato si vedeva male, e chi apre un
+     pannello a schermo intero cerca una X, non l'icona di prima. */
+  .chiudi {
+    position: absolute;
+    top: 18px;
+    right: max(var(--gutter), 20px);
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-1);
+    opacity: 0;
+    transition: opacity var(--dur-2) var(--ease-out);
+  }
+
+  .menu.aperto .chiudi {
+    opacity: 1;
+    transition-delay: 320ms;
+  }
+
+  .ics {
+    position: relative;
+    display: block;
+    width: 22px;
+    height: 22px;
+  }
+
+  .ics i {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--paper);
+  }
+
+  .ics i:first-child {
+    transform: rotate(45deg);
+  }
+
+  .ics i:last-child {
+    transform: rotate(-45deg);
+  }
+
   .menu-dentro {
     display: grid;
     gap: var(--sp-8);
@@ -303,27 +359,12 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     }
   }
 
-  /* Il bottone di chiusura è lo stesso di apertura: cambia solo la forma. */
-  :global(html[data-menu-aperto]) .tratti i:first-child {
-    transform: translateY(3.5px) rotate(45deg);
-  }
-
-  :global(html[data-menu-aperto]) .tratti i:last-child {
-    transform: translateY(-3.5px) rotate(-45deg);
-  }
-
-  :global(html[data-menu-aperto]) .apri .tratti i {
-    background: var(--paper);
-  }
-
+  /* Il menu copre l'intestazione, quindi l'hamburger non si vede più: non c'è
+     niente da trasformare, la chiusura ha la sua X dentro il pannello. */
   :global(html[data-menu-aperto]) .intestazione {
     background: none;
     backdrop-filter: none;
     border-bottom-color: transparent;
-  }
-
-  :global(html[data-menu-aperto]) .marchio {
-    color: var(--paper);
   }
 
   /* Con il menu aperto la pagina sotto non deve scorrere: su telefono è la
@@ -392,6 +433,8 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     bottone.addEventListener('click', () => {
       menu.classList.contains('aperto') ? chiudi() : apri();
     });
+
+    menu.querySelector<HTMLButtonElement>('[data-chiudi]')?.addEventListener('click', chiudi);
 
     document.addEventListener('keydown', (e) => {
       if (!menu.classList.contains('aperto')) return;

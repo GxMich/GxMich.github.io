@@ -1,87 +1,95 @@
 ---
 /**
- * Frame 02 — la vetrina.
+ * Frame 02 — la vetrina dei lavori.
  *
- * È l'unico posto del sito dove lo scorrimento orizzontale si merita di
- * esistere: una galleria di immagini è l'unico contenuto che guadagna davvero
- * a essere sfogliata lateralmente invece che impilata.
+ * Riscritta. La versione precedente agganciava la sezione e la faceva panare di
+ * lato: partiva tardi, lasciava un blocco di nero sotto e su un pannello solo
+ * non aveva senso. Un aggancio è un contratto con chi scorre — «fermati qui,
+ * ne vale la pena» — e per due immagini quel contratto non si ripaga.
  *
- * Con un pannello solo la sezione NON si aggancia e resta una vetrina singola
- * ferma. Uno scorrimento orizzontale che pana su un pannello solo è la cosa
- * che grida più forte "qui manca roba".
+ * Ora è quello che deve essere: una fila di lavori che si sfoglia di lato con
+ * lo scorrimento nativo. Funziona col dito, col trackpad, con le frecce e con i
+ * due bottoni, non ha niente da calcolare e quindi non può lasciare buchi.
  */
 import { Image } from 'astro:assets';
 import { originale } from '../../lib/immagini.ts';
 
-export interface Pannello {
-  immagine: string;
+export interface Lavoro {
+  href: string;
   titolo: string;
   nota: string;
+  immagine?: string;
   alt: string;
 }
 
 interface Props {
-  pannelli: Pannello[];
+  lavori: Lavoro[];
   titolo: string;
   occhiello: string;
 }
 
-const { pannelli, titolo, occhiello } = Astro.props;
-const singolo = pannelli.length < 2;
+const { lavori, titolo, occhiello } = Astro.props;
+const sfogliabile = lavori.length > 1;
 ---
 
-<section class="vetrina" aria-labelledby="vetrina-titolo">
+<section class="vetrina su-palco" aria-labelledby="vetrina-titolo">
   <div class="contenitore intestazione">
-    <p class="etichetta">{occhiello}</p>
-    <h2 id="vetrina-titolo" class="h2 sfoca-entra" data-anima>{titolo}</h2>
+    <div class="parole">
+      <p class="etichetta">{occhiello}</p>
+      <h2 id="vetrina-titolo" class="h2 sfoca-entra" data-anima>{titolo}</h2>
+    </div>
+
     {
-      !singolo && (
-        <p class="etichetta conto" aria-hidden="true">
-          <span data-indice>01</span> / {String(pannelli.length).padStart(2, '0')}
-        </p>
+      sfogliabile && (
+        <div class="comandi" data-comandi>
+          <button type="button" data-vai="-1">
+            <span class="solo-lettori">Lavoro precedente</span>
+            <span aria-hidden="true">←</span>
+          </button>
+          <button type="button" data-vai="1">
+            <span class="solo-lettori">Lavoro successivo</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
       )
     }
   </div>
 
-  {/*
-    Senza JavaScript la scena resta un contenitore che scorre in orizzontale da
-    solo: tabindex e role la rendono raggiungibile da tastiera. Quando GSAP
-    monta l'aggancio, entrambi vengono tolti perché a quel punto scorre la
-    pagina, non la scena.
-  */}
   <div
-    class="scena"
-    data-vetrina
-    data-singolo={singolo ? '' : undefined}
-    tabindex={singolo ? undefined : 0}
-    role={singolo ? undefined : 'group'}
-    aria-label={singolo ? undefined : 'Schermate, scorrimento orizzontale'}
+    class="pista"
+    data-pista
+    tabindex={sfogliabile ? 0 : undefined}
+    role={sfogliabile ? 'group' : undefined}
+    aria-label={sfogliabile ? 'Lavori — si sfoglia di lato' : undefined}
   >
-    <div class="pista" data-pista>
-      {
-        pannelli.map((p, i) => {
-          const img = originale(p.immagine);
-          return (
-            <figure class="pannello" data-pannello data-i={i}>
-              {img && (
+    {
+      lavori.map((l, i) => {
+        const img = originale(l.immagine);
+        return (
+          <a class="lavoro" href={l.href} data-lavoro>
+            {img && (
+              <div class="cornice">
                 <Image
                   src={img}
-                  alt={p.alt}
-                  widths={[540, 900, 1400]}
-                  sizes="(max-width: 767px) 88vw, 62vw"
+                  alt={l.alt}
+                  widths={[420, 720, 1100]}
+                  sizes="(max-width: 767px) 84vw, 46vw"
                   formats={['avif', 'webp']}
                   loading={i === 0 ? 'eager' : 'lazy'}
                 />
-              )}
-              <figcaption>
-                <span class="nome">{p.titolo}</span>
-                <span class="etichetta">{p.nota}</span>
-              </figcaption>
-            </figure>
-          );
-        })
-      }
-    </div>
+              </div>
+            )}
+            <div class="sotto">
+              <span class="nome h3">{l.titolo}</span>
+              <span class="etichetta nota">{l.nota}</span>
+              <span class="vai">
+                Guarda com'è venuto <span aria-hidden="true">→</span>
+              </span>
+            </div>
+          </a>
+        );
+      })
+    }
   </div>
 </section>
 
@@ -94,184 +102,186 @@ const singolo = pannelli.length < 2;
   }
 
   .intestazione {
-    display: grid;
-    gap: var(--sp-3);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--sp-5);
     padding-bottom: var(--sp-7);
   }
 
-  .intestazione .etichetta {
-    color: var(--light-2);
-  }
-
-  .intestazione h2 {
-    max-width: 20ch;
-  }
-
-  .conto {
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* Il ripiego, non l'eccezione: se GSAP non arriva — errore di rete, browser
-     vecchio, JavaScript disattivato — la scena scorre da sola e i pannelli
-     restano tutti raggiungibili. Con `overflow: hidden` di partenza, un solo
-     errore renderebbe invisibile metà della sezione. */
-  .scena {
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-  }
-
-  /* L'aggancio lo dichiara il JavaScript solo dopo aver montato davvero. */
-  .scena[data-agganciata] {
-    overflow: hidden;
-  }
-
-  .pista {
-    display: flex;
-    gap: clamp(16px, 2.4vw, 32px);
-    padding-inline: var(--gutter);
-    width: max-content;
-  }
-
-  /* Con un pannello solo niente pista: la vetrina si comporta come un blocco
-     normale e si centra nel contenitore. */
-  .scena[data-singolo] {
-    overflow: visible;
-  }
-
-
-  .scena[data-singolo] .pista {
-    width: 100%;
-    max-width: var(--page-max);
-    margin-inline: auto;
-  }
-
-  .pannello {
-    flex: 0 0 auto;
-    width: min(62vw, 860px);
-    margin: 0;
+  .parole {
     display: grid;
     gap: var(--sp-3);
   }
 
-  .scena[data-singolo] .pannello {
-    width: 100%;
-  }
-
-  .pannello img {
-    width: 100%;
-    border: 1px solid var(--edge);
-    border-radius: var(--radius-2);
-    box-shadow: var(--shadow-stage);
-  }
-
-  .pannello figcaption {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--sp-2) var(--sp-4);
-  }
-
-  .nome {
-    font-weight: 500;
-    letter-spacing: -0.015em;
-  }
-
-  .pannello .etichetta {
+  .parole .etichetta {
     color: var(--light-2);
   }
 
-  /* Sotto i 768px lo scorrimento orizzontale sparisce del tutto: diventa una
-     pila verticale, che su un telefono è quello che serve. */
+  .parole h2 {
+    max-width: 20ch;
+  }
+
+  .comandi {
+    display: flex;
+    gap: var(--sp-2);
+  }
+
+  .comandi button {
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--edge);
+    border-radius: var(--radius-1);
+    color: var(--light-2);
+    font-size: 17px;
+    transition:
+      border-color var(--dur-1) var(--ease-out),
+      color var(--dur-1) var(--ease-out);
+  }
+
+  .comandi button:hover:not(:disabled) {
+    border-color: var(--light-2);
+    color: var(--light);
+  }
+
+  .comandi button:disabled {
+    opacity: 0.32;
+    cursor: default;
+  }
+
+  /* Scorrimento nativo con aggancio: nessun calcolo, nessuno spazio morto, e
+     il dito fa quello che ci si aspetta. I margini interni allineano il primo
+     e l'ultimo lavoro al contenitore. */
+  .pista {
+    display: flex;
+    gap: clamp(16px, 2.4vw, 32px);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    padding-inline: var(--gutter);
+    padding-bottom: var(--sp-4);
+    scrollbar-width: thin;
+    scrollbar-color: var(--edge) transparent;
+  }
+
+  .lavoro {
+    flex: 0 0 auto;
+    width: min(46vw, 620px);
+    scroll-snap-align: start;
+    text-decoration: none;
+    display: grid;
+    gap: var(--sp-4);
+    align-content: start;
+  }
+
+  .cornice {
+    border: 1px solid var(--edge);
+    border-radius: var(--radius-2);
+    overflow: hidden;
+    background: var(--stage-2);
+  }
+
+  .cornice img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform var(--dur-3) var(--ease-out);
+  }
+
+  .lavoro:hover .cornice img {
+    transform: scale(1.02);
+  }
+
+  .sotto {
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  .nome {
+    letter-spacing: -0.025em;
+  }
+
+  .nota {
+    color: var(--light-2);
+  }
+
+  .vai {
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    color: var(--signal);
+    margin-top: var(--sp-1);
+  }
+
+  .vai span {
+    display: inline-block;
+    transition: transform var(--dur-1) var(--ease-out);
+  }
+
+  .lavoro:hover .vai span {
+    transform: translateX(4px);
+  }
+
+  /* Con un lavoro solo non c'è niente da sfogliare: occupa la larghezza piena
+     e la pista smette di comportarsi come una pista. */
+  .pista:has(> :only-child) {
+    overflow: visible;
+  }
+
+  .pista:has(> :only-child) .lavoro {
+    width: 100%;
+    max-width: calc(var(--page-max) - var(--gutter) * 2);
+    margin-inline: auto;
+  }
+
   @media (max-width: 767px) {
-    .scena {
-      overflow: visible;
+    .lavoro {
+      width: 84vw;
     }
 
-    .pista {
-      flex-direction: column;
-      width: 100%;
-      gap: var(--sp-7);
+    .comandi {
+      display: none;
     }
+  }
 
-    .pannello {
-      width: 100%;
+  @media (prefers-reduced-motion: reduce) {
+    .lavoro:hover .cornice img {
+      transform: none;
     }
   }
 </style>
 
 <script>
-  import { caricaGsap, movimentoRiccoAmmesso } from '../../lib/movimento.ts';
-
   function montaVetrina() {
-    const scena = document.querySelector<HTMLElement>('[data-vetrina]');
-    if (!scena || scena.dataset.montato !== undefined) return;
-    if (scena.dataset.singolo !== undefined) return;
-    if (!movimentoRiccoAmmesso()) return;
+    const pista = document.querySelector<HTMLElement>('[data-pista]');
+    const comandi = document.querySelector<HTMLElement>('[data-comandi]');
+    if (!pista || !comandi || pista.dataset.montato !== undefined) return;
 
-    scena.dataset.montato = 'si';
+    pista.dataset.montato = 'si';
 
-    const pista = scena.querySelector<HTMLElement>('[data-pista]');
-    const indice = document.querySelector<HTMLElement>('[data-indice]');
-    const pannelli = Array.from(scena.querySelectorAll<HTMLElement>('[data-pannello]'));
-    if (!pista) return;
+    const lavori = Array.from(pista.querySelectorAll<HTMLElement>('[data-lavoro]'));
+    const bottoni = Array.from(comandi.querySelectorAll<HTMLButtonElement>('[data-vai]'));
 
-    caricaGsap().then(({ gsap, ScrollTrigger }) => {
-      // Da qui in poi scorre la pagina, non la scena: il ritaglio e la
-      // raggiungibilità da tastiera passano all'aggancio.
-      scena.setAttribute('data-agganciata', '');
-      scena.removeAttribute('tabindex');
-      scena.removeAttribute('role');
-      scena.removeAttribute('aria-label');
+    const aggiornaBottoni = () => {
+      const fine = pista.scrollWidth - pista.clientWidth;
+      bottoni[0].disabled = pista.scrollLeft <= 2;
+      bottoni[1].disabled = pista.scrollLeft >= fine - 2;
+    };
 
-      const corsa = () => Math.max(0, pista.scrollWidth - window.innerWidth);
+    bottoni.forEach((b) =>
+      b.addEventListener('click', () => {
+        const verso = Number(b.dataset.vai);
+        // Il passo è il lavoro più il divario: così si arriva sempre allineati
+        // all'aggancio invece che a metà di una scheda.
+        const passo = lavori[0].offsetWidth + parseFloat(getComputedStyle(pista).gap || '0');
+        pista.scrollBy({ left: passo * verso, behavior: 'smooth' });
+      })
+    );
 
-      gsap.to(pista, {
-        x: () => -corsa(),
-        ease: 'none',
-        scrollTrigger: {
-          trigger: scena,
-          pin: true,
-          scrub: 1,
-          anticipatePin: 1,
-          // Ricalcolato a ogni misura, non fissato al montaggio: senza, la
-          // pista resta della lunghezza sbagliata dopo un ridimensionamento o
-          // quando arrivano le immagini e cambiano l'ingombro.
-          end: () => '+=' + corsa(),
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            if (!indice) return;
-            const n = Math.min(
-              pannelli.length,
-              Math.floor(self.progress * pannelli.length) + 1
-            );
-            indice.textContent = String(n).padStart(2, '0');
-          },
-        },
-      });
-
-      // Ogni pannello si apre mentre attraversa lo schermo, legato al proprio
-      // progresso e non a quello della pista.
-      pannelli.forEach((p) => {
-        gsap.fromTo(
-          p,
-          { scale: 0.92, opacity: 0.55 },
-          {
-            scale: 1,
-            opacity: 1,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: p,
-              containerAnimation: gsap.getTweensOf(pista)[0],
-              start: 'left right',
-              end: 'center center',
-              scrub: true,
-            },
-          }
-        );
-      });
-
-      ScrollTrigger.refresh();
-    });
+    pista.addEventListener('scroll', aggiornaBottoni, { passive: true });
+    window.addEventListener('resize', aggiornaBottoni, { passive: true });
+    aggiornaBottoni();
   }
 
   montaVetrina();

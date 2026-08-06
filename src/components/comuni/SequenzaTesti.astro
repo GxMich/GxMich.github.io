@@ -1,0 +1,249 @@
+---
+/**
+ * Un testo alla volta, al centro, che cambia mentre si scorre.
+ *
+ * Serve dove un elenco lungo non si legge: otto voci affiancate su una griglia
+ * sono otto cose che nessuno legge, una alla volta al centro dello schermo è
+ * una cosa che si legge. Su telefono la differenza è ancora più netta.
+ *
+ * Nessuna libreria. Il testo attivo lo decide un osservatore su tappe invisibili
+ * alte quanto serve: quando una tappa attraversa la metà dello schermo, il suo
+ * testo diventa quello davanti. Costa zero kilobyte e non c'è nessun aggancio
+ * da calcolare, quindi non può lasciare spazi vuoti sotto.
+ *
+ * Senza JavaScript i testi restano tutti visibili, uno sotto l'altro.
+ */
+interface Voce {
+  titolo: string;
+  testo: string;
+  nota?: string;
+}
+
+interface Props {
+  occhiello: string;
+  titolo: string;
+  voci: Voce[];
+  /** Quanto scorrimento vale una voce. Più basso, più svelto. */
+  passo?: string;
+}
+
+const { occhiello, titolo, voci, passo = '78vh' } = Astro.props;
+---
+
+<section class="sequenza su-palco" aria-labelledby={`seq-${occhiello.replace(/\W+/g, '-')}`}>
+  <div class="scia" data-sequenza style={`--passo:${passo}; --n:${voci.length}`}>
+    <div class="fissa">
+      <div class="contenitore centro">
+        <p class="etichetta occhiello">{occhiello}</p>
+        <h2 id={`seq-${occhiello.replace(/\W+/g, '-')}`} class="h2 titolo">{titolo}</h2>
+
+        <div class="testi">
+          {
+            voci.map((v, i) => (
+              <div class="voce" data-voce data-i={i} data-attiva={i === 0 ? '' : undefined}>
+                <p class="h3 voce-titolo">{v.titolo}</p>
+                <p class="voce-testo">{v.testo}</p>
+                {v.nota && <p class="etichetta voce-nota">{v.nota}</p>}
+              </div>
+            ))
+          }
+        </div>
+
+        <p class="conta dato" aria-hidden="true">
+          <span data-conta>01</span> / {String(voci.length).padStart(2, '0')}
+        </p>
+        <div class="barra" aria-hidden="true">
+          <span data-barra></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .sequenza {
+    background: var(--stage);
+    color: var(--light);
+    margin-block: var(--section-sm);
+  }
+
+  .scia {
+    position: relative;
+  }
+
+  .fissa {
+    position: sticky;
+    top: 0;
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding-block: var(--sp-9);
+  }
+
+  .centro {
+    display: grid;
+    gap: var(--sp-5);
+    justify-items: center;
+    text-align: center;
+  }
+
+  .occhiello {
+    color: var(--light-2);
+  }
+
+  .titolo {
+    max-width: 20ch;
+  }
+
+  /* I testi stanno uno sopra l'altro nella stessa cella: così l'altezza non
+     balla al cambio di voce e il centro resta fermo. */
+  .testi {
+    display: grid;
+    width: 100%;
+    max-width: 46ch;
+    margin-top: var(--sp-5);
+  }
+
+  .voce {
+    grid-area: 1 / 1;
+    display: grid;
+    gap: var(--sp-3);
+    justify-items: center;
+  }
+
+  .voce-testo {
+    font-size: var(--t-lede);
+    line-height: 1.5;
+    color: var(--light-2);
+    text-wrap: pretty;
+  }
+
+  .voce-nota {
+    color: var(--light-2);
+    margin-top: var(--sp-2);
+  }
+
+  .conta,
+  .barra {
+    display: none;
+  }
+
+  /* --------------------------------------------------------------------------
+     Da qui in giù vale solo quando lo script ha montato davvero. Senza, i testi
+     restano tutti visibili e leggibili: un elenco di voci senza le voci sarebbe
+     un pezzo di pagina vuoto.
+     -------------------------------------------------------------------------- */
+  .scia[data-montato] .voce {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(14px);
+    transition:
+      opacity var(--dur-2) var(--ease-out),
+      filter var(--dur-2) var(--ease-out),
+      transform var(--dur-2) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .scia[data-montato] .voce[data-attiva] {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .scia[data-montato] .conta {
+    display: block;
+    color: var(--light-2);
+    margin-top: var(--sp-4);
+  }
+
+  .scia[data-montato] .barra {
+    display: block;
+    width: min(280px, 60%);
+    height: 1px;
+    background: var(--edge);
+    overflow: hidden;
+  }
+
+  .scia[data-montato] .barra span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: var(--signal);
+    transition: width var(--dur-2) var(--ease-out);
+  }
+
+  /* L'altezza è quello che rende possibile lo scorrimento: senza, la sezione
+     è alta quanto una schermata e la sequenza non avanza mai. Una mezza
+     schermata in più alla fine lascia l'ultima voce ferma al centro invece di
+     farla scappare mentre la si legge. */
+  .scia[data-montato] {
+    min-height: calc(var(--n) * var(--passo) + 50svh);
+  }
+
+  /* Senza aggancio non c'è niente da disattivare sotto una certa larghezza:
+     `position: sticky` funziona uguale su telefono, ed è lì che il testo
+     singolo al centro serve di più. */
+
+  @media (prefers-reduced-motion: reduce) {
+    .scia[data-montato] .voce {
+      transition: none;
+      filter: none;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  function montaSequenze() {
+    const scie = document.querySelectorAll<HTMLElement>('[data-sequenza]:not([data-montato])');
+
+    scie.forEach((scia) => {
+      const voci = Array.from(scia.querySelectorAll<HTMLElement>('[data-voce]'));
+      const conta = scia.querySelector<HTMLElement>('[data-conta]');
+      const barra = scia.querySelector<HTMLElement>('[data-barra]');
+
+      if (voci.length === 0) return;
+
+      scia.dataset.montato = 'si';
+
+      let attiva = -1;
+
+      function mostra(i: number) {
+        if (i === attiva) return;
+        attiva = i;
+        voci.forEach((v, n) => v.toggleAttribute('data-attiva', n === i));
+        if (conta) conta.textContent = String(i + 1).padStart(2, '0');
+        if (barra) barra.style.width = `${((i + 1) / voci.length) * 100}%`;
+      }
+
+      /**
+       * Quanto della sezione è già passato, da 0 a 1, e da lì quale voce sta
+       * davanti.
+       *
+       * Calcolo diretto invece di un osservatore su tappe invisibili: è
+       * deterministico — a una data posizione corrisponde sempre la stessa voce
+       * — e soprattutto non ha stati in cui smette di funzionare lasciando sette
+       * voci su otto irraggiungibili.
+       */
+      function aggiorna() {
+        const r = scia.getBoundingClientRect();
+        const corsa = r.height - window.innerHeight;
+        if (corsa <= 0) return mostra(0);
+        const avanzamento = Math.min(1, Math.max(0, -r.top / corsa));
+        mostra(Math.min(voci.length - 1, Math.floor(avanzamento * voci.length)));
+      }
+
+      /* Niente strozzatura con requestAnimationFrame: la funzione legge un
+         rettangolo e torna subito se la voce non cambia, e in una scheda di
+         sfondo requestAnimationFrame non gira affatto. */
+      window.addEventListener('scroll', aggiorna, { passive: true });
+      window.addEventListener('resize', aggiorna, { passive: true });
+      aggiorna();
+    });
+  }
+
+  montaSequenze();
+  document.addEventListener('astro:page-load', montaSequenze);
+</script>

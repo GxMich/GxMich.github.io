@@ -9,24 +9,25 @@
  */
 import Guscio from '../layouts/Guscio.astro';
 import Invito from '../components/sezioni/Invito.astro';
+import SequenzaTesti from '../components/comuni/SequenzaTesti.astro';
 import { SITE } from '../config.js';
 import { ID, briciole } from '../lib/schema.ts';
 
 const dopo = [
   {
-    n: '01',
+    nota: 'Passo 01',
     titolo: 'Ti rispondo io',
     testo:
       'Non un modulo automatico e non un commerciale. Di solito entro un giorno, di sera o nel fine settimana: ho un lavoro a turni e preferisco dirtelo prima che scoprirlo dopo.',
   },
   {
-    n: '02',
+    nota: 'Passo 02',
     titolo: 'Mezz’ora al telefono, gratis',
     testo:
       'Mi racconti cosa fai e cosa ti blocca. Se penso di non essere la persona giusta per te te lo dico lì, e non ti è costato niente.',
   },
   {
-    n: '03',
+    nota: 'Passo 03',
     titolo: 'Una cifra, non una forbice',
     testo:
       'Se ha senso andare avanti ti mando il prezzo e cosa comprende, per iscritto. Prima di cominciare, non al terzo incontro.',
@@ -86,22 +87,11 @@ const jsonLd = [
     </div>
   </header>
 
-  <section class="dopo" aria-labelledby="dopo-titolo">
-    <div class="contenitore">
-      <h2 id="dopo-titolo" class="h2 sfoca-entra" data-anima>Cosa succede dopo che scrivi.</h2>
-      <ol class="passi">
-        {
-          dopo.map((p) => (
-            <li class="passo sfoca-entra" data-anima>
-              <p class="etichetta">{p.n}</p>
-              <p class="h3">{p.titolo}</p>
-              <p class="testo-sm">{p.testo}</p>
-            </li>
-          ))
-        }
-      </ol>
-    </div>
-  </section>
+  <SequenzaTesti
+    occhiello="Cosa succede dopo che scrivi"
+    titolo="Tre passaggi, e nessuno costa niente."
+    voci={dopo}
+  />
 
   <Invito />
 </Guscio>
@@ -155,44 +145,12 @@ const jsonLd = [
     text-decoration: underline;
   }
 
-  .dopo {
-    padding-block: var(--section-sm);
-    background: var(--paper-sunk);
-    margin-top: var(--section-sm);
-  }
-
-  .dopo h2 {
-    max-width: 18ch;
-    margin-bottom: clamp(28px, 4vw, 48px);
-  }
-
-  .passi {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(24px, 3vw, 48px);
-    border-top: 1px solid var(--ink);
-  }
-
-  .passo {
-    display: grid;
-    gap: var(--sp-3);
-    align-content: start;
-    padding-top: var(--sp-5);
-  }
-
-  .passo p:last-child {
-    max-width: 40ch;
-  }
 
   @media (max-width: 900px) {
     .diretti {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .passi {
-      grid-template-columns: 1fr;
-      gap: var(--sp-6);
-    }
   }
 
   @media (max-width: 520px) {
