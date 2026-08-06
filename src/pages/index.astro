@@ -30,9 +30,6 @@ const sistemi = progetti
   .filter((p) => p.data.tipo === 'tool')
   .sort((a, b) => a.data.ordine - b.data.ordine);
 
-const primo = siti[0];
-const pagine = primo?.data.schermate ?? [];
-
 /**
  * La vetrina in home mostra i lavori, tutti, siti per primi.
  *
@@ -59,11 +56,6 @@ const lavori = [...progetti]
     alt: p.data.riassunto,
   }));
 
-/* L'apertura mostra l'ultima pagina disponibile: fra le due del Carnevale è
-   quella che si legge meglio in piccolo. Diventa una scelta automatica quando
-   i siti in elenco saranno più di uno. */
-const scattoApertura = pagine[pagine.length - 1];
-
 const jsonLd = [persona, attivita, sitoWeb];
 ---
 
@@ -73,11 +65,7 @@ const jsonLd = [persona, attivita, sitoWeb];
   ogImage="/og/home.png"
   jsonLd={jsonLd}
 >
-  <Apertura
-    immagine={scattoApertura?.src}
-    alt={scattoApertura?.alt}
-    didascalia={primo ? `${primo.data.titolo} — una pagina, così com'è online` : undefined}
-  />
+  <Apertura />
 
   {
     lavori.length > 0 && (

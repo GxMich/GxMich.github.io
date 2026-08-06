@@ -39,6 +39,19 @@ const T = {
   light2: '#A1A1A8',
 };
 
+/** Gli stessi ruoli, nel tema scuro. */
+const S = {
+  paper: '#0B0B0D',
+  paperSunk: '#131317',
+  ink: '#F4F4F5',
+  ink2: '#A8A8B0',
+  ink3: '#8B8B94',
+  signal: '#FF5C33',
+  signalInk: '#FF8259',
+  stage: '#000000',
+  stage2: '#0B0B0D',
+};
+
 /**
  * soglia 4.5 → testo normale (AA)
  * soglia 3.0 → testo grande, icone, anelli di messa a fuoco
@@ -57,6 +70,18 @@ const coppie = [
   ['--light-2 su palco sollevato', T.light2, T.stage2, 4.5],
   ['--signal sul palco (testo)', T.signal, T.stage, 4.5],
   ['anello di focus sul palco', T.signal, T.stage, 3.0],
+
+  ['scuro · --ink su carta', S.ink, S.paper, 4.5],
+  ['scuro · --ink-2 su carta', S.ink2, S.paper, 4.5],
+  ['scuro · --ink-3 su carta', S.ink3, S.paper, 4.5],
+  ['scuro · --ink-3 su incassato', S.ink3, S.paperSunk, 4.5],
+  ['scuro · --signal-ink su carta', S.signalInk, S.paper, 4.5],
+  ['scuro · --signal-ink su incassato', S.signalInk, S.paperSunk, 4.5],
+  ['scuro · testo del bottone', T.ink, S.signal, 4.5],
+  ['scuro · anello di focus', S.signal, S.paper, 3.0],
+  ['scuro · --ink sul palco', S.ink, S.stage, 4.5],
+  ['scuro · --ink-2 sul palco', S.ink2, S.stage, 4.5],
+  ['scuro · --ink-2 su palco sollevato', S.ink2, S.stage2, 4.5],
 ];
 
 let bocciate = 0;

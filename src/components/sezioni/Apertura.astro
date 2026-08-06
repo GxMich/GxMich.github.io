@@ -2,43 +2,36 @@
 /**
  * Frame 01 — l'apertura.
  *
- * Ha un compito solo: in tre secondi, a chi ha un'attività e cerca un sito,
- * dire che è nel posto giusto. Per questo l'immagine di un sito vero sta sopra
- * la piega su schermo largo, e non due schermate più in basso.
+ * Solo parole. L'immagine c'era e se n'è andata: una schermata di sito lì
+ * costringeva il titolo in mezza pagina, e un titolo in mezza pagina non apre
+ * niente. Le schermate stanno nella vetrina, che è il posto dove si guardano.
  *
  * Il titolo è testo vero nel DOM dal primo disegno: l'otturatore lavora sul
  * ritaglio, non sull'opacità del contenuto, così l'elemento che Google misura
  * non aspetta nessuna animazione.
  */
-import { Image } from 'astro:assets';
 import Bottone from '../comuni/Bottone.astro';
-import { originale } from '../../lib/immagini.ts';
-
-interface Props {
-  immagine?: string;
-  didascalia?: string;
-  alt?: string;
-}
-
-const { immagine, didascalia, alt } = Astro.props;
-const scatto = originale(immagine);
+import Icona from '../comuni/Icona.astro';
 ---
 
 <section class="apertura">
   <div class="contenitore dentro">
-    <div class="testo">
-      <p class="etichetta zona">
-        Siti su misura — Vercelli · Casale Monferrato · Novara · Chivasso
-      </p>
+    <p class="etichetta zona">
+      <span class="pulsa" aria-hidden="true"></span>
+      Siti su misura — Vercelli · Casale Monferrato · Novara · Chivasso
+    </p>
 
-      <h1 class="display-xl otturatore" data-anima>
-        <span class="riga"><span>Il tuo locale ha una faccia.</span></span>
-        <span class="riga"><span>Il sito deve avere quella.</span></span>
-      </h1>
+    <h1 class="titolo otturatore" data-anima>
+      <span class="riga"><span>Il tuo locale</span></span>
+      <span class="riga"><span>ha una faccia.</span></span>
+      <span class="riga"><span class="chiaro">Il sito deve</span></span>
+      <span class="riga"><span class="chiaro">avere quella.</span></span>
+    </h1>
 
+    <div class="coda">
       <p class="lede sfoca-entra" data-anima>
-        Non un modello riempito con le tue foto. Vengo a vedere il posto, capisco cosa ti
-        fa perdere tempo, e costruisco una cosa sola: la tua.
+        Non un modello riempito con le tue foto. Vengo a vedere il posto, capisco cosa ti fa
+        perdere tempo, e costruisco una cosa sola: la tua.
       </p>
 
       <div class="inviti sfoca-entra" data-anima>
@@ -48,52 +41,72 @@ const scatto = originale(immagine);
       </div>
     </div>
 
-    {
-      scatto && (
-        <figure class="palco">
-          <Image
-            src={scatto}
-            alt={alt ?? ''}
-            widths={[540, 900, 1280]}
-            sizes="(max-width: 900px) 100vw, 46vw"
-            formats={['avif', 'webp']}
-            loading="eager"
-            fetchpriority="high"
-          />
-          {didascalia && <figcaption class="etichetta">{didascalia}</figcaption>}
-        </figure>
-      )
-    }
+    <p class="scendi etichetta" aria-hidden="true">
+      <Icona nome="freccia-giu" dimensione={16} />
+      Continua
+    </p>
   </div>
 </section>
 
 <style>
   .apertura {
-    padding-block: clamp(40px, 6vw, 88px) 0;
+    padding-block: clamp(48px, 9vw, 120px) clamp(32px, 5vw, 64px);
   }
 
-  /* Layout spezzato: il testo occupa le prime sei colonne, l'immagine parte
-     dalla settima e sfonda il margine destro. La simmetria qui direbbe che le
-     due cose pesano uguale, e non è vero. */
   .dentro {
     display: grid;
-    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
-    gap: clamp(32px, 5vw, 72px);
-    align-items: center;
-  }
-
-  .testo {
-    display: grid;
-    gap: clamp(24px, 3vw, 36px);
+    gap: clamp(28px, 4vw, 52px);
   }
 
   .zona {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
     padding-bottom: var(--sp-3);
     border-bottom: 1px solid var(--rule);
   }
 
-  h1 {
-    max-width: 15ch;
+  /* Un punto che respira: dice che il sito è vivo e che qualcuno risponde.
+     È l'unica cosa in movimento continuo di tutta la pagina — di più
+     diventerebbe rumore. */
+  .pulsa {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--signal);
+    flex: 0 0 auto;
+    animation: respiro 2.6s var(--ease-inout) infinite;
+  }
+
+  @keyframes respiro {
+    0%,
+    100% {
+      opacity: 1;
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--signal) 55%, transparent);
+    }
+    70% {
+      opacity: 0.75;
+      box-shadow: 0 0 0 7px transparent;
+    }
+  }
+
+  /* Più grande della scala: l'apertura è l'unico punto del sito dove il titolo
+     ha il permesso di essere enorme, e senza immagine accanto se lo può
+     permettere davvero. */
+  .titolo {
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: clamp(46px, 10.5vw, 148px);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    max-width: 14ch;
+    margin: 0;
+  }
+
+  /* Le due righe che portano la promessa restano piene; le prime due sono la
+     premessa e stanno un gradino indietro. */
+  .chiaro {
+    color: var(--ink-2);
   }
 
   .riga {
@@ -105,52 +118,73 @@ const scatto = originale(immagine);
     display: block;
   }
 
+  .coda {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(24px, 4vw, 64px);
+    align-items: end;
+    padding-top: clamp(16px, 2.4vw, 32px);
+    border-top: 1px solid var(--rule);
+  }
+
+  .lede {
+    max-width: 44ch;
+    margin: 0;
+  }
+
   .inviti {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--sp-3) var(--sp-4);
+    justify-content: flex-end;
   }
 
   .gratis {
     color: var(--ink-3);
   }
 
-  /* Il fondo scuro non fa atmosfera: fa da cornice perché una schermata chiara
-     brilli. Sfonda il margine destro fino al bordo dello schermo. */
-  .palco {
-    background: var(--stage);
-    padding: clamp(20px, 2.6vw, 40px);
-    border-radius: var(--radius-2) 0 0 var(--radius-2);
-    margin-right: calc(var(--gutter) * -1);
-    display: grid;
-    gap: var(--sp-3);
+  .scendi {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    color: var(--ink-3);
+    margin-top: clamp(20px, 3vw, 40px);
   }
 
-  .palco img {
-    width: 100%;
-    border: 1px solid var(--edge);
-    border-radius: var(--radius-2);
-    box-shadow: var(--shadow-stage);
+  .scendi :global(.icona) {
+    animation: scendi 2.4s var(--ease-inout) infinite;
   }
 
-  .palco figcaption {
-    color: var(--light-2);
+  @keyframes scendi {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(4px);
+    }
   }
 
   @media (max-width: 900px) {
-    .dentro {
+    .coda {
       grid-template-columns: 1fr;
-      gap: clamp(32px, 7vw, 56px);
+      align-items: start;
     }
 
-    .palco {
-      margin-right: 0;
-      border-radius: var(--radius-2);
+    .inviti {
+      justify-content: flex-start;
     }
 
-    h1 {
-      max-width: 18ch;
+    .titolo {
+      max-width: 12ch;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pulsa,
+    .scendi :global(.icona) {
+      animation: none;
     }
   }
 </style>

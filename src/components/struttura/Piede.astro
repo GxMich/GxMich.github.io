@@ -16,7 +16,22 @@ const anno = new Date().getFullYear();
 ---
 
 <footer class="piede su-palco">
-  <span class="firma" aria-hidden="true">Modica Michele</span>
+  {/*
+    Il nome come SVG e non come testo.
+    Con `font-size` legata alla larghezza della finestra il nome usciva dai
+    bordi e si vedeva a metà: bastava una finestra un po' stretta. Qui
+    `textLength` lo costringe alla larghezza esatta del riquadro e il riquadro
+    si adatta al contenitore, quindi è sempre intero, a qualsiasi misura.
+  */}
+  <svg
+    class="firma"
+    viewBox="0 0 1000 128"
+    preserveAspectRatio="xMidYMid meet"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <text x="0" y="100" textLength="1000" lengthAdjust="spacingAndGlyphs">Modica Michele</text>
+  </svg>
 
   <div class="contenitore dentro">
     <div class="colonna primaria">
@@ -82,24 +97,21 @@ const anno = new Date().getFullYear();
     overflow: hidden;
   }
 
-  /* Il nome riempie l'altezza del piede e resta dietro a tutto. `1lh` di
-     interlinea con la dimensione legata alla larghezza della finestra: cresce
-     con lo schermo senza mai andare a capo. */
   .firma {
     position: absolute;
-    inset: 0;
+    inset: auto var(--gutter) var(--sp-5);
     z-index: -1;
-    display: grid;
-    place-items: center;
+    width: calc(100% - var(--gutter) * 2);
+    height: auto;
+    opacity: 0.08;
+    user-select: none;
+  }
+
+  .firma text {
     font-family: var(--font-ui);
     font-weight: 700;
-    font-size: clamp(52px, 15.5vw, 250px);
-    line-height: 0.9;
-    letter-spacing: -0.05em;
-    white-space: nowrap;
-    color: var(--light);
-    opacity: 0.07;
-    user-select: none;
+    font-size: 120px;
+    fill: var(--light);
   }
 
   .dentro {
@@ -188,12 +200,7 @@ const anno = new Date().getFullYear();
     }
 
     .firma {
-      /* Su telefono il nome intero su una riga sola diventa illeggibilmente
-         piccolo: va a capo, e l'interlinea stretta lo tiene compatto. */
-      white-space: normal;
-      font-size: clamp(56px, 22vw, 120px);
-      line-height: 0.86;
-      text-align: center;
+      opacity: 0.11;
     }
   }
 </style>

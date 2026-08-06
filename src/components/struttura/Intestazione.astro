@@ -5,66 +5,84 @@
  * Sono un componente solo perché sono la stessa navigazione in due forme, e
  * tenerli separati vorrebbe dire duplicare l'elenco delle voci.
  *
- * Sopra 1024px la barra resta visibile con tre voci e il bottone di contatto:
- * su un pubblico che sta valutando se chiamarti, nascondere la navigazione
- * dietro un'icona è un costo di conversione, non una scelta estetica. Sotto
- * 1024px il menu a schermo intero è la convenzione attesa, quindi la meccanica
- * lavora dove non costa niente.
+ * In cima alla pagina la barra è trasparente e larga quanto il contenuto.
+ * Appena si scorre si stacca dal bordo e diventa una pastiglia in colore
+ * pieno: usa `--ink` come fondo, quindi nel tema chiaro è scura sulla carta e
+ * nel tema scuro è chiara sul nero — si inverte da sola senza una seconda
+ * regola da tenere allineata.
+ *
+ * Sopra 1024px le voci restano visibili: su un pubblico che sta valutando se
+ * chiamarti, nascondere la navigazione dietro un'icona è un costo di
+ * conversione, non una scelta estetica.
  */
 import { SITE, NAVIGAZIONE } from '../../config.js';
+import Icona from '../comuni/Icona.astro';
+import Tema from '../comuni/Tema.astro';
 
 const percorso = Astro.url.pathname.replace(/\/$/, '') || '/';
 const attiva = (href: string) => percorso === href || percorso.startsWith(href + '/');
 const principali = NAVIGAZIONE.filter((v) => v.principale);
 ---
 
-{/* La sentinella misura lo scorrimento senza un ascoltatore su `scroll`:
-    quando esce dalla viewport, l'intestazione si assottiglia. */}
+{/* La sentinella misura lo scorrimento senza un ascoltatore su `scroll`. */}
 <div data-sentinella aria-hidden="true"></div>
 
 <header class="intestazione" data-intestazione>
-  <div class="contenitore barra">
-    <a class="marchio" href="/" aria-label={`${SITE.name} — torna alla home`}>
-      <span aria-hidden="true">MM</span>
-    </a>
+  <div class="contenitore guscio">
+    <div class="barra">
+      <a class="marchio" href="/" aria-label={`${SITE.name} — torna alla home`}>
+        <span class="bollo" aria-hidden="true"></span>
+        <span class="sigla" aria-hidden="true">MM</span>
+      </a>
 
-    <nav class="voci" aria-label="Navigazione principale">
-      {
-        principali.map((v) => (
-          <a href={v.href} aria-current={attiva(v.href) ? 'page' : undefined}>
-            {/* Due copie sovrapposte: al passaggio del mouse la prima sale e
-                la seconda entra da sotto. La seconda è decorativa, quindi
-                sparisce ai lettori di schermo. */}
-            <span class="scambio">
-              <span>{v.etichetta}</span>
-              <span aria-hidden="true">{v.etichetta}</span>
-            </span>
-          </a>
-        ))
-      }
-    </nav>
+      <nav class="voci" aria-label="Navigazione principale">
+        {
+          principali.map((v) => (
+            <a href={v.href} aria-current={attiva(v.href) ? 'page' : undefined}>
+              {/* Due copie sovrapposte: al passaggio del mouse la prima sale e
+                  la seconda entra da sotto. */}
+              <span class="scambio">
+                <span>{v.etichetta}</span>
+                <span aria-hidden="true">{v.etichetta}</span>
+              </span>
+            </a>
+          ))
+        }
+      </nav>
 
-    <a class="invito" href="/contatti">Parliamone</a>
+      <div class="coda">
+        <Tema />
 
-    <button class="apri" type="button" data-apri aria-expanded="false" aria-controls="menu-principale">
-      <span class="solo-lettori">Apri il menu</span>
-      <span class="tratti" aria-hidden="true"><i></i><i></i></span>
-    </button>
+        <a class="invito" href="/contatti">
+          <span>Parliamone</span>
+          <Icona nome="freccia" dimensione={15} />
+        </a>
+
+        <button
+          class="apri"
+          type="button"
+          data-apri
+          aria-expanded="false"
+          aria-controls="menu-principale"
+        >
+          <span class="solo-lettori">Apri il menu</span>
+          <Icona nome="menu" dimensione={22} />
+        </button>
+      </div>
+    </div>
   </div>
 </header>
 
 <div class="menu" id="menu-principale" data-menu inert>
   <button class="chiudi" type="button" data-chiudi>
     <span class="solo-lettori">Chiudi il menu</span>
-    <span class="ics" aria-hidden="true"><i></i><i></i></span>
+    <Icona nome="chiudi" dimensione={22} />
   </button>
 
   <div class="contenitore menu-dentro">
     <nav aria-label="Menu">
       <ul class="menu-voci">
-        {/* La home è la voce che manca in ogni menu fatto male: chi ci è
-            arrivato da una pagina interna deve poterci tornare senza cercare
-            il marchio in un angolo. */}
+        {/* La home è la voce che manca in ogni menu fatto male. */}
         <li class="riga" style="--i:0">
           <a href="/" aria-current={percorso === '/' ? 'page' : undefined}>Home</a>
         </li>
@@ -81,12 +99,8 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     </nav>
 
     <div class="menu-piede" style={`--i:${NAVIGAZIONE.length + 1}`}>
-      <p class="riga">
-        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
-      </p>
-      <p class="riga">
-        <a href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>
-      </p>
+      <p class="riga"><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+      <p class="riga"><a href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a></p>
       <p class="riga etichetta">{SITE.city} · {SITE.provincia} — e da remoto</p>
     </div>
   </div>
@@ -98,45 +112,82 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     position: sticky;
     top: 0;
     z-index: var(--z-header);
-    background: color-mix(in srgb, var(--paper) 86%, transparent);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid transparent;
-    transition:
-      border-color var(--dur-2) var(--ease-out),
-      background-color var(--dur-2) var(--ease-out);
   }
 
-  /* Il filetto compare solo quando c'è del contenuto sotto: in cima alla
-     pagina una riga orizzontale non separa niente e sporca l'apertura. */
-  .intestazione[data-scorsa] {
-    border-bottom-color: var(--rule);
-    background: color-mix(in srgb, var(--paper) 94%, transparent);
+  .guscio {
+    transition: padding var(--dur-3) var(--ease-out);
   }
 
   .barra {
     display: flex;
     align-items: center;
-    gap: var(--sp-6);
+    gap: var(--sp-5);
     height: var(--header-h);
-    transition: height var(--dur-2) var(--ease-out);
+    padding-inline: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+    transition:
+      height var(--dur-3) var(--ease-out),
+      padding var(--dur-3) var(--ease-out),
+      background-color var(--dur-3) var(--ease-out),
+      color var(--dur-3) var(--ease-out),
+      border-radius var(--dur-3) var(--ease-out),
+      box-shadow var(--dur-3) var(--ease-out);
+  }
+
+  /* La pastiglia. `--ink` come fondo si inverte col tema senza una seconda
+     regola: scura sulla carta chiara, chiara sul nero. */
+  .intestazione[data-scorsa] .guscio {
+    padding-top: var(--sp-3);
   }
 
   .intestazione[data-scorsa] .barra {
-    height: 54px;
+    height: 62px;
+    padding-inline: var(--sp-5);
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: 0 12px 34px -18px rgba(0, 0, 0, 0.55);
   }
 
   .marchio {
-    font-family: var(--font-mono);
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
     text-decoration: none;
+    color: inherit;
     margin-right: auto;
   }
 
+  .bollo {
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    background: linear-gradient(140deg, #ff7a4d, var(--signal));
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  .marchio:hover .bollo {
+    transform: scale(1.12) rotate(12deg);
+  }
+
+  .sigla {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 13.5px;
+    letter-spacing: 0.06em;
+  }
+
+  /* Su schermo largo, con la pastiglia, le voci si centrano davvero: il
+     marchio spinge a sinistra e la coda a destra, questa resta in mezzo. */
   .voci {
     display: flex;
     gap: var(--sp-6);
+  }
+
+  .intestazione[data-scorsa] .voci {
+    margin-inline: auto;
   }
 
   .voci a {
@@ -144,17 +195,16 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     font-size: var(--t-body-sm);
     font-weight: 500;
     letter-spacing: -0.01em;
-    color: var(--ink-2);
-    transition: color var(--dur-1) var(--ease-out);
+    color: currentColor;
+    opacity: 0.66;
+    transition: opacity var(--dur-1) var(--ease-out);
   }
 
   .voci a:hover,
   .voci a[aria-current='page'] {
-    color: var(--ink);
+    opacity: 1;
   }
 
-  /* Lo scambio ha bisogno di un'altezza fissa per non far ballare la barra
-     mentre la copia sale. */
   .scambio {
     display: block;
     overflow: hidden;
@@ -172,38 +222,65 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     transform: translateY(-100%);
   }
 
+  .coda {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
   .invito {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
     font-size: var(--t-body-sm);
     font-weight: 500;
     letter-spacing: -0.01em;
     text-decoration: none;
     background: var(--signal);
     color: var(--signal-on);
-    border-radius: var(--radius-1);
-    padding: 9px 16px;
+    border-radius: 999px;
+    padding: 10px 8px 10px 18px;
     white-space: nowrap;
+    overflow: hidden;
+  }
+
+  /* La freccia si allunga: l'asta cresce da sinistra, la punta la segue. */
+  .invito :global(.asta) {
+    transform: scaleX(0.35);
+  }
+
+  .invito:hover :global(.asta) {
+    transform: scaleX(1);
+  }
+
+  .invito:hover :global(.punta) {
+    transform: translateX(2px);
+  }
+
+  .tema-guscio {
+    display: contents;
   }
 
   .apri {
     display: none;
-    padding: var(--sp-2);
-    margin-right: calc(var(--sp-2) * -1);
+    padding: 8px;
+    margin-right: -8px;
+    color: inherit;
+    border-radius: var(--radius-1);
   }
 
-  .tratti {
-    display: block;
-    width: 22px;
-  }
-
-  .tratti i {
-    display: block;
-    height: 1px;
-    background: var(--ink);
+  /* I due tratti si allargano a turno: piccolo, ma dice che il bottone è vivo. */
+  .apri :global(.tratto) {
     transition: transform var(--dur-2) var(--ease-out);
+    transform-origin: 3.5px center;
   }
 
-  .tratti i:first-child {
-    margin-bottom: 6px;
+  .apri:hover :global(.alto) {
+    transform: scaleX(0.72);
+  }
+
+  .apri:hover :global(.basso) {
+    transform: scaleX(0.86);
   }
 
   /* ------------------------------- menu ---------------------------------- */
@@ -211,11 +288,10 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     position: fixed;
     inset: 0;
     z-index: var(--z-menu);
-    background: var(--ink);
-    color: var(--paper);
+    background: var(--stage);
+    color: var(--light);
     display: flex;
     align-items: center;
-    /* Il cerchio parte dall'angolo dove sta il bottone che l'ha aperto. */
     clip-path: circle(0% at calc(100% - 40px) 40px);
     visibility: hidden;
     transition:
@@ -231,9 +307,6 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
       visibility 0s;
   }
 
-  /* La X sta dentro il menu e non dipende dal bottone che l'ha aperto: sopra
-     il fondo nero l'hamburger trasformato si vedeva male, e chi apre un
-     pannello a schermo intero cerca una X, non l'icona di prima. */
   .chiudi {
     position: absolute;
     top: 18px;
@@ -242,9 +315,12 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     height: 44px;
     display: grid;
     place-items: center;
-    border-radius: var(--radius-1);
+    border-radius: 999px;
+    color: var(--light);
     opacity: 0;
-    transition: opacity var(--dur-2) var(--ease-out);
+    transition:
+      opacity var(--dur-2) var(--ease-out),
+      transform var(--dur-2) var(--ease-out);
   }
 
   .menu.aperto .chiudi {
@@ -252,28 +328,8 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     transition-delay: 320ms;
   }
 
-  .ics {
-    position: relative;
-    display: block;
-    width: 22px;
-    height: 22px;
-  }
-
-  .ics i {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    background: var(--paper);
-  }
-
-  .ics i:first-child {
-    transform: rotate(45deg);
-  }
-
-  .ics i:last-child {
-    transform: rotate(-45deg);
+  .chiudi:hover {
+    transform: rotate(90deg);
   }
 
   .menu-dentro {
@@ -287,8 +343,6 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     gap: var(--sp-2);
   }
 
-  /* Ogni voce dentro il suo contenitore che taglia: è quello che fa entrare la
-     riga da sotto invece di farla comparire. */
   .riga {
     display: block;
     overflow: hidden;
@@ -307,7 +361,6 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     transition-delay: calc(385ms + var(--i, 0) * 60ms);
   }
 
-  /* In chiusura nessun ritardo: uscire deve essere immediato. */
   .menu:not(.aperto) .riga > * {
     transition-delay: 0s;
     transition-duration: var(--dur-2);
@@ -320,6 +373,13 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     line-height: 1.14;
     letter-spacing: -0.04em;
     text-decoration: none;
+    width: fit-content;
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  .menu-voci a:hover {
+    transform: translateX(14px);
+    color: var(--signal);
   }
 
   .menu-voci a[aria-current='page'] {
@@ -334,17 +394,13 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
 
   .menu-piede a {
     text-decoration: none;
-    border-bottom: 1px solid color-mix(in srgb, var(--paper) 30%, transparent);
+    border-bottom: 1px solid var(--edge);
     padding-bottom: 2px;
   }
 
   .menu-piede .etichetta {
-    color: color-mix(in srgb, var(--paper) 62%, transparent);
+    color: var(--light-2);
     margin-top: var(--sp-2);
-  }
-
-  .menu :global(:focus-visible) {
-    outline-color: var(--signal);
   }
 
   /* --------------------------- sotto i 1024px ----------------------------- */
@@ -355,33 +411,35 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     }
 
     .apri {
-      display: block;
+      display: grid;
+      place-items: center;
     }
   }
 
-  /* Il menu copre l'intestazione, quindi l'hamburger non si vede più: non c'è
-     niente da trasformare, la chiusura ha la sua X dentro il pannello. */
   :global(html[data-menu-aperto]) .intestazione {
-    background: none;
-    backdrop-filter: none;
-    border-bottom-color: transparent;
+    opacity: 0;
+    pointer-events: none;
   }
 
-  /* Con il menu aperto la pagina sotto non deve scorrere: su telefono è la
-     differenza fra un menu e un velo che si sposta mentre lo si legge. */
   :global(html[data-menu-aperto]),
   :global(html[data-menu-aperto] body) {
     overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marchio:hover .bollo,
+    .chiudi:hover,
+    .menu-voci a:hover {
+      transform: none;
+    }
   }
 </style>
 
 <script>
   /**
-   * `astro:page-load` scatta anche al primo caricamento, non solo ai passaggi
-   * successivi: montare qui e anche subito significherebbe due ascoltatori
-   * sullo stesso clic, cioè un menu che si apre e si richiude nello stesso
-   * istante. Il segno sul bottone rende il montaggio ripetibile senza danni,
-   * e serve davvero perché l'intestazione sopravvive ai cambi di pagina.
+   * `astro:page-load` scatta anche al primo caricamento: montare qui e anche
+   * subito significherebbe due ascoltatori sullo stesso clic. Il segno sul
+   * bottone rende il montaggio ripetibile senza danni.
    */
   function montaIntestazione() {
     const intestazione = document.querySelector<HTMLElement>('[data-intestazione]');
@@ -393,8 +451,6 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     if (bottone.dataset.montato) return;
     bottone.dataset.montato = 'si';
 
-    /* Assottigliamento: un osservatore su una sentinella alta zero costa molto
-       meno di un ascoltatore su `scroll` che scatta a ogni fotogramma. */
     const osservatore = new IntersectionObserver(
       ([voce]) => {
         intestazione.toggleAttribute('data-scorsa', !voce.isIntersecting);
@@ -404,15 +460,14 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     osservatore.observe(sentinella);
 
     const focalizzabili = () =>
-      Array.from(
-        menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')
-      ).filter((el) => el.offsetParent !== null);
+      Array.from(menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')).filter(
+        (el) => el.offsetParent !== null
+      );
 
     function apri() {
       menu.classList.add('aperto');
       menu.removeAttribute('inert');
       bottone.setAttribute('aria-expanded', 'true');
-      bottone.querySelector('.solo-lettori')!.textContent = 'Chiudi il menu';
       document.documentElement.setAttribute('data-menu-aperto', '');
       focalizzabili()[0]?.focus();
     }
@@ -421,12 +476,9 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
       menu.classList.remove('aperto');
       menu.setAttribute('inert', '');
       bottone.setAttribute('aria-expanded', 'false');
-      bottone.querySelector('.solo-lettori')!.textContent = 'Apri il menu';
       document.documentElement.removeAttribute('data-menu-aperto');
-      /* Sempre al bottone, non all'ultimo elemento che aveva il fuoco: è il
-         controllo che possiede il menu, ed è dove chi naviga da tastiera si
-         aspetta di ritrovarsi. Riportare il fuoco altrove — o peggio al
-         corpo — perde il segno di dove si era. */
+      /* Sempre al bottone: è il controllo che possiede il menu, ed è dove chi
+         naviga da tastiera si aspetta di ritrovarsi. */
       bottone.focus();
     }
 
@@ -445,8 +497,8 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
         return;
       }
 
-      /* Trappola per il fuoco: senza, il tabulatore esce dal menu e continua
-         a scorrere i link della pagina sotto, che è coperta e illeggibile. */
+      /* Trappola per il fuoco: senza, il tabulatore esce dal menu e continua a
+         scorrere i link della pagina sotto, che è coperta e illeggibile. */
       if (e.key === 'Tab') {
         const elementi = focalizzabili();
         if (elementi.length === 0) return;
@@ -463,8 +515,6 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
       }
     });
 
-    /* Chi apre il menu, sceglie e arriva sulla pagina nuova non deve
-       ritrovarsi il menu ancora aperto sopra. */
     document.addEventListener('astro:before-swap', () => {
       if (menu.classList.contains('aperto')) {
         menu.classList.remove('aperto');

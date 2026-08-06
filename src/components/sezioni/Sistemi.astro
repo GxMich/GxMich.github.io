@@ -38,7 +38,7 @@ function etichettaStato(stato?: string) {
 }
 ---
 
-<section class="sistemi" aria-labelledby="sistemi-titolo">
+<section class="sistemi su-palco" aria-labelledby="sistemi-titolo">
   <div class="contenitore">
     <div class="testa">
       <h2 id="sistemi-titolo" class="h3 sfoca-entra" data-anima>
@@ -68,9 +68,12 @@ function etichettaStato(stato?: string) {
 </section>
 
 <style>
+  /* Fondo nero: è la fascia che separa il lavoro per i clienti da quello
+     tecnico, e il salto di superficie lo dice meglio di un titolo. */
   .sistemi {
-    padding-block: var(--section-sm);
-    background: var(--paper-sunk);
+    padding-block: var(--section);
+    background: var(--stage);
+    color: var(--light);
   }
 
   .testa {

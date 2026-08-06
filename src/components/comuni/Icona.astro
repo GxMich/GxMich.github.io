@@ -1,0 +1,132 @@
+---
+/**
+ * Icone in linea.
+ *
+ * In linea e non da una libreria: sono cinque segni, e due librerie di icone
+ * pesavano più di tutto il resto del JavaScript della home messo insieme.
+ * Ereditano `currentColor`, quindi cambiano da sole col tema.
+ *
+ * Ognuna ha una parte animabile marcata con una classe: è il pezzo che si
+ * muove al passaggio del mouse. Il movimento sta nel componente che la usa,
+ * non qui — la stessa freccia scorre in un bottone e ruota in un accordion.
+ */
+interface Props {
+  nome: 'freccia' | 'freccia-giu' | 'sole' | 'luna' | 'menu' | 'chiudi' | 'segno';
+  dimensione?: number;
+  class?: string;
+}
+
+const { nome, dimensione = 18, class: classe } = Astro.props;
+const comuni = {
+  width: dimensione,
+  height: dimensione,
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  'stroke-width': 1.6,
+  'stroke-linecap': 'round' as const,
+  'stroke-linejoin': 'round' as const,
+  'aria-hidden': 'true',
+  focusable: 'false',
+};
+---
+
+{
+  nome === 'freccia' && (
+    <svg {...comuni} class:list={['icona', 'freccia', classe]}>
+      <line class="asta" x1="4" y1="12" x2="19" y2="12" />
+      <polyline class="punta" points="13,6 19,12 13,18" />
+    </svg>
+  )
+}
+
+{
+  nome === 'freccia-giu' && (
+    <svg {...comuni} class:list={['icona', classe]}>
+      <line class="asta" x1="12" y1="4" x2="12" y2="19" />
+      <polyline class="punta" points="6,13 12,19 18,13" />
+    </svg>
+  )
+}
+
+{
+  nome === 'sole' && (
+    <svg {...comuni} class:list={['icona', 'sole', classe]}>
+      <circle class="corpo" cx="12" cy="12" r="4.2" />
+      <g class="raggi">
+        <line x1="12" y1="2.5" x2="12" y2="4.6" />
+        <line x1="12" y1="19.4" x2="12" y2="21.5" />
+        <line x1="2.5" y1="12" x2="4.6" y2="12" />
+        <line x1="19.4" y1="12" x2="21.5" y2="12" />
+        <line x1="5.3" y1="5.3" x2="6.8" y2="6.8" />
+        <line x1="17.2" y1="17.2" x2="18.7" y2="18.7" />
+        <line x1="5.3" y1="18.7" x2="6.8" y2="17.2" />
+        <line x1="17.2" y1="6.8" x2="18.7" y2="5.3" />
+      </g>
+    </svg>
+  )
+}
+
+{
+  nome === 'luna' && (
+    <svg {...comuni} class:list={['icona', 'luna', classe]}>
+      <path class="corpo" d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.4 8.4 0 1 0 10.2 10.2Z" />
+    </svg>
+  )
+}
+
+{
+  nome === 'menu' && (
+    <svg {...comuni} class:list={['icona', 'menu', classe]}>
+      <line class="tratto alto" x1="3.5" y1="8" x2="20.5" y2="8" />
+      <line class="tratto basso" x1="3.5" y1="16" x2="20.5" y2="16" />
+    </svg>
+  )
+}
+
+{
+  nome === 'chiudi' && (
+    <svg {...comuni} class:list={['icona', classe]}>
+      <line x1="5.5" y1="5.5" x2="18.5" y2="18.5" />
+      <line x1="18.5" y1="5.5" x2="5.5" y2="18.5" />
+    </svg>
+  )
+}
+
+{
+  nome === 'segno' && (
+    <svg {...comuni} class:list={['icona', classe]} fill="currentColor" stroke="none">
+      <rect x="9" y="9" width="6" height="6" />
+    </svg>
+  )
+}
+
+<style>
+  .icona {
+    display: block;
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+
+  /* La freccia si allunga invece di traslare: l'asta cresce, la punta scorre.
+     Costa lo stesso e si vede che è disegnata, non spostata. */
+  .freccia .asta,
+  .freccia .punta {
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  .freccia .asta {
+    transform-origin: 4px 12px;
+  }
+
+  /* Il sole e la luna vivono nello stesso bottone: i raggi ruotano piano
+     quando compaiono, la luna arriva ruotando dal basso. */
+  .sole .raggi {
+    transform-origin: center;
+  }
+
+  .sole .corpo,
+  .luna .corpo {
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+</style>

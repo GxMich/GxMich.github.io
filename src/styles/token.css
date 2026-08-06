@@ -30,7 +30,11 @@
   --signal-on: var(--ink); /* testo sopra --signal: 5,89:1 — AA */
 
   /* --------------------------------------------------------------------------
-     COLORE — palco (le sezioni scure che fanno brillare le schermate)
+     COLORE — palco (le fasce scure che fanno brillare le schermate)
+
+     Nel tema scuro il palco non può restare quello che era: su carta nera una
+     fascia nera non è una fascia. Diventa il nero pieno mentre la carta si
+     schiarisce appena — il salto resta, cambia solo da che parte sta.
      -------------------------------------------------------------------------- */
   --stage: #08080a;
   --stage-2: #101014;
@@ -133,6 +137,65 @@
   --z-header: 100;
   --z-menu: 200;
   --z-skip: 300;
+}
+
+/* ============================================================================
+   TEMA SCURO
+
+   Due modi di arrivarci, e devono valere in tutti e due i versi:
+    - la preferenza di sistema, per chi non tocca niente;
+    - l'interruttore in pagina, che vince sempre sulla preferenza di sistema —
+      chi lo tocca ha appena detto cosa vuole.
+
+   I valori non sono l'inverso aritmetico di quelli chiari. Il bianco pieno su
+   nero pieno abbaglia e fa sanguinare i bordi del testo: la carta scura è un
+   grigio bluastro molto scuro, e l'inchiostro non arriva mai al bianco.
+   L'arancio si schiarisce, perché #CE320C su fondo scuro sparisce.
+   ============================================================================ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='chiaro']) {
+    --paper: #0b0b0d;
+    --paper-sunk: #131317;
+
+    --ink: #f4f4f5;
+    --ink-2: #a8a8b0;
+    --ink-3: #8b8b94;
+
+    --rule: #26262c;
+
+    --signal: #ff5c33;
+    --signal-ink: #ff8259;
+    --signal-on: #0a0a0b;
+
+    --stage: #000000;
+    --stage-2: #0b0b0d;
+    --edge: #22222a;
+    --shadow-stage: 0 30px 70px -30px rgba(0, 0, 0, 1);
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-tema='scuro'] {
+  --paper: #0b0b0d;
+  --paper-sunk: #131317;
+
+  --ink: #f4f4f5;
+  --ink-2: #a8a8b0;
+  --ink-3: #8b8b94;
+
+  --rule: #26262c;
+
+  --signal: #ff5c33;
+  --signal-ink: #ff8259;
+  --signal-on: #0a0a0b;
+
+  --stage: #000000;
+  --stage-2: #0b0b0d;
+  --edge: #22222a;
+  --shadow-stage: 0 30px 70px -30px rgba(0, 0, 0, 1);
+
+  color-scheme: dark;
 }
 
 /* Il palco non è un tema: è una superficie. Applicando questa classe a una

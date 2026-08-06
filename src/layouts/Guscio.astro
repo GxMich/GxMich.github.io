@@ -53,8 +53,9 @@ const passaggio = {
     {noindex && <meta name="robots" content="noindex, follow" />}
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#FAFAFA" />
-    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FAFAFA" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0B0B0D" />
+    <meta name="color-scheme" content="light dark" />
 
     {/* I due tagli che si vedono per primi. Il serif arriva dopo: compare solo
         a metà pagina e non vale un blocco sul primo disegno. */}
@@ -78,9 +79,22 @@ const passaggio = {
     {blocchi.map((b) => <script type="application/ld+json" set:html={JSON.stringify(b)} />)}
 
     <script is:inline>
-      // Prima del primo disegno: il contenuto si nasconde solo se c'è qualcuno
-      // che può rivelarlo. Senza questa riga, un errore di JavaScript lascia la
-      // pagina bianca per sempre.
+      // Prima del primo disegno, e in questo ordine.
+      //
+      // Il tema per primo: se la scelta salvata arrivasse dopo il primo
+      // disegno, chi ha scelto lo scuro vedrebbe un lampo bianco a ogni
+      // pagina. Senza scelta salvata non si scrive niente e comanda il sistema.
+      try {
+        var salvato = localStorage.getItem('tema');
+        if (salvato === 'chiaro' || salvato === 'scuro') {
+          document.documentElement.dataset.tema = salvato;
+        }
+      } catch (e) {
+        /* navigazione privata: resta la preferenza di sistema */
+      }
+
+      // Il contenuto si nasconde solo se c'è qualcuno che può rivelarlo.
+      // Senza questa riga, un errore di JavaScript lascia la pagina bianca.
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.documentElement.classList.add('puo-animare');
       }
