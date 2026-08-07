@@ -19,13 +19,22 @@ import Icona from './Icona.astro';
 </button>
 
 <style>
+  /**
+   * I colori vengono dal contesto, non dai token assoluti.
+   *
+   * Con `color: var(--ink)` sull'hover il bottone spariva dentro l'isola
+   * dell'intestazione: quella pastiglia ha `--ink` come *fondo*, quindi
+   * l'icona prendeva esattamente il colore su cui era appoggiata. Partendo da
+   * `currentColor` il bottone si adatta alla superficie che lo ospita — barra
+   * trasparente o pastiglia invertita — senza sapere quale delle due sia.
+   */
   .tema {
     width: 38px;
     height: 38px;
     display: grid;
     place-items: center;
     border-radius: 999px;
-    color: var(--ink-2);
+    color: color-mix(in srgb, currentColor 62%, transparent);
     border: 1px solid transparent;
     transition:
       color var(--dur-1) var(--ease-out),
@@ -34,8 +43,9 @@ import Icona from './Icona.astro';
   }
 
   .tema:hover {
-    color: var(--ink);
-    border-color: var(--rule);
+    color: currentColor;
+    border-color: color-mix(in srgb, currentColor 22%, transparent);
+    background: color-mix(in srgb, currentColor 8%, transparent);
   }
 
   /* Le due facce stanno nella stessa cella e ruotano una dentro l'altra: è la
