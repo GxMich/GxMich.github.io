@@ -12,7 +12,9 @@
     "og": "node scripts/generate-og.mjs",
     "contrasti": "node scripts/contrasti.mjs",
     "peso": "node scripts/peso-js.mjs",
-    "caratteri": "node scripts/caratteri.mjs"
+    "caratteri": "node scripts/caratteri.mjs",
+    "verifica": "node scripts/verifica.mjs",
+    "controlli": "npm run contrasti && npm run peso && npm run verifica"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",

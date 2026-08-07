@@ -1,0 +1,85 @@
+# Michele Modica — sviluppatore web e software
+
+> Sviluppo siti su misura per attività locali fra Vercelli, Casale Monferrato,
+> Novara e Chivasso, e strumenti su misura per processi aziendali che si
+> inceppano. Sto a Trino (VC). Lavoro di persona in zona e da remoto in tutta
+> Italia. Prendo pochi progetti l'anno.
+
+## Come lavoro
+
+- **Prendo pochi progetti l'anno.** Non è una tecnica di vendita: ho un lavoro
+  a turni in un magazzino logistico e sviluppo la sera e nei fine settimana.
+  Chi lavora con me parla sempre con me, e chi scrive il codice è la stessa
+  persona che ha ascoltato.
+- **Il prezzo si sa alla prima risposta**, non al terzo incontro. Una cifra,
+  non una forbice. Non c'è un listino pubblico perché due attività non hanno
+  mai lo stesso bisogno.
+- **Dominio e hosting restano intestati al cliente** (circa 50–120 € l'anno,
+  pagati direttamente al fornitore). Nessun canone obbligatorio: il lavoro si
+  paga una volta.
+- **Tempi**: di solito tre o quattro settimane dalla prima conversazione alla
+  messa online. Non faccio consegne sotto la settimana.
+- **La prima mezz'ora al telefono non si paga.** Se il progetto non è nelle mie
+  corde lo dico subito, e quando posso indico chi contattare.
+
+## Cosa non faccio
+
+E-commerce complessi con magazzino, taglie, spedizioni e resi. Assistenza
+mensile a canone obbligatorio. Consegne sotto la settimana. Gestione dei social.
+
+## Sull'intelligenza artificiale
+
+La uso per esplorare più direzioni di design nello stesso tempo in cui, da
+solo, ne farei una, e per scrivere il codice ripetitivo. Non la uso per
+decidere: cosa mettere in home, che tono usare e cosa togliere restano
+decisioni mie. Ogni cosa che consegno è stata letta, provata e capita riga per
+riga: se una parte non la so verificare, quella parte non la uso.
+
+## Pagine
+
+- [Home](https://www.modicamichele.it/): cosa faccio, per chi, e quanto costa
+- [Lavori](https://www.modicamichele.it/progetti): sei progetti raccontati per
+  intero — problema, strada scelta, risultato, e cosa non ha funzionato
+- [Servizi](https://www.modicamichele.it/servizi): cosa comprende un sito su
+  misura, cosa no, per chi è pensato, e otto domande con risposta per esteso
+- [Chi sono](https://www.modicamichele.it/chi-sono): il percorso dal 2023 a
+  oggi e come uso l'intelligenza artificiale nel lavoro
+- [Contatti](https://www.modicamichele.it/contatti): email, WhatsApp, modulo
+
+## Progetti
+
+- [Banco olografico](https://www.modicamichele.it/progetti/banco-olografico) —
+  ricerca, in corso. Visualizzatore CAD nel browser: un motore bicilindrico da
+  115 componenti veri si smonta muovendo le mani davanti alla webcam. Three.js,
+  WebGL2, MediaPipe Hands, glTF 2.0.
+- [SuiteFit](https://www.modicamichele.it/progetti/suitefit) — iniziativa, in
+  beta con dati di prova. Piattaforma dove personal trainer e nutrizionista
+  seguono lo stesso cliente da profili separati. PHP, MySQL.
+- [Tracciamento pallet](https://www.modicamichele.it/progetti/gestione-pallet) —
+  lavoro interno per un operatore logistico, in uso. Da due minuti di
+  trascrizione manuale per pallet a una scansione. Node.js, PostgreSQL.
+- [Cruscotto SLA](https://www.modicamichele.it/progetti/monitoraggio-sla) —
+  lavoro interno, in uso. Da un report settimanale a un quadro che si aggiorna
+  durante la giornata, con tre fasce di soglia. Python, D3.js.
+- [LightenUp](https://www.modicamichele.it/progetti/lightenup) — iniziativa,
+  online da poco. Diario dove si scrive in privato e si pubblica in anonimo.
+  Next.js 15, React 19, Supabase.
+- [Carnevale di Trino](https://www.modicamichele.it/progetti/carnevale-trino) —
+  iniziativa, completo. Dieci pagine statiche per una manifestazione
+  tradizionale, aggiornabili da volontari che cambiano ogni anno.
+
+## Onestà sui numeri
+
+Nessuna cifra su questo sito è gonfiata, e dove i numeri non ci sono è scritto
+che non ci sono. SuiteFit è in beta e non ha ancora utenti veri. LightenUp è
+online da poco e non ha traffico da dichiarare. Due progetti sono lavoro
+interno e i dati aziendali non sono pubblicabili: di quelli si trova il
+ragionamento, non le metriche. Non ci sono testimonianze perché non ne sono
+ancora state raccolte di vere.
+
+## Contatti
+
+- Email: modicamichelework@gmail.com
+- WhatsApp: +39 349 059 5725
+- Zona: Trino (VC), e di persona fra Vercelli, Casale Monferrato, Novara e
+  Chivasso. Da remoto in tutta Italia per i lavori su processi.

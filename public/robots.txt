@@ -1,4 +1,33 @@
+# Tutti i motori di ricerca: tutto aperto.
 User-agent: *
 Allow: /
 
-Sitemap: https://www.esempio-michele.it/sitemap-index.xml
+# I motori che rispondono con una frase invece che con dieci link.
+# Sono dichiarati per nome di proposito: questo sito vive di ricerche come
+# "sviluppatore web a Vercelli", e a quella domanda oggi risponde spesso un
+# assistente. Bloccarli varrebbe come togliersi dall'elenco del telefono.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://www.modicamichele.it/sitemap-index.xml

@@ -76,7 +76,7 @@ inEvidenza: true
 ordine: 2
 
 metaTitolo: Banco olografico — smontare un motore CAD nel browser con le mani
-metaDescrizione: "Visualizzatore CAD nel browser: 115 componenti veri, esploso proporzionale alla distanza dal centro, comandi con tracciamento delle mani da webcam. Three.js e MediaPipe."
+metaDescrizione: "Visualizzatore CAD nel browser: 115 componenti veri, esploso a strati e comandi con le mani da webcam. Three.js e MediaPipe."
 ---
 
 I modelli non sono miei: sono i campioni ufficiali del consorzio Khronos,

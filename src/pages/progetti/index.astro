@@ -14,7 +14,7 @@ import { getCollection } from 'astro:content';
 import Guscio from '../../layouts/Guscio.astro';
 import SchedaSito from '../../components/comuni/SchedaSito.astro';
 import Invito from '../../components/sezioni/Invito.astro';
-import { briciole } from '../../lib/schema.ts';
+import { briciole, elencoProgetti } from '../../lib/schema.ts';
 
 const progetti = await getCollection('progetti');
 const perOrdine = (a: (typeof progetti)[number], b: (typeof progetti)[number]) =>
@@ -45,6 +45,13 @@ function etichettaStato(stato?: string) {
 }
 
 const jsonLd = [
+  elencoProgetti(
+    [...siti, ...sistemi].map((p) => ({
+      titolo: p.data.titolo,
+      slug: p.id,
+      riassunto: p.data.riassunto,
+    }))
+  ),
   briciole([
     { nome: 'Home', percorso: '/' },
     { nome: 'Lavori', percorso: '/progetti' },

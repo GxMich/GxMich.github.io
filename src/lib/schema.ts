@@ -152,6 +152,75 @@ export function briciole(voci: { nome: string; percorso: string }[]) {
   };
 }
 
+/**
+ * Un progetto come oggetto.
+ *
+ * Serve soprattutto ai motori che rispondono con una frase invece che con
+ * dieci link: senza questo, una scheda progetto è solo del testo, e alla
+ * domanda «cosa ha costruito Michele Modica?» non c'è niente da citare che
+ * colleghi il lavoro alla persona. `author` punta allo stesso @id della
+ * persona dichiarata altrove, così le sei schede diventano sei opere di un
+ * soggetto solo invece di sei pagine slegate.
+ *
+ * `SoftwareApplication` per i tool e `WebSite` per i siti: sono i due tipi che
+ * descrivono davvero le due famiglie, e usarne uno generico per entrambe
+ * butterebbe via l'unica distinzione che il portfolio fa.
+ */
+export function progetto(d: {
+  titolo: string;
+  riassunto: string;
+  tipo: 'sito' | 'tool';
+  anno: number;
+  natura: 'cliente' | 'iniziativa' | 'interno';
+  stato?: string;
+  tecnologie: string[];
+  slug: string;
+  immagine?: string;
+}) {
+  const url = new URL(`/progetti/${d.slug}`, SITE.url).href;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': d.tipo === 'tool' ? 'SoftwareApplication' : 'WebSite',
+    '@id': `${url}#opera`,
+    name: d.titolo,
+    description: d.riassunto,
+    url,
+    inLanguage: 'it-IT',
+    author: { '@id': ID.persona },
+    creator: { '@id': ID.persona },
+    dateCreated: String(d.anno),
+    isAccessibleForFree: true,
+    ...(d.immagine && { image: new URL(d.immagine, SITE.url).href }),
+    ...(d.tecnologie.length > 0 && { keywords: d.tecnologie.join(', ') }),
+    ...(d.tipo === 'tool' && {
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+    }),
+    /* Lo stato in chiaro: «in beta con dati di prova» è un'informazione che
+       vale quanto il resto, e nasconderla qui mentre è scritta in pagina
+       sarebbe una discrepanza fra quello che si dice e quello che si dichiara. */
+    ...(d.stato && { creativeWorkStatus: d.stato }),
+  };
+}
+
+/** L'elenco dei lavori, per chi chiede «cosa ha fatto» e vuole una lista. */
+export function elencoProgetti(voci: { titolo: string; slug: string; riassunto: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Lavori di ' + SITE.name,
+    numberOfItems: voci.length,
+    itemListElement: voci.map((v, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: new URL(`/progetti/${v.slug}`, SITE.url).href,
+      name: v.titolo,
+      description: v.riassunto,
+    })),
+  };
+}
+
 /** Domande e risposte. Il testo deve esistere anche in pagina, non solo qui. */
 export function domande(coppie: { d: string; r: string }[]) {
   return {

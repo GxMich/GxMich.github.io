@@ -21,7 +21,7 @@ import Risultati from '../../components/casi/Risultati.astro';
 import Schermate from '../../components/casi/Schermate.astro';
 import Invito from '../../components/sezioni/Invito.astro';
 import { originale } from '../../lib/immagini.ts';
-import { briciole } from '../../lib/schema.ts';
+import { briciole, progetto as schemaProgetto } from '../../lib/schema.ts';
 
 export async function getStaticPaths() {
   const progetti = await getCollection('progetti');
@@ -78,6 +78,17 @@ const presenti = [
 const numero = (chiave: string) => String(presenti.indexOf(chiave) + 1).padStart(2, '0');
 
 const jsonLd = [
+  schemaProgetto({
+    titolo: d.titolo,
+    riassunto: d.riassunto,
+    tipo: d.tipo,
+    anno: d.anno,
+    natura: d.natura,
+    stato: d.stato,
+    tecnologie: d.tecnologie,
+    slug: progetto.id,
+    immagine: copertina?.src,
+  }),
   briciole([
     { nome: 'Home', percorso: '/' },
     { nome: 'Lavori', percorso: '/progetti' },
