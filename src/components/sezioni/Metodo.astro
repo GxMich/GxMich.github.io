@@ -64,6 +64,10 @@ const passi = [
           </li>
         ))
       }
+
+      {/* Tiene il mazzo completo fermo al centro per mezza schermata prima di
+          liberarlo. Vuoto e senza ruolo: è spazio, non contenuto. */}
+      <li class="respiro" aria-hidden="true"></li>
     </ol>
   </div>
 </section>
@@ -85,16 +89,51 @@ const passi = [
     max-width: 12ch;
   }
 
+  /**
+   * Le carte si fermano al centro dello schermo e ci restano finché non è
+   * arrivata anche l'ultima.
+   *
+   * Prima si agganciavano sotto l'intestazione e si liberavano quasi subito:
+   * la pila si vedeva per un istante e poi scappava via, che è il contrario di
+   * quello che deve fare un mazzo di carte. Adesso ognuna occupa un tratto di
+   * scorrimento suo — `--corsa` — e si aggancia alla stessa quota di tutte le
+   * altre, così si accumulano invece di scorrere.
+   *
+   * L'altezza della carta è fissata: serve a calcolare la quota di aggancio
+   * che la mette esattamente al centro, e senza un valore certo il centro
+   * cambierebbe da una carta all'altra a seconda di quanto testo contiene.
+   */
   .pila {
-    display: grid;
-    gap: var(--sp-5);
+    --altezza: clamp(230px, 30svh, 330px);
+    --corsa: 76svh;
+    display: block;
   }
 
   .carta {
     position: sticky;
-    /* L'offset progressivo lascia visibile il bordo delle carte sotto: senza,
+    /* Stessa quota per tutte: è quello che le fa impilare invece di scorrere.
+       L'offset progressivo lascia visibile il bordo di quelle sotto — senza,
        sembra una carta sola che si restringe. */
-    top: calc(var(--header-h) + var(--sp-5) + var(--i) * 12px);
+    top: calc(50svh - var(--altezza) / 2 + var(--i) * 9px);
+    height: var(--corsa);
+  }
+
+  /**
+   * Il respiro finale è un elemento vuoto dopo le carte, e ci sono voluti due
+   * tentativi sbagliati per arrivarci.
+   *
+   * Un elemento agganciato è vincolato alla *content box* del genitore: un
+   * `padding-bottom` sulla pila non la allarga, e infatti non cambiava niente.
+   * Allungare l'ultima carta invece allunga anche la sua posizione naturale,
+   * quindi quella si agganciava e si liberava nello stesso istante — misurati
+   * dieci pixel con tutte e quattro ferme.
+   *
+   * Uno spazio che non appartiene a nessuna carta allunga la content box senza
+   * spostare nessuna posizione naturale: è l'unica delle tre cose che sposta
+   * davvero il momento in cui il mazzo si libera.
+   */
+  .respiro {
+    height: 60svh;
   }
 
   /* Il fondo è pieno e non incassato: una carta che si sovrappone a un'altra
@@ -102,12 +141,19 @@ const passi = [
   .carta-dentro {
     background: var(--paper);
     border: 1px solid var(--rule);
-    box-shadow: 0 -1px 0 var(--rule), 0 -18px 30px -24px rgba(0, 0, 0, 0.4);
+    box-shadow:
+      0 -1px 0 var(--rule),
+      0 -18px 30px -24px rgba(0, 0, 0, 0.4);
     border-radius: var(--radius-2);
     padding: clamp(24px, 3vw, 44px);
+    /* Tutte della stessa altezza: è quello che rende vero il centro calcolato
+       sopra, e fa sì che i bordi che sbucano siano paralleli invece che
+       sfalsati a caso a seconda della lunghezza del testo. */
+    min-height: var(--altezza);
     display: grid;
     grid-template-columns: 64px minmax(0, 1fr) auto;
     gap: var(--sp-3) clamp(16px, 3vw, 40px);
+    align-content: center;
     align-items: start;
     transform-origin: center top;
     will-change: transform;
@@ -135,9 +181,27 @@ const passi = [
   }
 
   @media (max-width: 767px) {
-    /* Niente aggancio sotto i 768px: diventa un elenco. */
+    /* Niente aggancio sotto i 768px: diventa un elenco, e senza l'altezza
+       fissa che serviva solo a calcolare il centro. */
+    .pila {
+      display: grid;
+      gap: var(--sp-4);
+      padding-bottom: 0;
+    }
+
     .carta {
       position: static;
+      height: auto;
+    }
+
+    .carta-dentro {
+      min-height: 0;
+    }
+
+    /* Senza aggancio non c'è niente da tenere fermo: resterebbe mezza
+       schermata di vuoto in fondo a un elenco. */
+    .respiro {
+      display: none;
     }
 
     .carta-dentro {
@@ -183,13 +247,17 @@ const passi = [
            leggeva più. La pila si capisce dal bordo che sbuca e dalla scala —
            che restano leggibili anche a chi ha poca vista, cosa che un testo
            grigio su grigio non fa. */
+        /* Finisce quando la carta successiva raggiunge il centro, cioè nel
+           momento esatto in cui la copre: legare la fine a "top top" — com'era
+           prima che le carte si agganciassero al centro — la faceva rimpicciolire
+           molto dopo essere già stata coperta. */
         gsap.to(dentro, {
           scale: 0.95,
           ease: 'none',
           scrollTrigger: {
             trigger: carte[i + 1],
             start: 'top bottom',
-            end: 'top top',
+            end: 'top center',
             scrub: true,
             invalidateOnRefresh: true,
           },
