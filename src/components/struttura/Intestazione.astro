@@ -2,16 +2,19 @@
 /**
  * Intestazione e menu a schermo intero.
  *
- * Sono un componente solo perché sono la stessa navigazione in due forme, e
- * tenerli separati vorrebbe dire duplicare l'elenco delle voci.
+ * Due stati e una sola barra.
  *
- * In cima alla pagina la barra è trasparente e larga quanto il contenuto.
- * Appena si scorre si stacca dal bordo e diventa una pastiglia in colore
- * pieno: usa `--ink` come fondo, quindi nel tema chiaro è scura sulla carta e
- * nel tema scuro è chiara sul nero — si inverte da sola senza una seconda
- * regola da tenere allineata.
+ *  - In cima: larga quanto il contenuto, trasparente, col nome per esteso.
+ *    C'è spazio, e un nome scritto per intero lavora meglio di una sigla.
+ *  - Scorrendo: si stacca e diventa un'isola stretta, il nome si richiude
+ *    sul segno e attorno al segno compare l'anello che dice quanto manca alla
+ *    fine della pagina.
  *
- * Sopra 1024px le voci restano visibili: su un pubblico che sta valutando se
+ * L'isola usa `--ink` come fondo, quindi si inverte da sola col tema: scura
+ * sulla carta chiara, chiara sul nero — senza una seconda regola da tenere
+ * allineata a mano.
+ *
+ * Sopra 1024px le voci restano visibili. Su un pubblico che sta valutando se
  * chiamarti, nascondere la navigazione dietro un'icona è un costo di
  * conversione, non una scelta estetica.
  */
@@ -31,16 +34,29 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
   <div class="contenitore guscio">
     <div class="barra">
       <a class="marchio" href="/" aria-label={`${SITE.name} — torna alla home`}>
-        <span class="bollo" aria-hidden="true"></span>
-        <span class="sigla" aria-hidden="true">MM</span>
+        <span class="segno" aria-hidden="true">
+          <span class="bollo"></span>
+          {/* L'anello si riempie con lo scorrimento: dice quanto manca senza
+              aggiungere una barra che ruba una riga alla pagina. */}
+          <span class="anello" data-anello></span>
+        </span>
+        <span class="nome" aria-hidden="true">
+          <span class="nome-lungo">Michele Modica</span>
+          <span class="nome-corto">MM</span>
+        </span>
       </a>
 
-      <nav class="voci" aria-label="Navigazione principale">
+      <nav class="voci" aria-label="Navigazione principale" data-voci>
+        {/* Un indicatore solo che scivola, invece di un bordo acceso su
+            ciascuna: si vede da dove viene e dove va. */}
+        <span class="cursore" data-cursore aria-hidden="true"></span>
         {
           principali.map((v) => (
-            <a href={v.href} aria-current={attiva(v.href) ? 'page' : undefined}>
-              {/* Due copie sovrapposte: al passaggio del mouse la prima sale e
-                  la seconda entra da sotto. */}
+            <a
+              href={v.href}
+              aria-current={attiva(v.href) ? 'page' : undefined}
+              data-voce={attiva(v.href) ? 'attiva' : ''}
+            >
               <span class="scambio">
                 <span>{v.etichetta}</span>
                 <span aria-hidden="true">{v.etichetta}</span>
@@ -54,8 +70,8 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
         <Tema />
 
         <a class="invito" href="/contatti">
-          <span>Parliamone</span>
-          <Icona nome="freccia" dimensione={15} />
+          <span class="invito-testo">Parliamone</span>
+          <span class="invito-segno"><Icona nome="freccia" dimensione={15} /></span>
         </a>
 
         <button
@@ -82,14 +98,16 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
   <div class="contenitore menu-dentro">
     <nav aria-label="Menu">
       <ul class="menu-voci">
-        {/* La home è la voce che manca in ogni menu fatto male. */}
         <li class="riga" style="--i:0">
-          <a href="/" aria-current={percorso === '/' ? 'page' : undefined}>Home</a>
+          <a href="/" aria-current={percorso === '/' ? 'page' : undefined}>
+            <span class="indice dato">00</span>Home
+          </a>
         </li>
         {
           NAVIGAZIONE.map((v, i) => (
             <li class="riga" style={`--i:${i + 1}`}>
               <a href={v.href} aria-current={attiva(v.href) ? 'page' : undefined}>
+                <span class="indice dato">{String(i + 1).padStart(2, '0')}</span>
                 {v.etichetta}
               </a>
             </li>
@@ -122,66 +140,42 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     display: flex;
     align-items: center;
     gap: var(--sp-5);
-    height: var(--header-h);
+    height: 72px;
     padding-inline: 0;
     border-radius: 0;
     background: transparent;
     color: var(--ink);
     transition:
       height var(--dur-3) var(--ease-out),
+      max-width var(--dur-3) var(--ease-out),
       padding var(--dur-3) var(--ease-out),
       background-color var(--dur-3) var(--ease-out),
       color var(--dur-3) var(--ease-out),
       border-radius var(--dur-3) var(--ease-out),
-      box-shadow var(--dur-3) var(--ease-out);
+      box-shadow var(--dur-3) var(--ease-out),
+      transform var(--dur-3) var(--ease-out);
   }
 
-  /* La pastiglia. `--ink` come fondo si inverte col tema senza una seconda
-     regola: scura sulla carta chiara, chiara sul nero. */
+  /* ------------------------------- l'isola ------------------------------- */
   .intestazione[data-scorsa] .guscio {
     padding-top: var(--sp-3);
   }
 
-  /* L'isola è più stretta della pagina: una pastiglia larga quanto il
-     contenuto non è un'isola, è ancora una barra con gli angoli tondi. */
   .intestazione[data-scorsa] .barra {
-    max-width: 880px;
+    max-width: 860px;
     margin-inline: auto;
-    height: 54px;
-    padding-inline: 8px 8px;
+    height: 56px;
+    padding-inline: 10px;
     gap: var(--sp-4);
     border-radius: 999px;
     background: var(--ink);
     color: var(--paper);
-    box-shadow: 0 12px 34px -18px rgba(0, 0, 0, 0.55);
+    box-shadow:
+      0 1px 0 color-mix(in srgb, var(--paper) 12%, transparent) inset,
+      0 14px 38px -20px rgba(0, 0, 0, 0.6);
   }
 
-  .intestazione[data-scorsa] .marchio {
-    padding-left: 8px;
-  }
-
-  /* Nell'isola la sigla sparisce: resta il bollo, che basta a farsi
-     riconoscere e recupera lo spazio che serve alle voci. */
-  .intestazione[data-scorsa] .sigla {
-    display: none;
-  }
-
-  .intestazione[data-scorsa] .bollo {
-    width: 22px;
-    height: 22px;
-  }
-
-  .intestazione[data-scorsa] .invito {
-    padding: 8px 6px 8px 16px;
-  }
-
-  /* `:global` perché il bottone del tema è un componente a sé: i suoi stili
-     sono confinati là dentro e da qui non li raggiungerei. */
-  .intestazione[data-scorsa] :global(.tema) {
-    width: 34px;
-    height: 34px;
-  }
-
+  /* ------------------------------ il marchio ------------------------------ */
   .marchio {
     display: flex;
     align-items: center;
@@ -189,32 +183,97 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     text-decoration: none;
     color: inherit;
     margin-right: auto;
+    padding: 4px;
+    border-radius: 999px;
+  }
+
+  .segno {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
   }
 
   .bollo {
     width: 26px;
     height: 26px;
     border-radius: 999px;
-    background: linear-gradient(140deg, #ff7a4d, var(--signal));
-    transition: transform var(--dur-2) var(--ease-out);
+    background: linear-gradient(140deg, #ff9a70, var(--signal));
+    transition:
+      transform var(--dur-2) var(--ease-out),
+      width var(--dur-3) var(--ease-out),
+      height var(--dur-3) var(--ease-out);
   }
 
   .marchio:hover .bollo {
-    transform: scale(1.12) rotate(12deg);
+    transform: scale(1.1) rotate(14deg);
   }
 
-  .sigla {
-    font-family: var(--font-mono);
-    font-weight: 600;
-    font-size: 13.5px;
-    letter-spacing: 0.06em;
+  /* La maschera lascia vedere solo la corona: dentro resta il segno. */
+  .anello {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: conic-gradient(
+      var(--signal) calc(var(--avanzamento, 0) * 360deg),
+      color-mix(in srgb, currentColor 22%, transparent) 0
+    );
+    -webkit-mask: radial-gradient(closest-side, transparent 80%, #000 81%);
+    mask: radial-gradient(closest-side, transparent 80%, #000 81%);
+    opacity: 0;
+    transition: opacity var(--dur-2) var(--ease-out);
   }
 
-  /* Su schermo largo, con la pastiglia, le voci si centrano davvero: il
-     marchio spinge a sinistra e la coda a destra, questa resta in mezzo. */
-  .voci {
+  .intestazione[data-scorsa] .anello {
+    opacity: 1;
+  }
+
+  .intestazione[data-scorsa] .bollo {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Il nome si richiude sul segno: `max-width` invece di `display:none`, così
+     la chiusura si vede invece di essere uno scatto. */
+  .nome {
     display: flex;
-    gap: var(--sp-6);
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.02em;
+    max-width: 200px;
+    transition:
+      max-width var(--dur-3) var(--ease-out),
+      opacity var(--dur-2) var(--ease-out);
+  }
+
+  .nome-corto {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    opacity: 0;
+    width: 0;
+    transition: opacity var(--dur-2) var(--ease-out);
+  }
+
+  /* Solo su schermo largo: sotto i 1024px il nome è già ridotto alla sigla, e
+     richiuderlo lascerebbe il marchio senza nessuna etichetta. */
+  @media (min-width: 1024px) {
+    .intestazione[data-scorsa] .nome {
+      max-width: 0;
+      opacity: 0;
+    }
+  }
+
+  /* ------------------------------- le voci ------------------------------- */
+  .voci {
+    position: relative;
+    display: flex;
+    gap: var(--sp-2);
   }
 
   .intestazione[data-scorsa] .voci {
@@ -222,17 +281,40 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
   }
 
   .voci a {
+    position: relative;
     text-decoration: none;
     font-size: var(--t-body-sm);
     font-weight: 500;
     letter-spacing: -0.01em;
-    color: currentColor;
-    opacity: 0.66;
-    transition: opacity var(--dur-1) var(--ease-out);
+    color: color-mix(in srgb, currentColor 62%, transparent);
+    padding: 8px 14px;
+    border-radius: 999px;
+    transition: color var(--dur-1) var(--ease-out);
   }
 
   .voci a:hover,
   .voci a[aria-current='page'] {
+    color: currentColor;
+  }
+
+  /* Il cursore sta sotto le voci e si sposta: la posizione la calcola lo
+     script, qui c'è solo come si muove. */
+  .cursore {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, currentColor 9%, transparent);
+    opacity: 0;
+    transform: translateX(var(--x, 0));
+    width: var(--w, 0);
+    transition:
+      transform var(--dur-2) var(--ease-out),
+      width var(--dur-2) var(--ease-out),
+      opacity var(--dur-1) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .voci[data-cursore-attivo] .cursore {
     opacity: 1;
   }
 
@@ -253,10 +335,21 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     transform: translateY(-100%);
   }
 
+  /* -------------------------------- la coda ------------------------------- */
   .coda {
     display: flex;
     align-items: center;
-    gap: var(--sp-2);
+    gap: var(--sp-3);
+  }
+
+  /* Un filetto separa gli strumenti dalla navigazione: senza, il bottone del
+     tema sembra una quarta voce di menu. */
+  .coda::before {
+    content: '';
+    width: 1px;
+    height: 20px;
+    background: color-mix(in srgb, currentColor 18%, transparent);
+    margin-right: var(--sp-1);
   }
 
   .invito {
@@ -272,12 +365,31 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     border-radius: 999px;
     padding: 10px 8px 10px 18px;
     white-space: nowrap;
-    overflow: hidden;
+    transition: background-color var(--dur-2) var(--ease-out);
   }
 
-  /* La freccia si allunga: l'asta cresce da sinistra, la punta la segue. */
+  .invito:hover {
+    background: color-mix(in srgb, var(--signal) 86%, #000);
+  }
+
+  /* Il segno viaggia dentro una pastiglia sua: al passaggio del mouse la
+     pastiglia si schiarisce e la freccia si allunga dentro. */
+  .invito-segno {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--signal-on) 12%, transparent);
+    transition: background-color var(--dur-2) var(--ease-out);
+  }
+
+  .invito:hover .invito-segno {
+    background: color-mix(in srgb, var(--signal-on) 20%, transparent);
+  }
+
   .invito :global(.asta) {
-    transform: scaleX(0.35);
+    transform: scaleX(0.3);
   }
 
   .invito:hover :global(.asta) {
@@ -288,19 +400,14 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     transform: translateX(2px);
   }
 
-  .tema-guscio {
-    display: contents;
-  }
-
   .apri {
     display: none;
     padding: 8px;
-    margin-right: -8px;
+    margin-right: -4px;
     color: inherit;
-    border-radius: var(--radius-1);
+    border-radius: 999px;
   }
 
-  /* I due tratti si allargano a turno: piccolo, ma dice che il bottone è vivo. */
   .apri :global(.tratto) {
     transition: transform var(--dur-2) var(--ease-out);
     transform-origin: 3.5px center;
@@ -312,6 +419,20 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
 
   .apri:hover :global(.basso) {
     transform: scaleX(0.86);
+  }
+
+  .intestazione[data-scorsa] :global(.tema) {
+    width: 34px;
+    height: 34px;
+  }
+
+  .intestazione[data-scorsa] .invito {
+    padding: 7px 6px 7px 16px;
+  }
+
+  .intestazione[data-scorsa] .invito-segno {
+    width: 24px;
+    height: 24px;
   }
 
   /* ------------------------------- menu ---------------------------------- */
@@ -385,8 +506,6 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     transition: transform 600ms var(--ease-out);
   }
 
-  /* Le righe partono al 55% dell'espansione del cerchio: prima sarebbero
-     coperte dal fondo che sta ancora arrivando. */
   .menu.aperto .riga > * {
     transform: none;
     transition-delay: calc(385ms + var(--i, 0) * 60ms);
@@ -398,6 +517,9 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
   }
 
   .menu-voci a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-4);
     font-family: var(--font-ui);
     font-weight: 700;
     font-size: clamp(38px, 11vw, 68px);
@@ -405,11 +527,23 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     letter-spacing: -0.04em;
     text-decoration: none;
     width: fit-content;
-    transition: transform var(--dur-2) var(--ease-out);
+    transition:
+      transform var(--dur-2) var(--ease-out),
+      color var(--dur-2) var(--ease-out);
+  }
+
+  .menu-voci .indice {
+    color: var(--light-2);
+    font-size: var(--t-label);
+    transition: color var(--dur-2) var(--ease-out);
   }
 
   .menu-voci a:hover {
     transform: translateX(14px);
+    color: var(--signal);
+  }
+
+  .menu-voci a:hover .indice {
     color: var(--signal);
   }
 
@@ -444,6 +578,20 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     .apri {
       display: grid;
       place-items: center;
+    }
+
+    .barra {
+      height: 64px;
+    }
+
+    /* Su telefono il nome per esteso mangia la barra: resta la sigla. */
+    .nome-lungo {
+      display: none;
+    }
+
+    .nome-corto {
+      opacity: 1;
+      width: auto;
     }
   }
 
@@ -483,13 +631,61 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     bottone.dataset.montato = 'si';
 
     const osservatore = new IntersectionObserver(
-      ([voce]) => {
-        intestazione.toggleAttribute('data-scorsa', !voce.isIntersecting);
-      },
+      ([voce]) => intestazione.toggleAttribute('data-scorsa', !voce.isIntersecting),
       { rootMargin: '0px' }
     );
     osservatore.observe(sentinella);
 
+    /* --------------------- il cursore sotto le voci --------------------- */
+    const voci = document.querySelector<HTMLElement>('[data-voci]');
+    const cursore = document.querySelector<HTMLElement>('[data-cursore]');
+
+    if (voci && cursore) {
+      const attiva = voci.querySelector<HTMLElement>('a[aria-current="page"]');
+
+      const posa = (bersaglio: HTMLElement | null) => {
+        if (!bersaglio) {
+          voci.removeAttribute('data-cursore-attivo');
+          return;
+        }
+        cursore.style.setProperty('--x', `${bersaglio.offsetLeft}px`);
+        cursore.style.setProperty('--w', `${bersaglio.offsetWidth}px`);
+        voci.setAttribute('data-cursore-attivo', '');
+      };
+
+      voci.querySelectorAll<HTMLElement>('a').forEach((a) => {
+        a.addEventListener('mouseenter', () => posa(a));
+        a.addEventListener('focus', () => posa(a));
+      });
+
+      /* Uscendo torna sulla pagina corrente: se non c'è, sparisce invece di
+         restare fermo sull'ultima voce toccata. */
+      voci.addEventListener('mouseleave', () => posa(attiva));
+      voci.addEventListener('focusout', (e) => {
+        if (!voci.contains(e.relatedTarget as Node)) posa(attiva);
+      });
+
+      posa(attiva);
+      /* I caratteri arrivano dopo il primo disegno e cambiano la larghezza
+         delle voci: senza questo il cursore resta della misura sbagliata. */
+      document.fonts?.ready.then(() => posa(attiva));
+      window.addEventListener('resize', () => posa(attiva), { passive: true });
+    }
+
+    /* ------------------- l'anello attorno al marchio -------------------- */
+    const anello = document.querySelector<HTMLElement>('[data-anello]');
+    if (anello) {
+      const aggiornaAnello = () => {
+        const corsa = document.documentElement.scrollHeight - window.innerHeight;
+        const quota = corsa > 0 ? Math.min(1, Math.max(0, window.scrollY / corsa)) : 0;
+        anello.style.setProperty('--avanzamento', String(quota));
+      };
+      window.addEventListener('scroll', aggiornaAnello, { passive: true });
+      window.addEventListener('resize', aggiornaAnello, { passive: true });
+      aggiornaAnello();
+    }
+
+    /* ------------------------------ il menu ----------------------------- */
     const focalizzabili = () =>
       Array.from(menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')).filter(
         (el) => el.offsetParent !== null
