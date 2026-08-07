@@ -110,11 +110,20 @@ Superficie chiara, un solo accento, e l'accento significa **azione**.
 | `--ink-2` | `#55565A` | corpo secondario | 7,02:1 AAA |
 | `--ink-3` | `#686A70` | etichette, meta | 5,18:1 AA |
 | `--rule` | `#E2E2E1` | filetti | decorativo |
-| `--signal` | `#FF4A1C` | **superficie**: bottone, anello di focus | 3,22:1 grafico |
+| `--signal` | `#FF5C33` | **superficie**: bottone, riempimenti, fili d'accento | 6,44:1 col testo sopra |
 | `--signal-ink` | `#CE320C` | **inchiostro**: link, enfasi | 4,92:1 AA |
 
-I due arancioni non si scambiano mai. Il testo sul bottone è **inchiostro su arancio**
-(5,89:1): il bianco dava 3,36:1, sotto la soglia.
+I due arancioni non si scambiano mai: `--signal` è superficie, `--signal-ink` è
+inchiostro. Il testo sul bottone è **inchiostro su arancio** (6,44:1): il bianco dava
+3,36:1, sotto la soglia.
+
+`--signal` è **identico nei due temi**. `--signal-ink` no, e non è una svista: `#FF5C33`
+come *testo* su carta chiara farebbe 2,95:1, cioè illeggibile — il testo ha bisogno di più
+contrasto di una superficie, sempre.
+
+L'anello di messa a fuoco è **inchiostro con un alone arancione**, non arancione pieno:
+l'arancio da solo su carta chiara dà 2,95:1, appena sotto il 3:1 richiesto agli indicatori,
+e quello è l'unico segno che dice a chi naviga da tastiera dove si trova.
 
 Le sezioni scure non sono un tema: la classe `.su-palco` ridefinisce i nomi dei token, e i
 componenti dentro si ricolorano da soli senza una variante ciascuno.

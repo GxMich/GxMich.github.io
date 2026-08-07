@@ -259,12 +259,19 @@ ol {
 /* ----------------------------------------------------------------------------
    MESSA A FUOCO E ACCESSIBILITÀ
 
-   L'anello arancione dà 3,22:1 su carta e 5,95:1 sul palco: sopra la soglia di
-   3:1 richiesta agli indicatori non testuali su entrambe le superfici.
+   Due anelli concentrici, non uno.
+
+   L'arancio da solo su carta chiara dà 2,95:1, cioè appena sotto il 3:1
+   richiesto agli indicatori non testuali — e quello è l'unico segno che dice a
+   chi naviga da tastiera dove si trova. Il contorno esterno è inchiostro, che
+   fa 18,96:1 sul chiaro e 17,89:1 sullo scuro: si vede su qualsiasi fondo, in
+   qualsiasi tema. L'alone arancione dentro resta, perché il colore del sito
+   deve riconoscersi anche qui.
    ---------------------------------------------------------------------------- */
 :focus-visible {
-  outline: 2px solid var(--signal);
+  outline: 2px solid var(--ink);
   outline-offset: 3px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--signal) 55%, transparent);
   border-radius: var(--radius-1);
 }
 

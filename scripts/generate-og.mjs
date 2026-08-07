@@ -30,7 +30,7 @@ const COLORI = {
   inchiostro: '#0A0A0B',
   spento: '#686A70',
   filetto: '#E2E2E1',
-  segnale: '#FF4A1C',
+  segnale: '#FF5C33',
 };
 
 const CARATTERI = [

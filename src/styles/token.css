@@ -9,9 +9,10 @@
      COLORE — carta
 
      I rapporti di contrasto sono misurati, non stimati (scripts/contrasti.mjs).
-     Tre valori sono già stati corretti una volta: --ink-3 era #8E9095 e sul
-     fondo incassato dava 2,83:1, cioè sotto la soglia; --signal come inchiostro
-     era #FF4A1C e dava 3,22:1. Non rimetterli come stavano.
+     Due valori sono già stati corretti una volta perché sembravano a posto a
+     occhio e non lo erano: --ink-3 era #8E9095 e sul fondo incassato dava
+     2,83:1, sotto la soglia; il testo del bottone era bianco sull'arancio e
+     dava 3,36:1. Non rimetterli come stavano.
      -------------------------------------------------------------------------- */
   --paper: #fafafa;
   --paper-sunk: #f1f1f0;
@@ -22,12 +23,20 @@
 
   --rule: #e2e2e1; /* filetto: struttura, mai informazione */
 
-  /* L'arancio vive in due valori con due mestieri diversi e non si scambiano:
-     --signal è superficie (fondo bottone, anello di messa a fuoco),
-     --signal-ink è inchiostro (link, testo enfatizzato). */
-  --signal: #ff4a1c; /*  3,22:1 su carta — soglia grafica, non testuale */
+  /* L'arancio vive in due valori con due mestieri diversi, e non si scambiano:
+     --signal è SUPERFICIE (fondo del bottone, riempimenti, fili d'accento),
+     --signal-ink è INCHIOSTRO (link, testo enfatizzato).
+
+     --signal è lo stesso identico in tutti e due i temi. Ne avevo messi due,
+     uno schiarito per il fondo scuro: una raffinatezza che costava una
+     complicazione e che sul chiaro risultava più aggressiva del necessario.
+
+     --signal-ink invece deve restare diverso, e non è una svista: #FF5C33 come
+     TESTO su carta chiara farebbe 2,95:1, cioè illeggibile. Il testo ha bisogno
+     di più contrasto di una superficie, sempre. */
+  --signal: #ff5c33; /*  6,44:1 col testo scuro sopra — AA */
   --signal-ink: #ce320c; /*  4,92:1 su carta · 4,55:1 su incassato — AA */
-  --signal-on: var(--ink); /* testo sopra --signal: 5,89:1 — AA */
+  --signal-on: var(--ink); /* testo sopra --signal: 6,44:1 — AA */
 
   /* --------------------------------------------------------------------------
      COLORE — palco (le fasce scure che fanno brillare le schermate)
@@ -150,7 +159,9 @@
    I valori non sono l'inverso aritmetico di quelli chiari. Il bianco pieno su
    nero pieno abbaglia e fa sanguinare i bordi del testo: la carta scura è un
    grigio bluastro molto scuro, e l'inchiostro non arriva mai al bianco.
-   L'arancio si schiarisce, perché #CE320C su fondo scuro sparisce.
+
+   --signal non cambia: è lo stesso arancio del tema chiaro. Cambia solo
+   --signal-ink, perché #CE320C come testo su fondo scuro sparisce.
    ============================================================================ */
 @media (prefers-color-scheme: dark) {
   :root:not([data-tema='chiaro']) {
