@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "PowerShell(node -v)",
-      "PowerShell(npm -v)"
+      "PowerShell(npm -v)",
+      "Bash(gh auth *)",
+      "Bash(gh --version)"
     ]
   }
 }

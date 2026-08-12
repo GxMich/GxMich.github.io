@@ -32,6 +32,8 @@ const progetti = defineCollection({
     durata: z.string().optional(),
     /** Se è online e visitabile */
     link: z.string().url().optional(),
+    /** Repository pubblico, quando il codice è consultabile */
+    codice: z.string().url().optional(),
 
     // --- i cinque blocchi ---
     contesto: z.string(), // 1. chi è il cliente / contesto

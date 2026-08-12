@@ -32,8 +32,12 @@ const scorre = laterale && schermate.length > 1;
       const img = originale(s.src);
       if (!img) return null;
       const eVettore = s.src.toLowerCase().endsWith('.svg');
+      /* Una schermata di telefono va trattata da telefono: se prende la
+         larghezza di una desktop diventa alta il triplo. La forma la so già
+         qui, dal file, e non serve chiederla al browser. */
+      const eRitratto = img.height > img.width;
       return (
-        <figure class="scatto">
+        <figure class:list={['scatto', { ritratto: eRitratto }]}>
           {eVettore ? (
             <img src={img.src} alt={s.alt} width={img.width} height={img.height} loading="lazy" />
           ) : (
@@ -68,10 +72,23 @@ const scorre = laterale && schermate.length > 1;
     padding-bottom: var(--sp-4);
   }
 
+  /* Nella fila le schermate si allineano per altezza, non per larghezza.
+     Alla stessa larghezza, una schermata di telefono diventa una colonna alta
+     il triplo di una desktop e da sola si mangia la sezione: allineandole per
+     altezza ognuna tiene la sua forma e la fila resta una fila. La larghezza
+     minima è per la didascalia, che sotto un ritratto stretto diventerebbe
+     una colonna di due parole per riga. */
   .laterale .scatto {
     flex: 0 0 auto;
-    width: min(62vw, 780px);
+    width: auto;
+    min-width: min(60vw, 280px);
     scroll-snap-align: start;
+  }
+
+  .laterale .scatto img {
+    height: min(56vh, 500px);
+    width: auto;
+    max-width: min(78vw, 780px);
   }
 
   .scatto {
@@ -103,6 +120,26 @@ const scorre = laterale && schermate.length > 1;
 
     .laterale .scatto {
       width: 100%;
+      min-width: 0;
     }
+
+    /* Impilate torna a comandare la larghezza: `width` e proporzioni note in
+       anticipo tengono lo spazio prima che l'immagine arrivi, e la pagina non
+       salta sotto le dita mentre si scorre. */
+    .laterale .scatto img {
+      height: auto;
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+
+  /* Il ritratto resta stretto ovunque: è l'unica misura che gli impedisce di
+     occupare da solo uno schermo intero.
+     `.galleria` davanti non è ornamentale: Astro appende il proprio attributo
+     di scope a ogni pezzo del selettore, quindi `.laterale .scatto img` pesa
+     più di `.scatto.ritratto img` e vincerebbe lui. */
+  .galleria .scatto.ritratto img {
+    max-width: min(58vw, 260px);
+    margin-inline: auto;
   }
 </style>

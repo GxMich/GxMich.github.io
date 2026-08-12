@@ -16,6 +16,7 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import Guscio from '../../layouts/Guscio.astro';
+import Bottone from '../../components/comuni/Bottone.astro';
 import Blocco from '../../components/casi/Blocco.astro';
 import Risultati from '../../components/casi/Risultati.astro';
 import Schermate from '../../components/casi/Schermate.astro';
@@ -118,6 +119,23 @@ const jsonLd = [
         {/* Il corsivo serif è riservato alle frasi sue: qui è una riga sola e
             grande, che è la misura in cui quel carattere funziona davvero. */}
         <p class="citazione sunto sfoca-entra" data-anima>{d.riassunto}</p>
+
+        {
+          (d.link || d.codice) && (
+            <p class="link-progetto sfoca-entra" data-anima>
+              {d.link && (
+                <Bottone href={d.link} variante="pieno">
+                  Vedi il sito <span aria-hidden="true">↗</span>
+                </Bottone>
+              )}
+              {d.codice && (
+                <Bottone href={d.codice} variante="fantasma">
+                  Codice <span aria-hidden="true">↗</span>
+                </Bottone>
+              )}
+            </p>
+          )
+        }
       </div>
     </header>
 
@@ -246,14 +264,32 @@ const jsonLd = [
     color: var(--ink-2);
   }
 
-  .copertura {
-    background: var(--stage);
-    padding-block: clamp(24px, 3.4vw, 56px);
+  .link-progetto {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-top: clamp(20px, 2.6vw, 28px);
   }
 
+  /* L'aria in cima non è decorativa: l'isola dell'intestazione scorre sopra
+     questa fascia, e senza margine si posa esattamente sulla barra del sito
+     ritratto nella schermata. Due menu allineati sulla stessa riga si leggono
+     come un errore di montaggio, non come una schermata dentro una pagina. */
+  .copertura {
+    background: var(--stage);
+    padding-block: clamp(48px, 5vw, 88px) clamp(24px, 3.4vw, 56px);
+  }
+
+  /* Il tetto sull'altezza tiene la copertina dentro una schermata: a piena
+     larghezza una schermata desktop arriva a coprire quasi tutta la finestra,
+     e il racconto sotto sparisce sotto la piega. */
   .copertura img {
-    width: 100%;
+    display: block;
+    width: auto;
+    max-width: 100%;
     height: auto;
+    max-height: 72vh;
+    margin-inline: auto;
     border: 1px solid var(--edge);
     border-radius: var(--radius-2);
     box-shadow: var(--shadow-stage);

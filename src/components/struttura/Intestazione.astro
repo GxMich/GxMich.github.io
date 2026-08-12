@@ -145,6 +145,7 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     border-radius: 0;
     background: transparent;
     color: var(--ink);
+    border: 1px solid transparent;
     transition:
       height var(--dur-3) var(--ease-out),
       max-width var(--dur-3) var(--ease-out),
@@ -152,6 +153,7 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
       background-color var(--dur-3) var(--ease-out),
       color var(--dur-3) var(--ease-out),
       border-radius var(--dur-3) var(--ease-out),
+      border-color var(--dur-3) var(--ease-out),
       box-shadow var(--dur-3) var(--ease-out),
       transform var(--dur-3) var(--ease-out);
   }
@@ -170,6 +172,12 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     border-radius: 999px;
     background: var(--ink);
     color: var(--paper);
+    /* Il bordo, non l'ombra, tiene separata l'isola dal fondo: un'ombra
+       nera sparisce sopra una sezione già scura (`.su-palco`), che la
+       barra non "vede" perché non ne è discendente nel DOM. Il bordo usa
+       `--paper` — il colore chiaro dentro la pastiglia scura — così resta
+       visibile qualunque cosa ci sia sotto. */
+    border-color: color-mix(in srgb, var(--paper) 18%, transparent);
     box-shadow:
       0 1px 0 color-mix(in srgb, var(--paper) 12%, transparent) inset,
       0 14px 38px -20px rgba(0, 0, 0, 0.6);
