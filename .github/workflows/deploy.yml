@@ -2,7 +2,7 @@ name: Deploy su GitHub Pages
 
 on:
   push:
-    branches: [redesign-v2]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
