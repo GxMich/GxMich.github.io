@@ -105,6 +105,14 @@ anteprima: osteria-nodo/01-home.jpg
 schermate:
   - src: osteria-nodo/01-home.jpg
     alt: Copertina di Osteria Nodo con il claim "Ingredienti, tempo, contrasti" a sinistra e una fotografia di un piatto in preparazione a destra
+  - src: osteria-nodo/02-luogo.jpg
+    alt: Sezione "Il luogo" con fotografia a piena larghezza della sala e il titolo "Una sala corta, una cucina aperta, niente in mezzo" che entra dal bordo
+  - src: osteria-nodo/03-carta.jpg
+    alt: Sezione "La carta" con l'elenco dei piatti per portata a sinistra, prezzi allineati a destra, e una fotografia del piatto scelto in una cornice circolare
+  - src: osteria-nodo/04-prenota.jpg
+    alt: Modulo di prenotazione con selezione di data, orario e numero di ospiti, e la nota che dichiara la simulazione senza invio o salvataggio dati
+  - src: osteria-nodo/05-mobile.jpg
+    alt: La stessa copertina su telefono, con il menu ridotto a un pulsante e la fotografia del piatto sotto il claim
 
 tecnologie:
   - Next.js 16
