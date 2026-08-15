@@ -45,13 +45,17 @@ const nature = {
 
 /* Ordinati per `ordine`, non per famiglia: qual e' il lavoro che apre la fila
    e' una decisione editoriale, e sta nel frontmatter dove Michele la controlla.
-   La divisione stretta in siti e sistemi resta su /progetti. */
+   La divisione stretta in siti e sistemi resta su /progetti.
+
+   In vetrina il titolo della scheda e' il problema, non il nome del progetto:
+   chi guarda i lavori sta cercando qualcuno che risolva il suo, e «Pizzeria
+   Moderna · 2026» non gli dice niente. Il nome resta sotto, come nota. */
 const lavori = [...progetti]
   .sort((a, b) => a.data.ordine - b.data.ordine)
   .map((p) => ({
     href: `/progetti/${p.id}`,
-    titolo: p.data.titolo,
-    nota: `${nature[p.data.natura]} · ${p.data.anno}`,
+    titolo: p.data.sfida ?? p.data.titolo,
+    nota: `${p.data.titolo} · ${nature[p.data.natura]} · ${p.data.anno}`,
     immagine: p.data.anteprima,
     alt: p.data.riassunto,
   }));
@@ -61,7 +65,7 @@ const jsonLd = [persona, attivita, sitoWeb];
 
 <Guscio
   titolo="Sviluppatore web a Vercelli e Casale — Michele Modica"
-  descrizione="Siti su misura per attività fra Vercelli, Casale Monferrato e Novara. Prezzo detto prima, dominio intestato a te, pochi progetti l'anno."
+  descrizione="Siti su misura per attività fra Vercelli, Casale Monferrato e Novara. Prezzo detto prima, dominio intestato a te, nessun abbonamento obbligatorio."
   ogImage="/og/home.png"
   jsonLd={jsonLd}
 >
@@ -72,7 +76,7 @@ const jsonLd = [persona, attivita, sitoWeb];
       <Vetrina
         lavori={lavori}
         occhiello="I lavori"
-        titolo="Sette progetti, e cosa risolve ognuno."
+        titolo="Ogni lavoro nasce da un problema."
       />
     )
   }

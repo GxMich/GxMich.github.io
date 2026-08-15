@@ -6,6 +6,7 @@ anno: 2026
 natura: iniziativa
 stato: In beta — funzionante, con dati di prova, UI e alcune funzioni da rifinire
 durata: In lavorazione dal 2026
+sfida: Due professionisti sullo stesso cliente, e nessun posto dove incontrarsi.
 riassunto: Una piattaforma dove personal trainer e nutrizionista lavorano sullo stesso cliente, e il cliente li vede tutti e due da un accesso solo.
 
 contesto: |

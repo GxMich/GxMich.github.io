@@ -6,6 +6,7 @@ anno: 2026
 natura: iniziativa
 stato: Completo
 durata: Poche settimane
+sfida: Una manifestazione storica che ogni anno ripartiva da zero con i suoi contenuti.
 riassunto: Dieci pagine per una manifestazione che vive di date, personaggi e memoria collettiva, fatte per essere aggiornate da chi non scrive codice.
 
 contesto: |

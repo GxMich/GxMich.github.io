@@ -30,22 +30,15 @@ import Icona from '../comuni/Icona.astro';
 
     <div class="coda">
       <p class="lede sfoca-entra" data-anima>
-        Non un modello riempito con le tue foto. Vengo a vedere il posto, capisco cosa ti fa
-        perdere tempo, e costruisco una cosa sola: la tua.
+        Non ti serve un sito che assomigli a quello del locale accanto. Ti serve una presenza
+        online che faccia capire, in pochi secondi, perché qualcuno dovrebbe scegliere te.
       </p>
 
       <div class="inviti sfoca-entra" data-anima>
         <Bottone href="/contatti">Parliamo del tuo progetto</Bottone>
         <Bottone href="/progetti" variante="fantasma">Guarda i lavori</Bottone>
-        <span class="etichetta gratis">La prima mezz'ora non si paga</span>
+        <span class="etichetta gratis">Prima mezz'ora senza impegno</span>
       </div>
-
-      <p class="pochi sfoca-entra" data-anima>
-        <span class="pochi-segno" aria-hidden="true"></span>
-        <strong>Prendo pochi progetti l'anno.</strong> Se ti rispondo, vuol dire che ho il
-        tempo per il tuo — e se in questo momento sono pieno te lo dico subito, invece di
-        metterti in coda senza dirtelo.
-      </p>
     </div>
 
     <p class="scendi etichetta" aria-hidden="true">
@@ -155,35 +148,6 @@ import Icona from '../comuni/Icona.astro';
 
   .gratis {
     color: var(--ink-3);
-  }
-
-  /* Il vincolo dichiarato in apertura, non nascosto in una domanda frequente:
-     per chi valuta e' una rassicurazione, non un limite, e va letto prima di
-     decidere se scrivere. */
-  .pochi {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: flex-start;
-    gap: var(--sp-3);
-    max-width: 62ch;
-    font-size: var(--t-body-sm);
-    line-height: 1.55;
-    color: var(--ink-2);
-    margin: 0;
-    padding-top: var(--sp-4);
-  }
-
-  .pochi strong {
-    color: var(--ink);
-    font-weight: 500;
-  }
-
-  .pochi-segno {
-    width: 2px;
-    align-self: stretch;
-    background: var(--signal);
-    border-radius: 2px;
-    flex: 0 0 auto;
   }
 
   /* Sta sul bordo della piega di proposito: è l'invito a scorrere, e se

@@ -5,6 +5,7 @@ tipo: sito
 anno: 2026
 natura: iniziativa
 stato: Concept online — il ristorante non esiste
+sfida: Un'osteria con un'identità precisa, e un sito che non la faceva vedere.
 riassunto: Un sito di ristorante costruito come una pubblicazione editoriale, non come una vetrina — con un filetto tipografico che lega il nome del locale a ogni sezione della pagina.
 link: https://gxmich.github.io/osteria-nodo/
 codice: https://github.com/GxMich/osteria-nodo

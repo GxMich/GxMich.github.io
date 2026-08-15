@@ -5,6 +5,7 @@ tipo: sito
 anno: 2026
 natura: iniziativa
 stato: Concept online — non è un locale reale
+sfida: Una pizzeria che non voleva sembrare l'ennesima pizzeria.
 riassunto: Un sito di pizzeria che non fa il menù digitale. Racconta il mestiere — impasto, forno, sala — e mette il menù come una tappa del racconto, non l'apertura.
 link: https://gxmich.github.io/pizzeria-moderna
 codice: https://github.com/GxMich/pizzeria-moderna

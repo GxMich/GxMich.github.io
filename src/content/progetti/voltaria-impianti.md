@@ -5,6 +5,7 @@ tipo: sito
 anno: 2026
 natura: iniziativa
 stato: Demo online — l'azienda non esiste, i dati sono di fantasia
+sfida: Un'impresa tecnica che doveva sembrare affidabile prima ancora del primo contatto.
 riassunto: Un sito da elettricista che pubblica il listino invece di nasconderlo, e lascia alla ditta un pannello per accendere e spegnere i servizi da sola.
 link: https://gxmich.github.io/voltaria-impianti-elettrici-demo/
 codice: https://github.com/GxMich/voltaria-impianti-elettrici-demo

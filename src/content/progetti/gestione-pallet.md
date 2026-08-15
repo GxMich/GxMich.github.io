@@ -6,6 +6,7 @@ anno: 2025
 natura: interno
 stato: In uso
 durata: Sviluppo e messa a regime nell'arco di alcuni mesi
+sfida: Due minuti di trascrizione a mano, ripetuti per ogni pallet che entra.
 riassunto: Registrare un pallet richiedeva un paio di minuti di trascrizione a mano. Ora è una scansione e la riga si scrive da sola.
 
 contesto: |

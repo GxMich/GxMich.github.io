@@ -22,21 +22,21 @@ import { ID, persona, briciole } from '../lib/schema.ts';
 const tappe = [
   {
     anno: '2023',
-    titolo: 'Imparo a programmare, da solo',
+    titolo: 'Ho iniziato programmando da autodidatta',
     testo:
-      'Il primo progetto finito si chiamava LightenUp: un tracciatore di allenamenti in PHP, uguale a centinaia di altri. Non lo apriva nessuno, me compreso. Mi ha insegnato la cosa che conta: finire non basta, bisogna risolvere qualcosa a qualcuno.',
+      'Il primo progetto finito era un tracciatore di allenamenti uguale a centinaia di altri. Non lo apriva nessuno, me compreso. Mi ha insegnato la cosa che conta: finire non basta, bisogna risolvere qualcosa a qualcuno.',
   },
   {
     anno: '2024 – 2025',
-    titolo: 'Il magazzino diventa la palestra',
+    titolo: 'Ho costruito strumenti per problemi veri',
     testo:
-      'Da problem solver vedo ogni giorno dove il processo si inceppa. Comincio a costruire strumenti per il mio stesso lavoro: il tracciamento dei pallet, il monitoraggio dei tempi di consegna. Non sono esercizi — se sbaglio un dato, si ferma un camion.',
+      'In magazzino vedo ogni giorno dove il processo si inceppa, e comincio a risolverlo in codice: il tracciamento dei pallet, il monitoraggio dei tempi di consegna. Non sono esercizi — se sbaglio un dato, si ferma un camion.',
   },
   {
     anno: '2026',
-    titolo: 'Progetti miei, portati fino in fondo',
+    titolo: 'Ho portato lo stesso approccio nel web',
     testo:
-      'SuiteFit, la piattaforma per personal trainer e nutrizionisti. Il banco olografico, che smonta motori CAD a gesti davanti alla webcam. E i primi siti per attività del territorio.',
+      'Capire il problema, progettare la soluzione, costruirla. SuiteFit per personal trainer e nutrizionisti, il banco olografico che smonta motori a gesti davanti alla webcam, e i primi siti per attività del territorio.',
   },
   {
     anno: 'Oggi',
@@ -46,32 +46,37 @@ const tappe = [
   },
 ];
 
-const faLaMacchina = [
-  { titolo: 'Esplorare varianti', testo: 'Tre impostazioni di homepage invece di una, per capire quale regge meglio i tuoi contenuti veri. È la cosa in cui mi fa guadagnare più tempo.' },
-  { titolo: 'Scrivere il codice ripetitivo', testo: 'Griglie, form, stati di errore, adattamento al telefono. Roba che so scrivere a memoria e che non mi diverte più da anni.' },
-  { titolo: 'Controllare il lavoro', testo: 'Rileggere il codice cercando errori, contrasti insufficienti, link rotti, cose che ho dimenticato. Un secondo paio di occhi che non si stanca.' },
-  { titolo: 'Fare la prima stesura dei testi', testo: 'Una base da correggere, mai da pubblicare così. I testi di un sito vanno riscritti da chi ha parlato col cliente.' },
-];
-
-const restaUmano = [
-  { titolo: 'Capire cosa vuoi davvero comunicare', testo: "Nessun modello linguistico è stato nel tuo locale il venerdì sera. Questa parte si fa parlando, guardando, e a volte contraddicendo quello che mi hai detto all'inizio." },
-  { titolo: 'Il gusto', testo: "L'IA, se le lasci scegliere, converge sempre sulla media di quello che ha visto. La media è il motivo per cui tanti siti si somigliano. Scegliere cosa togliere è un lavoro di gusto, e il gusto non si delega." },
-  { titolo: 'Le decisioni di prodotto', testo: 'Cosa mettere in home e cosa no, quali funzioni valgono il loro costo, quando dirti che una cosa che hai chiesto ti farà perdere clienti.' },
-  { titolo: 'Il rapporto con te', testo: 'Rispondere al telefono, spiegarti le scelte senza gergo, esserci quando qualcosa non va. Il pezzo più importante e quello meno automatizzabile.' },
-];
-
 /**
- * Le due colonne diventano una sequenza sola: l'etichetta dice da che parte
- * sta ogni voce, quindi la distinzione resta senza bisogno di due colonne che
- * su telefono si impilano comunque una sotto l'altra.
+ * Tre voci, non otto.
+ *
+ * La versione lunga spiegava per due schermate dove entra la macchina e dove
+ * no: interessante per chi scrive software, inutile per chi sta valutando se
+ * un sito gli porterà clienti. Chi vuole la versione lunga la trova nel
+ * racconto dei lavori, dove è attaccata a una decisione vera.
  */
 const metodoIA = [
-  ...faLaMacchina.map((v) => ({ ...v, nota: 'Lo fa la macchina' })),
-  ...restaUmano.map((v) => ({ ...v, nota: 'Non lo delego mai' })),
+  {
+    nota: 'Lo fa la macchina',
+    titolo: 'Esplorare e scrivere in fretta',
+    testo:
+      'Tre impostazioni di homepage invece di una, e tutto il codice ripetitivo che so già a memoria. È la parte in cui mi fa guadagnare più tempo, e quel tempo torna a te.',
+  },
+  {
+    nota: 'Non lo delego mai',
+    titolo: 'Decidere cosa dire e cosa togliere',
+    testo:
+      "La macchina propone, e spesso propone la cosa media: è il motivo per cui tanti siti si somigliano. Cosa mettere in home, che tono usare e cosa togliere restano scelte mie.",
+  },
+  {
+    nota: 'Non lo delego mai',
+    titolo: 'Il rapporto con te',
+    testo:
+      'Nessun modello è stato nel tuo locale il venerdì sera. Parlarne, spiegarti le scelte senza gergo, esserci quando qualcosa non va: la parte più importante e la meno automatizzabile.',
+  },
 ];
 
 const tappeLavoro = [
-  { etichetta: 'Da solo', testo: 'Pochi progetti alla volta. Parli sempre con me, e chi scrive il codice è la stessa persona che ti ha ascoltato.' },
+  { etichetta: 'Da solo', testo: 'Pochi clienti alla volta. Parli sempre con me, e chi scrive il codice è la stessa persona che ti ha ascoltato.' },
   { etichetta: 'Fuori orario', testo: 'Ho un lavoro a turni, quindi rispondo la sera e nei fine settimana. Non è un limite nascosto: te lo dico prima, così sai cosa aspettarti sui tempi.' },
   { etichetta: 'Se non sono adatto', testo: 'Te lo dico alla prima chiamata, non al terzo incontro. E quando posso ti indico chi contattare al posto mio.' },
 ];
@@ -94,8 +99,8 @@ const jsonLd = [
 ---
 
 <Guscio
-  titolo="Chi sono e come lavoro con l'IA — Michele, sviluppatore web"
-  descrizione="Sviluppatore web di Trino, fra Vercelli, Casale e Novara. Come uso davvero l'IA: cosa le lascio fare e cosa non le lascio decidere."
+  titolo="Chi sono e come lavoro — Michele, sviluppatore web"
+  descrizione="Sviluppatore web di Trino, fra Vercelli, Casale e Novara. Come ci sono arrivato, come lavoro e cosa resta una decisione mia."
   ogImage="/og/chi-sono.png"
   jsonLd={jsonLd}
 >
@@ -114,9 +119,9 @@ const jsonLd = [
             clienti in tutta Italia.
           </p>
           <p class="testo">
-            <strong>Non sono uno che chiede a un'IA di fare un sito.</strong> Sono uno che sa
-            scrivere quel codice a mano e che ha deciso di usare l'IA dove ha senso, perché il
-            risultato viene meglio. Sotto ti spiego esattamente dove.
+            <strong>Uso l'IA come strumento, non come sostituto del mio lavoro.</strong> Mi
+            permette di esplorare più possibilità e di automatizzare il lavoro ripetitivo.
+            Strategia, design, contenuti e decisioni restano miei.
           </p>
         </div>
       </div>
@@ -139,10 +144,10 @@ const jsonLd = [
   <section class="sezione percorso" aria-labelledby="percorso">
     <div class="contenitore">
       <div class="intestazione">
-        <h2 id="percorso" class="h2">Come ci sono arrivato.</h2>
+        <h2 id="percorso" class="h2">Ho imparato costruendo cose vere.</h2>
         <p class="testo-sm">
-          Tre anni di codice. Non venti, e non provo a farteli sembrare tali — compreso
-          l'anno in cui ho costruito una cosa che non serviva a nessuno.
+          Non un percorso di studi: una fila di problemi veri, risolti uno alla volta —
+          compreso l'anno in cui ho costruito una cosa che non serviva a nessuno.
         </p>
       </div>
 
@@ -173,14 +178,9 @@ const jsonLd = [
     </div>
   </section>
 
-  {/*
-    Otto voci su due colonne erano un muro di testo che si legge solo se uno ha
-    già deciso di leggerlo — e da telefono nemmeno quello. Una alla volta, con
-    l'etichetta che dice da che parte sta, fa la stessa cosa in metà fatica.
-  */}
   <SequenzaTesti
-    occhiello="Il pezzo che di solito nessuno racconta"
-    titolo="Dove entra la macchina, e dove non la lascio entrare."
+    occhiello="Come uso gli strumenti"
+    titolo="Tecnologia veloce. Decisioni umane."
     voci={metodoIA}
   />
 
@@ -188,8 +188,7 @@ const jsonLd = [
     <div class="contenitore">
       <p class="onesta">
         <strong>Il rovescio, per onestà:</strong> l'IA sbaglia, e sbaglia in modo convincente.
-        Per questo ogni cosa che consegno l'ho letta, provata e capita riga per riga. Se una
-        parte del lavoro non la so verificare, quella parte non la uso.
+        Per questo ogni cosa che consegno l'ho letta, provata e capita riga per riga.
       </p>
     </div>
   </section>

@@ -5,6 +5,7 @@ tipo: sito
 anno: 2026
 natura: iniziativa
 stato: Concept online — non è una struttura reale
+sfida: Un agriturismo che doveva far percepire il luogo prima ancora della visita.
 riassunto: Un agriturismo con sei camere non compete con altri agriturismi, compete con la propria scheda su un portale. Il sito prova a dire quello che la scheda non riesce a dire.
 link: https://gxmich.github.io/agriturismo-concept/
 codice: https://github.com/GxMich/agriturismo-concept

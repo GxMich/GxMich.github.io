@@ -6,6 +6,7 @@ anno: 2026
 natura: iniziativa
 stato: In corso — nucleo funzionante, resa grafica da rifinire
 durata: In lavorazione dal 2026
+sfida: Un motore da 115 pezzi da far smontare a chi non ce l'ha davanti.
 riassunto: Un motore a due cilindri da 115 pezzi che si smonta nel browser muovendo le mani davanti alla webcam, senza installare niente.
 
 contesto: |

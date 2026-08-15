@@ -6,6 +6,7 @@ anno: 2025
 natura: interno
 stato: In uso
 durata: Alcune settimane
+sfida: Numeri che arrivavano il lunedì, quando non c'era più niente da correggere.
 riassunto: Gli indicatori di servizio si leggevano il lunedì per la settimana finita. Ora si vedono mentre succedono, e avvisano da soli.
 
 contesto: |

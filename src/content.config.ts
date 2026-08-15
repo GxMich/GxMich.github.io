@@ -18,6 +18,17 @@ const progetti = defineCollection({
     riassunto: z.string(),
 
     /**
+     * Il problema in una riga, con dentro il cliente e non il lavoro:
+     * «Una pizzeria che non voleva sembrare l'ennesima pizzeria».
+     *
+     * È il titolo della scheda in vetrina. Il nome del progetto resta sotto,
+     * come nota: chi guarda i lavori sta cercando qualcuno che risolva il suo
+     * problema, non l'elenco dei nomi che ho messo in fattura. Quando manca,
+     * la vetrina ripiega sul titolo — così una scheda nuova non rompe niente.
+     */
+    sfida: z.string().optional(),
+
+    /**
      * Da dove nasce il lavoro. Serve a non far passare per commessa un progetto
      * nato da solo: un portfolio che confonde le due cose si smonta al primo
      * cliente che chiede il riferimento.

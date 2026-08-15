@@ -6,6 +6,7 @@ anno: 2026
 natura: iniziativa
 stato: Online da poco — poche persone, nessuna promozione
 durata: Riscritto da zero nel 2026, prima versione nel 2023
+sfida: Uno spazio per scrivere quello che non firmeresti col tuo nome.
 riassunto: Un diario per quello che non riesci ancora a dire ad alta voce. Scrivi in privato, pubblichi in anonimo, e dal profilo pubblico non si risale a te.
 
 contesto: |
