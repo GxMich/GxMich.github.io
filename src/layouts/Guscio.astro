@@ -10,6 +10,7 @@ import '../styles/base.css';
 import { ClientRouter } from 'astro:transitions';
 import Intestazione from '../components/struttura/Intestazione.astro';
 import Piede from '../components/struttura/Piede.astro';
+import Consenso from '../components/comuni/Consenso.astro';
 import { SITE } from '../config.js';
 
 interface Props {
@@ -46,6 +47,17 @@ const passaggio = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    {/*
+      Google Tag Manager e Clarity non stanno qui.
+
+      Erano due script in chiaro in testa al documento, quindi partivano al
+      primo byte, prima che chiunque potesse dire la sua — e con loro
+      partivano i cookie. Adesso li inietta la fascia del consenso, dopo un
+      sì: vedi src/components/comuni/Consenso.astro. Se li rimetti qui il
+      consenso torna a essere una formalità, e la pagina privacy torna a
+      dire una cosa falsa.
+    */}
 
     <title>{titolo}</title>
     <meta name="description" content={descrizione} />
@@ -104,6 +116,11 @@ const passaggio = {
   </head>
 
   <body>
+    {/* Via anche il riquadro nascosto per chi ha JavaScript spento: quello
+        chiamava Google al caricamento e non c'è modo di condizionarlo a una
+        scelta, perché la scelta si esprime con JavaScript. Senza JavaScript
+        non ci sono misure e va bene così. */}
+
     <a class="salta" href="#contenuto">Salta al contenuto</a>
 
     <Intestazione transition:persist />
@@ -113,6 +130,8 @@ const passaggio = {
     </main>
 
     <Piede transition:animate="none" />
+
+    <Consenso />
 
     <script>
       // Le comparse valgono per ogni pagina: montarle qui evita che ogni

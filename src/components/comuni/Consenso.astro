@@ -1,0 +1,304 @@
+---
+/**
+ * La fascia del consenso alle misure di traffico.
+ *
+ * Non è un banner cookie di quelli che si accettano per farli sparire: è
+ * l'interruttore vero. Google Tag Manager e Clarity non stanno nel sorgente
+ * della pagina — non c'è nessun tag da bloccare, nessuna «modalità consenso»
+ * che li lascia partire a metà. Gli indirizzi arrivano qui come attributi e
+ * lo script li inietta solo dopo un sì. Finché non arriva, verso quei due
+ * domini non parte niente, che è quello che chiede la legge quando dice
+ * «consenso preventivo».
+ *
+ * Due bottoni identici per forma e per numero di clic. Il rifiuto è il primo
+ * che si incontra leggendo. Fare il no più piccolo, più chiaro o più lontano
+ * è la definizione tecnica di consenso non valido: non è una questione di
+ * galateo, è che il consenso raccolto così non vale e i dati raccolti con
+ * quello nemmeno.
+ *
+ * La fascia parte nascosta e si mostra da sola se la scelta non c'è ancora:
+ * chi ha già risposto non se la vede più comparire a ogni pagina.
+ */
+import { SITE } from '../../config.js';
+
+const { gtm, clarity } = SITE.misure;
+const attiva = Boolean(gtm || clarity);
+---
+
+{
+  attiva && (
+    <aside
+      class="fascia su-palco"
+      data-consenso
+      data-gtm={gtm ?? ''}
+      data-clarity={clarity ?? ''}
+      hidden
+      role="region"
+      aria-labelledby="consenso-titolo"
+      tabindex="-1"
+    >
+      <div class="dentro">
+        <div class="testo">
+          <p class="etichetta" id="consenso-titolo">Misure di traffico</p>
+          <p class="testo-sm">
+            Mi piacerebbe sapere quante persone passano di qui e quali pagine leggono
+            davvero. Per farlo servono due strumenti esterni, di Google e di Microsoft, che
+            salvano cookie sul tuo browser e registrano come ti muovi nella pagina. Partono
+            solo se dici di sì, e se dici di no il sito funziona esattamente uguale.{' '}
+            <a href="/privacy">Cosa raccolgono, per esteso</a>
+          </p>
+        </div>
+
+        <div class="scelte">
+          <button type="button" class="scelta" data-consenso-no>Non voglio</button>
+          <button type="button" class="scelta si" data-consenso-si>Va bene</button>
+        </div>
+      </div>
+    </aside>
+  )
+}
+
+<style>
+  .fascia {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: var(--z-consenso);
+    border-top: 1px solid var(--edge);
+    padding: var(--sp-5) var(--gutter) calc(var(--sp-5) + env(safe-area-inset-bottom));
+  }
+
+  .fascia[hidden] {
+    display: none;
+  }
+
+  .dentro {
+    max-width: var(--page-max);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--sp-5) clamp(24px, 4vw, 56px);
+    align-items: center;
+  }
+
+  .testo {
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  .testo p:last-child {
+    max-width: 82ch;
+  }
+
+  .testo a {
+    color: var(--signal-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--edge);
+    white-space: nowrap;
+  }
+
+  .testo a:hover {
+    border-bottom-color: var(--signal-ink);
+  }
+
+  .scelte {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+  }
+
+  /* Stessa geometria per tutti e due: cambia il riempimento, non la
+     dimensione né lo sforzo per arrivarci. */
+  .scelta {
+    font-family: var(--font-ui);
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    padding: 12px 22px;
+    border-radius: var(--radius-1);
+    border: 1px solid var(--edge);
+    color: var(--light);
+    white-space: nowrap;
+    transition:
+      background-color var(--dur-1) var(--ease-out),
+      border-color var(--dur-1) var(--ease-out),
+      color var(--dur-1) var(--ease-out);
+  }
+
+  .scelta:hover {
+    border-color: var(--light-2);
+  }
+
+  .scelta.si {
+    background: var(--signal);
+    border-color: var(--signal);
+    color: var(--signal-on);
+  }
+
+  .scelta.si:hover {
+    background: var(--light);
+    border-color: var(--light);
+    color: var(--stage);
+  }
+
+  @media (max-width: 860px) {
+    .dentro {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+
+    .scelta {
+      flex: 1 1 auto;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Tre stati salvati, come per il tema: «si», «no», o niente.
+   *
+   * Niente non vuol dire no — vuol dire che non gliel'ho ancora chiesto, e
+   * finché è così la fascia si mostra. Distinguere i due casi è tutta la
+   * differenza fra chiedere una volta e chiedere a ogni visita.
+   */
+  const CHIAVE = 'misure-consenso';
+
+  /* I cookie che i due strumenti lasciano sul nostro dominio. Quelli che
+     scrivono sui loro (clarity.ms, google.com) da qui non si toccano: sono
+     di un'altra origine e il browser non ce lo permette. Per quelli c'è la
+     richiesta di cancellazione, che è scritta nella pagina privacy. */
+  const COOKIE_MISURE = [
+    '_ga',
+    '_gid',
+    '_gat',
+    '_gcl_au',
+    '_clck',
+    '_clsk',
+    'CLID',
+    'ANONCHK',
+    'MUID',
+    'SM',
+  ];
+
+  function leggiScelta() {
+    try {
+      return localStorage.getItem(CHIAVE);
+    } catch {
+      /* navigazione privata: la fascia ricompare, ed è il comportamento
+         giusto — senza memoria non posso sapere cosa mi ha già detto. */
+      return null;
+    }
+  }
+
+  function salvaScelta(valore: string) {
+    try {
+      localStorage.setItem(CHIAVE, valore);
+    } catch {
+      /* la scelta vale per questa visita e basta */
+    }
+  }
+
+  function caricaMisure(gtm: string, clarity: string) {
+    const w = window as any;
+    if (w.__misureAvviate) return;
+    w.__misureAvviate = true;
+
+    if (gtm) {
+      w.dataLayer = w.dataLayer || [];
+      w.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtm.js?id=' + encodeURIComponent(gtm);
+      document.head.appendChild(s);
+    }
+
+    if (clarity) {
+      w.clarity =
+        w.clarity ||
+        function () {
+          (w.clarity.q = w.clarity.q || []).push(arguments);
+        };
+      const c = document.createElement('script');
+      c.async = true;
+      c.src = 'https://www.clarity.ms/tag/' + encodeURIComponent(clarity);
+      document.head.appendChild(c);
+    }
+  }
+
+  /**
+   * Dopo un ripensamento gli script sono già in pagina e non si tolgono: una
+   * volta caricati restano finché il documento vive. Quindi si cancella
+   * quello che hanno lasciato e si ricarica la pagina — così il documento
+   * nuovo nasce pulito e senza di loro. È l'unico modo onesto di far valere
+   * un no che arriva dopo un sì.
+   */
+  function dimenticaMisure() {
+    const host = location.hostname;
+    const domini = ['', host, '.' + host, '.' + host.split('.').slice(-2).join('.')];
+
+    for (const nome of COOKIE_MISURE) {
+      for (const dominio of domini) {
+        document.cookie =
+          nome +
+          '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' +
+          (dominio ? '; domain=' + dominio : '');
+      }
+    }
+  }
+
+  function montaConsenso() {
+    const fascia = document.querySelector<HTMLElement>('[data-consenso]');
+    if (!fascia) return;
+
+    const gtm = fascia.dataset.gtm ?? '';
+    const clarity = fascia.dataset.clarity ?? '';
+
+    /* Prima di ogni altra cosa: se il sì c'è già, gli strumenti partono
+       subito, anche su una pagina raggiunta navigando. */
+    if (leggiScelta() === 'si') caricaMisure(gtm, clarity);
+
+    if (fascia.dataset.montato !== undefined) return;
+    fascia.dataset.montato = 'si';
+
+    const mostra = (conFuoco: boolean) => {
+      fascia.hidden = false;
+      if (conFuoco) fascia.focus();
+    };
+
+    const nascondi = () => {
+      fascia.hidden = true;
+    };
+
+    fascia.querySelector('[data-consenso-si]')?.addEventListener('click', () => {
+      salvaScelta('si');
+      nascondi();
+      caricaMisure(gtm, clarity);
+    });
+
+    fascia.querySelector('[data-consenso-no]')?.addEventListener('click', () => {
+      const eraSi = leggiScelta() === 'si';
+      salvaScelta('no');
+      nascondi();
+
+      if (eraSi) {
+        dimenticaMisure();
+        location.reload();
+      }
+    });
+
+    /* La scelta si può cambiare: qualsiasi cosa con questo attributo — oggi
+       il bottone nella pagina privacy — riapre la fascia. Il consenso che non
+       si può ritirare con la stessa facilità con cui si è dato non è
+       consenso. */
+    document.querySelectorAll('[data-cambia-consenso]').forEach((elemento) => {
+      elemento.addEventListener('click', (e) => {
+        e.preventDefault();
+        mostra(true);
+      });
+    });
+
+    if (leggiScelta() === null) mostra(false);
+  }
+
+  montaConsenso();
+  document.addEventListener('astro:page-load', montaConsenso);
+</script>

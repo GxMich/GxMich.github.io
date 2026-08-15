@@ -116,8 +116,11 @@ const anno = new Date().getFullYear();
     <p class="etichetta">
       © {anno} {SITE.name} — {SITE.city} ({SITE.provincia})
     </p>
-    <p class="etichetta">
+    {/* Il ripensamento deve stare dove sta la privacy, non tre clic più in
+        là: ritirare il consenso deve costare quanto darlo. */}
+    <p class="etichetta legami">
       <a href="/privacy">Privacy</a>
+      <button type="button" data-cambia-consenso>Misure di traffico</button>
     </p>
   </div>
 </footer>
@@ -227,6 +230,25 @@ const anno = new Date().getFullYear();
 
   .coda a {
     color: inherit;
+  }
+
+  .legami {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-5);
+  }
+
+  .legami button {
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: inherit;
+    cursor: pointer;
+    transition: color var(--dur-1) var(--ease-out);
+  }
+
+  .legami button:hover {
+    color: var(--light);
   }
 
   @media (max-width: 1023px) {

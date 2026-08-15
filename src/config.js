@@ -116,6 +116,26 @@ export const SITE = {
   googleRecensioni: null,
 
   /**
+   * Le misure di traffico.
+   *
+   * Google Tag Manager e Microsoft Clarity: il primo conta le visite, il
+   * secondo registra come ci si muove nella pagina. Tutti e due salvano
+   * cookie e tutti e due mandano dati fuori di qui, quindi in Europa non
+   * possono partire prima che qualcuno abbia detto di sì — non «mentre»
+   * glielo si chiede, proprio prima. Per questo gli indirizzi stanno qui e
+   * non nel layout: la fascia del consenso li legge e li inietta solo dopo la
+   * risposta, e finché la risposta non c'è nella pagina non entra una riga di
+   * codice di nessuno dei due.
+   *
+   * Mettere `null` a uno dei due lo spegne del tutto. Se li spegni entrambi
+   * sparisce anche la fascia, perché non ci sarebbe più niente da chiedere.
+   */
+  misure: {
+    gtm: 'GTM-TSLP22NJ',
+    clarity: 'y2xyt4h0zn',
+  },
+
+  /**
    * Foto usata nei dati strutturati, dove serve un indirizzo pubblico stabile.
    * È la versione compressa a 900px: l'originale sta in src/assets/michele.png
    * e in pagina passa dall'ottimizzatore di Astro.

@@ -14,9 +14,10 @@ import { SITE } from '../config.js';
       <h1 class="display">Cosa faccio dei tuoi dati</h1>
 
       <div class="avviso">
-        <strong>Da completare prima di pubblicare.</strong> Questo testo è una traccia
-        onesta ma generica: va integrato con i tuoi dati reali (denominazione, indirizzo,
-        partita IVA) e riletto da chi ti segue per gli adempimenti. Non è consulenza legale.
+        <strong>Scritta in italiano, non in legalese.</strong> Ho preferito dire le cose
+        come stanno invece di ricopiare un modello: se qualcosa non ti torna scrivimi e te
+        lo spiego. Questo testo descrive quello che succede davvero su questo sito, ma non è
+        consulenza legale.
       </div>
 
       <div class="testo">
@@ -29,9 +30,41 @@ import { SITE } from '../config.js';
 
         <h2 class="h4">Quali dati raccolgo</h2>
         <p>
-          Solo quelli che mi scrivi tu nel modulo dei contatti: nome, recapito (email o
-          telefono), zona, tipo di progetto e il testo del messaggio. Non uso strumenti di
-          profilazione pubblicitaria e non ci sono cookie di terze parti su questo sito.
+          Quelli che mi scrivi tu nel modulo dei contatti: nome, recapito (email o
+          telefono), zona, tipo di progetto e il testo del messaggio. Più, <em>solo se me lo
+          permetti</em>, i dati delle misure di traffico spiegate qui sotto. Non faccio
+          profilazione pubblicitaria e non vendo niente a nessuno.
+        </p>
+
+        <h2 class="h4">Le misure di traffico, e come si spengono</h2>
+        <p>
+          Vorrei sapere quante persone passano di qui e quali pagine leggono davvero, perché
+          è l'unico modo che ho per capire cosa riscrivere. Per farlo uso due strumenti
+          esterni, e nessuno dei due parte finché non premi «Va bene» sulla fascia in fondo
+          allo schermo. Se non rispondi, o se rispondi di no, sul sito non entra nemmeno una
+          riga del loro codice e non viene salvato nessun cookie.
+        </p>
+        <ul class="elenco">
+          <li>
+            <strong>Google Tag Manager e Google Analytics</strong> — contano le visite: quali
+            pagine apri, da dove sei arrivato, che tipo di dispositivo usi, quanto resti.
+            Salvano cookie sul tuo browser e i dati vanno a Google, che sta anche fuori
+            dall'Unione Europea.
+          </li>
+          <li>
+            <strong>Microsoft Clarity</strong> — registra come ti muovi nella pagina: dove
+            passi con il mouse o con il dito, dove clicchi, fin dove scorri. In pratica una
+            ripresa anonima della sessione. Serve a capire dove ci si perde. Salva cookie e i
+            dati vanno a Microsoft.
+          </li>
+        </ul>
+        <p>
+          La base giuridica qui è il tuo consenso, e vale solo per quello. Puoi cambiare idea
+          quando vuoi: <button class="collegamento come-link" type="button" data-cambia-consenso
+          >riapri la scelta</button> e dì di no. In quel momento cancello i cookie che
+          riesco a raggiungere dal sito e ricarico la pagina senza quegli strumenti; per
+          quello che è già finito nei loro archivi, scrivimi e chiedo io la cancellazione.
+          Rifiutare non cambia niente di quello che vedi e di come funziona il sito.
         </p>
 
         <h2 class="h4">Perché li tratto</h2>
@@ -45,15 +78,18 @@ import { SITE } from '../config.js';
         <p>
           Il modulo è gestito da un servizio esterno che si occupa dell'invio della mail, e
           la posta è ospitata dal mio fornitore di caselle. Sono responsabili del
-          trattamento e non usano i dati per finalità proprie. Nessun altro riceve i tuoi
-          dati.
+          trattamento e non usano i dati per finalità proprie. Se hai acconsentito alle
+          misure di traffico, quei dati — e solo quelli — arrivano anche a Google e a
+          Microsoft, come scritto sopra. Nessun altro riceve i tuoi dati.
         </p>
 
         <h2 class="h4">Per quanto tempo li tengo</h2>
         <p>
           Le richieste che non diventano un progetto le conservo per il tempo necessario a
           risponderti e poco oltre, poi le cancello. Per i progetti avviati valgono i
-          termini di legge sui documenti fiscali.
+          termini di legge sui documenti fiscali. I dati delle misure di traffico li
+          conservano Google e Microsoft secondo i loro termini — nell'ordine dei mesi, non
+          degli anni — e io li guardo solo aggregati, senza nessun modo di risalire a te.
         </p>
 
         <h2 class="h4">I tuoi diritti</h2>
@@ -110,7 +146,37 @@ import { SITE } from '../config.js';
     color: var(--ink-2);
     text-wrap: pretty;
   }
+  .elenco {
+    display: grid;
+    gap: var(--sp-3);
+    color: var(--ink-2);
+    margin-top: var(--sp-2);
+  }
+  .elenco li {
+    padding-left: var(--sp-5);
+    position: relative;
+    text-wrap: pretty;
+  }
+  .elenco li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--ink-3);
+  }
+  .elenco strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
   .collegamento {
     color: var(--signal-ink);
+  }
+  /* Un bottone, perché apre una cosa invece di portare da qualche parte, ma
+     letto come il link che gli sta accanto: chi cerca «dove si cambia» deve
+     trovarlo dentro la frase, non in un riquadro in fondo alla pagina. */
+  .come-link {
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
   }
 </style>

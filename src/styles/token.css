@@ -146,6 +146,11 @@
   --z-header: 100;
   --z-menu: 200;
   --z-skip: 300;
+
+  /* Sopra l'intestazione, sotto il menu a schermo intero: la fascia del
+     consenso deve stare davanti alla pagina, ma se qualcuno apre il menu è
+     il menu che comanda. */
+  --z-consenso: 150;
 }
 
 /* ============================================================================
