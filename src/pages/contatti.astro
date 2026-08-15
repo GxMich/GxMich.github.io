@@ -77,13 +77,26 @@ const jsonLd = [
         </li>
         <li>
           <span class="etichetta">Dove sono</span>
-          <span class="h3">{SITE.city} ({SITE.provincia})</span>
+          {/* Comune, provincia e CAP scritti come sulla scheda Google: sono i
+              due posti che devono raccontare la stessa cosa. */}
+          <address class="h3 dove">{SITE.city} ({SITE.provincia}), {SITE.cap}</address>
         </li>
         <li>
           <span class="etichetta">Quando rispondo</span>
           <span class="h3">Tutti i giorni, 8–22</span>
         </li>
       </ul>
+
+      {
+        SITE.google && (
+          <p class="scheda testo-sm">
+            Sono anche su Google:{' '}
+            <a href={SITE.google} rel="me noopener" target="_blank">guarda la scheda dell'attività</a>. Se
+            abbiamo lavorato insieme, una recensione lì vale più di qualsiasi frase che potrei
+            scrivere io su questa pagina.
+          </p>
+        )
+      }
     </div>
   </header>
 
@@ -143,6 +156,26 @@ const jsonLd = [
 
   .diretti a:hover {
     text-decoration: underline;
+  }
+
+  .dove {
+    font-style: normal;
+  }
+
+  .scheda {
+    margin-top: clamp(24px, 3vw, 36px);
+    max-width: 62ch;
+    color: var(--ink-2);
+  }
+
+  .scheda a {
+    color: var(--signal-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .scheda a:hover {
+    border-bottom-color: var(--signal-ink);
   }
 
 

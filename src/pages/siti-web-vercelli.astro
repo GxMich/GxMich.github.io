@@ -1,0 +1,152 @@
+---
+/**
+ * Vercelli.
+ *
+ * Una pagina per città esiste per un motivo solo: chi cerca «sito web
+ * Vercelli» sta facendo una domanda diversa da chi cerca «sito web», e la
+ * home non risponde a quella. Se però la pagina non ha niente di suo da dire
+ * — la stessa promessa con il nome cambiato — allora vale meno di zero,
+ * perché Google la legge come una copia e il sito ne esce indebolito.
+ *
+ * Quindi qui dentro sta solo quello che è vero di Vercelli e non di Casale:
+ * il capoluogo, il commercio del centro, gli studi, la distanza da Trino.
+ */
+import { getCollection } from 'astro:content';
+import Guscio from '../layouts/Guscio.astro';
+import Zona from '../components/sezioni/Zona.astro';
+import { SITE } from '../config.js';
+import { ID, domande, briciole } from '../lib/schema.ts';
+
+const citta = 'Vercelli';
+const percorso = '/siti-web-vercelli';
+
+/* Un'impresa tecnica e un locale: sono le due facce del commercio di qui.
+   Entrambi nati da me, e la scheda lo dichiara — stanno qui come esempio di
+   come lavoro, non per far credere di avere clienti in centro a Vercelli. */
+const slugVicini = ['voltaria-impianti', 'pizzeria-moderna'];
+
+const progetti = await getCollection('progetti');
+const nature = {
+  cliente: 'Per un cliente',
+  iniziativa: 'Su iniziativa',
+  interno: 'Lavoro interno',
+} as const;
+
+const lavori = slugVicini
+  .map((s) => progetti.find((p) => p.id === s))
+  .filter((p): p is NonNullable<typeof p> => Boolean(p))
+  .map((p) => ({
+    href: `/progetti/${p.id}`,
+    titolo: p.data.titolo,
+    cliente: nature[p.data.natura],
+    riassunto: p.data.riassunto,
+    anno: p.data.anno,
+    immagine: p.data.schermate[0]?.src ?? p.data.anteprima,
+  }));
+
+const perche = [
+  "Vercelli è il capoluogo, e da Trino è una ventina di minuti di strada: è la città dove vado a fare le cose normali, non un mercato che ho scelto guardando una mappa. Le attività di cui parlo le conosco perché ci entro, non perché le ho lette in un elenco.",
+  'La provincia del riso ha una struttura commerciale sua: molte attività storiche, gestite da chi ci lavora dentro tutti i giorni, con una presenza online ferma a una pagina Facebook aggiornata quando capita. Non è pigrizia — è che nessuno ha mai spiegato loro cosa cambierebbe davvero, e la maggior parte delle proposte che ricevono arrivano al telefono da un call center con un canone mensile allegato.',
+  "Chi cerca online a Vercelli cerca da vicino: «dove mangiare stasera», «chi mi rifà l'impianto», «a che ora chiude». Sono ricerche che si giocano su tre cose — comparire, essere chiari e caricare in fretta da telefono — e nessuna delle tre richiede un sito grosso. Richiede un sito fatto bene.",
+];
+
+const attivita = [
+  {
+    titolo: 'Ristoranti e locali',
+    testo:
+      "Chi cerca dove mangiare decide guardando: foto vere della sala e dei piatti, orari giusti, e la carta leggibile sul telefono senza scaricare un PDF che si apre storto. È il caso in cui un sito ripaga più in fretta.",
+  },
+  {
+    titolo: 'Negozi e botteghe',
+    testo:
+      "Un negozio del centro non compete con Amazon sul prezzo: compete sul fatto che tu sappia che esiste, cosa tratta e che dentro c'è qualcuno che se ne intende. Il sito serve a dire quella cosa lì, non a fare vendita online.",
+  },
+  {
+    titolo: 'Studi professionali',
+    testo:
+      'Commercialisti, avvocati, studi tecnici: qui non si compra al primo colpo, si valuta. Il sito deve far capire con chi si sta parlando, di cosa si occupa davvero e come si comincia — la fiducia si costruisce prima della telefonata.',
+  },
+  {
+    titolo: 'Artigiani e imprese tecniche',
+    testo:
+      "Elettricisti, idraulici, serramentisti, officine. Chi vi cerca ha un problema adesso e vuole due cose: capire se fate quel lavoro e trovare un numero. Tutto il resto della pagina viene dopo, se viene.",
+  },
+];
+
+const presenza = [
+  {
+    titolo: 'Venti minuti di strada',
+    testo:
+      'Vengo io da te, in orario di negozio o dopo la chiusura, come ti è comodo. Per un sito di attività locale ci tengo a vedere il posto: le foto migliori e mezze delle idee buone nascono lì.',
+  },
+  {
+    titolo: 'Una conversazione, non un modulo',
+    testo:
+      'Il primo incontro sono un paio di ore in cui parli tu: cosa fai, chi entra dalla porta, cosa ti chiedono sempre. Non ti mando un questionario da riempire, perché le risposte scritte sono sempre più povere di quelle dette.',
+  },
+  {
+    titolo: 'Rispondo la sera',
+    testo:
+      "Ho un lavoro a turni in magazzino, quindi scrivo e chiamo di sera e nel fine settimana. Te lo dico prima perché è l'unica cosa che cambia rispetto a un'agenzia: sui tempi di consegna non cambia niente, sulla velocità di risposta durante la giornata sì.",
+  },
+];
+
+const faq = [
+  {
+    d: 'Quanto costa un sito a Vercelli?',
+    r: "Te lo dico alla prima risposta, con una cifra e non una forbice. Dipende da quante pagine servono, da chi scrive i testi, dalle fotografie che hai già e da quanti servizi vanno collegati. Restano fuori dominio e hosting, circa 50-120 euro l'anno pagati direttamente al fornitore così restano intestati a te. Non c'è nessun canone mensile obbligatorio.",
+  },
+  {
+    d: 'Hai un ufficio a Vercelli?',
+    r: "No, e preferisco dirlo: sto a Trino, in provincia di Vercelli, e non ho una sede aperta al pubblico. Ci vediamo da te, che per un'attività locale è comunque il posto giusto in cui vedersi.",
+  },
+  {
+    d: 'Ti occupi anche della scheda Google?',
+    r: "Sì, ed è la prima cosa che guardo. Per un'attività di Vercelli la scheda Google porta più contatti del sito nei primi mesi: la sistemiamo insieme, la colleghiamo al sito e ti spiego come si aggiorna, così resta in mano tua.",
+  },
+  {
+    d: 'Lavori solo in città o anche nei comuni intorno?',
+    r: "Tutta la zona. Trino, Crescentino, Santhià, Livorno Ferraris, Saluggia e i paesi in mezzo sono nello stesso raggio: di persona copro una sessantina di chilometri attorno a casa, e Vercelli città sta comodamente dentro.",
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: `Realizzazione siti web a ${citta}`,
+    serviceType: 'Progettazione e sviluppo di siti web per attività locali',
+    provider: { '@id': ID.persona },
+    areaServed: {
+      '@type': 'City',
+      name: citta,
+      containedInPlace: { '@type': 'AdministrativeArea', name: SITE.region },
+    },
+    url: `${SITE.url}${percorso}`,
+  },
+  domande(faq),
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: `Siti web a ${citta}`, percorso },
+  ]),
+];
+---
+
+<Guscio
+  titolo="Siti web a Vercelli — sviluppatore freelance | Michele Modica"
+  descrizione="Siti su misura per ristoranti, negozi, studi e artigiani di Vercelli. Prezzo detto prima, dominio intestato a te, nessun canone obbligatorio. Prima mezz'ora senza impegno."
+  ogImage="/og/home.png"
+  jsonLd={jsonLd}
+>
+  <Zona
+    citta={citta}
+    righe={['Siti su misura', 'per chi lavora', 'a Vercelli.']}
+    intro="Sono uno sviluppatore web di Trino, a venti minuti da Vercelli. Costruisco siti per attività che hanno una faccia e vogliono che il sito abbia quella: ristoranti, negozi, studi e imprese artigianali del capoluogo e dei comuni intorno."
+    perche={perche}
+    attivita={attivita}
+    presenza={presenza}
+    lavori={lavori}
+    lavoriTitolo="Due lavori, due mestieri diversi"
+    faq={faq}
+  />
+</Guscio>

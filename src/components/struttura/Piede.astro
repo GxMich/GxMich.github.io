@@ -42,6 +42,20 @@ const anno = new Date().getFullYear();
       <p class="contatto">
         <a href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>
       </p>
+
+      {/*
+        L'indirizzo in chiaro, con il tag che lo dichiara per quello che è.
+
+        Non è arredamento: perché una scheda Google e un sito si riconoscano
+        come la stessa attività, il nome, il luogo e il telefono devono essere
+        scritti uguali nei due posti. Qui c'è comune, CAP e regione — la via di
+        casa no, perché non è una sede in cui si entra e dichiararne una che
+        non esiste è la cosa che Google punisce più volentieri.
+      */}
+      <address class="dove testo-sm">
+        {SITE.city} ({SITE.provincia}), {SITE.cap} — {SITE.region}
+      </address>
+
       <p class="testo-sm nota">La prima mezz'ora non si paga.</p>
     </div>
 
@@ -55,14 +69,36 @@ const anno = new Date().getFullYear();
 
     <div class="colonna">
       <p class="etichetta">Dove lavoro</p>
+      {/* Le città che hanno una pagina diventano link, le altre restano testo:
+          così l'elenco non promette pagine che non esistono. */}
       <ul class="elenco spento">
-        {SITE.areas.map((a) => <li>{a}</li>)}
+        {
+          SITE.areas.map((a) => (
+            <li>
+              {SITE.pagineZona[a] ? <a href={SITE.pagineZona[a]}>{a}</a> : a}
+            </li>
+          ))
+        }
       </ul>
     </div>
 
     <div class="colonna">
       <p class="etichetta">Altrove</p>
       <ul class="elenco">
+        {/*
+          La scheda Google in cima e con il nome per esteso, non con il suo
+          dominio come gli altri: è l'unico link di questa colonna che serve a
+          qualcosa a chi legge — è lì che si vedono la mappa e le recensioni.
+        */}
+        {
+          SITE.google && (
+            <li>
+              <a href={SITE.google} rel="me noopener" target="_blank">
+                Scheda Google
+              </a>
+            </li>
+          )
+        }
         {
           SITE.profili.map((url) => (
             <li>
@@ -147,6 +183,12 @@ const anno = new Date().getFullYear();
 
   .contatto a:hover {
     border-bottom-color: var(--signal);
+  }
+
+  .dove {
+    font-style: normal;
+    color: var(--light-2);
+    margin-top: var(--sp-2);
   }
 
   .nota {

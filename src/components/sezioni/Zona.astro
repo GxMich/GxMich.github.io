@@ -1,0 +1,291 @@
+---
+/**
+ * L'impaginazione di una pagina-città.
+ *
+ * Qui dentro c'è solo la forma: il testo arriva tutto dalle proprietà, e ogni
+ * città ne ha uno suo. È la parte che decide se queste pagine funzionano o
+ * fanno danno — una pagina per città con lo stesso paragrafo e il nome
+ * sostituito è la definizione di contenuto duplicato, e Google la tratta come
+ * tale. Se un giorno il testo di due città si somiglia, il problema non è
+ * questo file: è che non c'era niente di diverso da dire, e allora la seconda
+ * pagina non andava scritta.
+ *
+ * Struttura fissa perché la pagina resti confrontabile con le altre: perché
+ * lavoro qui, che attività seguo, come funziona di persona, i lavori vicini,
+ * le domande della zona.
+ */
+import SchedaSito from '../comuni/SchedaSito.astro';
+import Invito from './Invito.astro';
+import { SITE } from '../../config.js';
+
+interface Lavoro {
+  href: string;
+  titolo: string;
+  cliente: string;
+  riassunto: string;
+  anno: number;
+  immagine?: string;
+}
+
+interface Props {
+  citta: string;
+  /** Il titolo in pagina, spezzato in righe come nelle altre testate. */
+  righe: string[];
+  intro: string;
+  /** Perché lavori proprio in questa zona: due o tre paragrafi. */
+  perche: string[];
+  /** Le attività tipiche del posto, con cosa serve a ciascuna. */
+  attivita: { titolo: string; testo: string }[];
+  /** Come funziona il lavoro di persona qui: distanza, incontri, tempi. */
+  presenza: { titolo: string; testo: string }[];
+  lavori?: Lavoro[];
+  /** Titolo della fascia dei lavori: dice perché quei lavori stanno qui. */
+  lavoriTitolo?: string;
+  faq: { d: string; r: string }[];
+}
+
+const {
+  citta,
+  righe,
+  intro,
+  perche,
+  attivita,
+  presenza,
+  lavori = [],
+  lavoriTitolo = 'Lavori della zona',
+  faq,
+} = Astro.props;
+---
+
+<header class="testata">
+  <div class="contenitore">
+    <p class="etichetta">Dove lavoro · {citta}</p>
+    <h1 class="display otturatore" data-anima>
+      {righe.map((r) => (
+        <span class="riga"><span>{r}</span></span>
+      ))}
+    </h1>
+    <p class="lede sfoca-entra" data-anima>{intro}</p>
+
+    <p class="testo-sm da-dove">
+      Sto a {SITE.city} ({SITE.provincia}). Di persona lavoro fra Vercelli, Casale
+      Monferrato, Novara e Chivasso; per i tool e le automazioni anche da remoto in tutta
+      Italia.
+    </p>
+  </div>
+</header>
+
+<section class="sezione" aria-labelledby="perche">
+  <div class="contenitore">
+    <h2 id="perche" class="h2 largo">Perché lavoro a {citta}.</h2>
+    <div class="prosa">
+      {perche.map((p) => (
+        <p class="sfoca-entra" data-anima>{p}</p>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="sezione incassata" aria-labelledby="chi">
+  <div class="contenitore">
+    <div class="intestazione">
+      <p class="etichetta">Chi mi cerca di solito</p>
+      <h2 id="chi" class="h2">Le attività per cui lavoro qui.</h2>
+    </div>
+
+    <ul class="voci">
+      {attivita.map((v) => (
+        <li class="sfoca-entra" data-anima>
+          <p class="h4">{v.titolo}</p>
+          <p class="testo-sm">{v.testo}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<section class="sezione" aria-labelledby="presenza">
+  <div class="contenitore">
+    <div class="intestazione">
+      <p class="etichetta">Come funziona di persona</p>
+      <h2 id="presenza" class="h2">Ci vediamo, e non è un dettaglio.</h2>
+    </div>
+
+    <ul class="voci tre">
+      {presenza.map((v) => (
+        <li class="sfoca-entra" data-anima>
+          <p class="h4">{v.titolo}</p>
+          <p class="testo-sm">{v.testo}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+{
+  lavori.length > 0 && (
+    <section class="sezione lavori" aria-labelledby="lavori">
+      <div class="contenitore">
+        <div class="intestazione">
+          <p class="etichetta">Da guardare</p>
+          <h2 id="lavori" class="h2">{lavoriTitolo}</h2>
+        </div>
+
+        <div class="griglia">
+          {lavori.map((l, i) => (
+            <SchedaSito
+              href={l.href}
+              titolo={l.titolo}
+              cliente={l.cliente}
+              riassunto={l.riassunto}
+              anno={l.anno}
+              immagine={l.immagine}
+              primo={i === 0}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<section class="sezione incassata" aria-labelledby="domande">
+  <div class="contenitore">
+    <h2 id="domande" class="h2 largo">Le domande di chi mi scrive da {citta}.</h2>
+
+    <dl class="faq">
+      {faq.map((q) => (
+        <div class="qa sfoca-entra" data-anima>
+          <dt class="h4">{q.d}</dt>
+          <dd class="testo-sm">{q.r}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<Invito />
+
+<style>
+  .testata {
+    padding-block: clamp(40px, 6vw, 88px) clamp(32px, 4vw, 56px);
+  }
+
+  .testata .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(24px, 3vw, 40px);
+  }
+
+  h1 {
+    max-width: 16ch;
+  }
+
+  .riga {
+    display: block;
+    overflow: hidden;
+  }
+
+  .riga > span {
+    display: block;
+  }
+
+  .testata .lede {
+    margin-top: clamp(18px, 2.4vw, 28px);
+    max-width: 58ch;
+  }
+
+  .da-dove {
+    margin-top: clamp(24px, 3vw, 36px);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--rule);
+    max-width: 62ch;
+    color: var(--ink-2);
+  }
+
+  .sezione {
+    padding-block: var(--section-sm);
+  }
+
+  .incassata {
+    background: var(--paper-sunk);
+  }
+
+  .intestazione {
+    display: grid;
+    gap: var(--sp-3);
+    padding-bottom: clamp(28px, 3.5vw, 48px);
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: clamp(28px, 3.5vw, 48px);
+  }
+
+  .largo {
+    max-width: 18ch;
+    padding-bottom: clamp(28px, 3.5vw, 48px);
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: clamp(28px, 3.5vw, 48px);
+  }
+
+  .prosa {
+    display: grid;
+    gap: var(--sp-5);
+    max-width: 66ch;
+  }
+
+  .voci {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(24px, 3vw, 44px) var(--col-gap);
+  }
+
+  .voci.tre {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .voci li {
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule);
+  }
+
+  .griglia {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(32px, 4vw, 64px);
+  }
+
+  .faq {
+    display: grid;
+    border-top: 1px solid var(--ink);
+  }
+
+  .qa {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--sp-3) clamp(16px, 3vw, 48px);
+    padding: var(--sp-5) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .qa dd {
+    margin: 0;
+    max-width: 66ch;
+  }
+
+  @media (max-width: 1023px) {
+    .voci {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .voci,
+    .voci.tre,
+    .griglia,
+    .qa {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

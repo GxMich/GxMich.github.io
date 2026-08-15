@@ -1,0 +1,149 @@
+---
+/**
+ * Casale Monferrato.
+ *
+ * Vale la stessa regola della pagina di Vercelli: se il testo si potesse
+ * riusare cambiando il nome della città, la pagina non andrebbe scritta.
+ * Qui la differenza è vera e non forzata — a Casale una fetta grossa dei
+ * clienti non abita in zona: arriva dal Monferrato, decide online prima di
+ * mettersi in macchina, e questo cambia cosa deve fare il sito.
+ */
+import { getCollection } from 'astro:content';
+import Guscio from '../layouts/Guscio.astro';
+import Zona from '../components/sezioni/Zona.astro';
+import { SITE } from '../config.js';
+import { ID, domande, briciole } from '../lib/schema.ts';
+
+const citta = 'Casale Monferrato';
+const percorso = '/siti-web-casale-monferrato';
+
+/* I due lavori che parlano la lingua di questa zona: l'agriturismo e
+   l'osteria. Sono progetti nati da me e la scheda lo dichiara — mostrarli
+   qui è mostrare come lavoro, non far credere di avere clienti a Casale. */
+const slugVicini = ['podere-vallescura', 'osteria-nodo'];
+
+const progetti = await getCollection('progetti');
+const nature = {
+  cliente: 'Per un cliente',
+  iniziativa: 'Su iniziativa',
+  interno: 'Lavoro interno',
+} as const;
+
+const lavori = slugVicini
+  .map((s) => progetti.find((p) => p.id === s))
+  .filter((p): p is NonNullable<typeof p> => Boolean(p))
+  .map((p) => ({
+    href: `/progetti/${p.id}`,
+    titolo: p.data.titolo,
+    cliente: nature[p.data.natura],
+    riassunto: p.data.riassunto,
+    anno: p.data.anno,
+    immagine: p.data.schermate[0]?.src ?? p.data.anteprima,
+  }));
+
+const perche = [
+  "Casale è la città più vicina a casa mia: da Trino è un quarto d'ora scarso. È la zona che conosco meglio dopo la mia, ed è anche quella dove il lavoro cambia di più, perché qui una parte dei clienti non abita a due strade di distanza.",
+  "Il Monferrato porta gente da fuori: chi prenota una cena, una camera o una visita in cantina decide guardando lo schermo, spesso da un'altra provincia e qualche settimana prima di partire. In quel momento il sito non è un biglietto da visita — è l'unica cosa che hai per farti scegliere, e compete con una scheda su un portale di prenotazioni che assomiglia a tutte le altre schede.",
+  "L'altra metà di Casale è la città vera, con i suoi negozi, i suoi artigiani e le sue imprese, che ha bisogno dell'opposto: farsi trovare da chi è già qui e cerca in fretta. Le due cose stanno nello stesso sito, ma non nella stessa pagina, e capire quale delle due conta per te è metà del lavoro.",
+];
+
+const attivita = [
+  {
+    titolo: 'Cantine e produttori',
+    testo:
+      "Chi arriva in cantina ha letto qualcosa prima. Il sito deve far vedere il posto, dire chi lo manda avanti e come si prenota una visita — tre cose che un catalogo di bottiglie non dice, e che decidono se la macchina parte davvero.",
+  },
+  {
+    titolo: 'Agriturismi e camere',
+    testo:
+      "Con sei camere non competi con un albergo: competi con la tua scheda su un portale, dove sei una riga fra trenta. Il sito è il posto dove puoi far percepire il luogo — e l'unico dove la prenotazione non ti costa commissione.",
+  },
+  {
+    titolo: 'Ristoranti e osterie',
+    testo:
+      'Metà dei tuoi clienti cerca stasera e da vicino, metà cerca il sabato di fra tre settimane e viene da fuori. Sono due modi diversi di leggere la stessa pagina, e la carta va scritta perché funzioni per tutti e due.',
+  },
+  {
+    titolo: 'Negozi, artigiani e imprese',
+    testo:
+      "La Casale di tutti i giorni: laboratori, botteghe, imprese tecniche. Qui non serve raccontare il territorio, serve comparire quando qualcuno cerca quello che fai e capire in dieci secondi che sei tu la persona giusta.",
+  },
+];
+
+const presenza = [
+  {
+    titolo: "Un quarto d'ora di strada",
+    testo:
+      "Casale è la città che ho più vicina: venirci non è una trasferta da mettere in preventivo. Ci vediamo da te, e per cantine e strutture ricettive il sopralluogo conta doppio — il posto è metà del prodotto.",
+  },
+  {
+    titolo: 'Le foto sono il progetto',
+    testo:
+      "Da queste parti il sito vive di immagini: la sala, le colline, la bottaia, le camere. Guardiamo insieme quello che hai, ti dico cosa manca davvero e cosa invece si può riusare senza rifare tutto da capo.",
+  },
+  {
+    titolo: 'Fatto per la stagione',
+    testo:
+      "Vendemmia, ponti, eventi: qui il calendario decide gli incassi. Costruisco le pagine perché tu possa cambiare da solo date, menù stagionali e disponibilità, senza dover chiamare me a settembre.",
+  },
+];
+
+const faq = [
+  {
+    d: 'Quanto costa un sito a Casale Monferrato?',
+    r: "Te lo dico alla prima risposta, con una cifra e non una forbice. Dipende da quante pagine servono, da chi scrive i testi, dalle fotografie che hai già e da quanti servizi vanno collegati. Restano fuori dominio e hosting, circa 50-120 euro l'anno pagati direttamente al fornitore così restano intestati a te. Non c'è nessun canone mensile obbligatorio.",
+  },
+  {
+    d: 'Ho già una scheda su un portale di prenotazioni: mi serve anche un sito?',
+    r: "Il portale ti porta persone che stavano cercando una struttura qualsiasi, e su ogni prenotazione trattiene una commissione. Il sito ti porta le persone che stavano cercando te, e non trattiene niente. Non sono alternativi: il sito è il posto dove chi ti ha visto sul portale va a controllare se sei davvero come sembri.",
+  },
+  {
+    d: 'Il sito deve essere anche in inglese?',
+    r: "Dipende da chi arriva davvero: se hai ospiti stranieri con una certa regolarità sì, e in quel caso ne parliamo prima di scrivere i testi, perché una versione tradotta bene si progetta dall'inizio e non si appiccica alla fine. Se invece i tuoi clienti sono quasi tutti italiani, l'inglese è lavoro in più che non ti torna indietro.",
+  },
+  {
+    d: 'Lavori anche nei paesi del Monferrato?',
+    r: "Sì. Di persona copro una sessantina di chilometri attorno a Trino: Casale, i paesi delle colline intorno, Vercelli, Chivasso e Novara stanno dentro. Se sei più lontano ne parliamo lo stesso — cambia solo quante volte riusciamo a vederci di persona.",
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: `Realizzazione siti web a ${citta}`,
+    serviceType: 'Progettazione e sviluppo di siti web per attività locali',
+    provider: { '@id': ID.persona },
+    areaServed: {
+      '@type': 'City',
+      name: citta,
+      containedInPlace: { '@type': 'AdministrativeArea', name: SITE.region },
+    },
+    url: `${SITE.url}${percorso}`,
+  },
+  domande(faq),
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: `Siti web a ${citta}`, percorso },
+  ]),
+];
+---
+
+<Guscio
+  titolo="Siti web a Casale Monferrato — freelance | Michele Modica"
+  descrizione="Siti su misura per cantine, agriturismi, ristoranti e negozi di Casale Monferrato. Prezzo detto prima, dominio intestato a te, nessun canone obbligatorio."
+  ogImage="/og/home.png"
+  jsonLd={jsonLd}
+>
+  <Zona
+    citta={citta}
+    righe={['Siti su misura', 'per chi lavora', 'a Casale.']}
+    intro="Sono uno sviluppatore web di Trino, a un quarto d'ora da Casale Monferrato. Costruisco siti per cantine, agriturismi, ristoranti, negozi e imprese del Monferrato: fatti sul posto e su chi ci lavora, non su un modello comprato."
+    perche={perche}
+    attivita={attivita}
+    presenza={presenza}
+    lavori={lavori}
+    lavoriTitolo="Due lavori che parlano questa lingua"
+    faq={faq}
+  />
+</Guscio>

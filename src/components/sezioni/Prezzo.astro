@@ -46,6 +46,27 @@ const patti = [
       Fuori dal prezzo restano solo dominio e hosting — circa 50–120 € l'anno, pagati da te
       direttamente al fornitore, così restano intestati a te.
     </p>
+
+    {/*
+      I confini stanno anche qui, non solo in fondo a /servizi.
+
+      È la sezione che convince di più — dire prima dove non arrivo è il
+      segnale che vale di più fra tutti quelli che posso dare — e finché
+      viveva solo due clic più in là la leggeva quasi nessuno. Qui è un
+      estratto di una riga, con la porta aperta verso l'elenco intero: sta
+      accanto al prezzo perché è lì che uno si sta chiedendo cosa compra.
+    */}
+    <p class="testo-sm confini sfoca-entra" data-anima>
+      Su alcune cose ti mando da qualcun altro: e-commerce con magazzino e spedizioni,
+      prenotazioni con incasso anticipato, consegne sotto la settimana. Te lo dico prima,
+      non a lavoro iniziato.
+    </p>
+
+    <p class="sfoca-entra" data-anima>
+      <a class="verso testo-sm" href="/servizi#escluso">
+        Dove posso essere utile, e dove no <span aria-hidden="true">→</span>
+      </a>
+    </p>
   </div>
 </section>
 
@@ -91,6 +112,30 @@ const patti = [
     padding-top: var(--sp-5);
     border-top: 1px solid var(--rule);
     max-width: 58ch;
+  }
+
+  .confini {
+    margin-top: var(--sp-5);
+    max-width: 58ch;
+    color: var(--ink-2);
+  }
+
+  .verso {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin-top: var(--sp-3);
+    font-weight: 500;
+    color: var(--signal-ink);
+    text-decoration: none;
+  }
+
+  .verso span {
+    transition: transform var(--dur-1) var(--ease-out);
+  }
+
+  .verso:hover span {
+    transform: translateX(4px);
   }
 
   /* Lo sfalsamento della comparsa: le tre colonne non devono entrare insieme,

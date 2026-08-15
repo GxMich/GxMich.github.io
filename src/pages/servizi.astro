@@ -103,8 +103,8 @@ const jsonLd = [
 ---
 
 <Guscio
-  titolo="Un sito su misura, senza sorprese — Michele Modica"
-  descrizione="Cosa comprende, cosa resta fuori, per chi è pensato e cosa fa variare il prezzo. Detto prima di iniziare, senza giri di parole."
+  titolo="Siti su misura a Vercelli e Casale — Servizi | Michele Modica"
+  descrizione="Cosa comprende un sito su misura, cosa resta fuori e cosa fa variare il prezzo. Per attività fra Vercelli, Casale Monferrato e Novara. Nessun canone obbligatorio."
   ogImage="/og/servizi.png"
   jsonLd={jsonLd}
 >
@@ -380,8 +380,19 @@ const jsonLd = [
     text-decoration: none;
     font-weight: 500;
     display: inline-flex;
+    align-items: center;
     gap: var(--sp-2);
     margin-top: clamp(24px, 3vw, 40px);
+  }
+
+  /* La freccia si sposta al passaggio, come nelle schede dei lavori: era
+     l'unico link a freccia del sito che restava fermo. */
+  .freccia span {
+    transition: transform var(--dur-1) var(--ease-out);
+  }
+
+  .freccia:hover span {
+    transform: translateX(4px);
   }
 
   .faq {

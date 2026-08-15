@@ -20,8 +20,19 @@ import Icona from '../comuni/Icona.astro';
 
     <a class="strada prima sfoca-entra" href="/servizi" data-anima>
       <span class="riga-alta" aria-hidden="true"></span>
+      {/*
+        Il destinatario detto per nome, non lasciato indovinare.
+
+        Le due schede si distinguono già a colpo d'occhio, ma la differenza che
+        si vede è «una chiara e una scura»: non dice a chi parlano. Un
+        ristoratore che legge «Per aziende e professionisti» sulla seconda
+        capisce in mezzo secondo che non lo riguarda, e smette di leggerla.
+      */}
       <span class="testa">
-        <span class="indice dato">01</span>
+        <span class="marca">
+          <span class="indice dato">01</span>
+          <span class="pubblico etichetta">Per attività locali</span>
+        </span>
         <span class="segno"><Icona nome="finestra" dimensione={22} /></span>
       </span>
       <span class="etichetta">Hai un'attività</span>
@@ -39,7 +50,10 @@ import Icona from '../comuni/Icona.astro';
     <a class="strada seconda su-palco sfoca-entra" href="/progetti" data-anima data-parallasse>
       <span class="riga-alta" aria-hidden="true"></span>
       <span class="testa">
-        <span class="indice dato">02</span>
+        <span class="marca">
+          <span class="indice dato">02</span>
+          <span class="pubblico etichetta">Per aziende e professionisti</span>
+        </span>
         <span class="segno"><Icona nome="flusso" dimensione={22} /></span>
       </span>
       <span class="etichetta">Hai un processo che si inceppa</span>
@@ -122,9 +136,27 @@ import Icona from '../comuni/Icona.astro';
     border-bottom: 1px solid var(--rule);
   }
 
+  .marca {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-3);
+    min-width: 0;
+  }
+
   .indice {
     color: var(--ink-3);
     letter-spacing: 0.14em;
+  }
+
+  /* Un riquadro sottile e non un fondo pieno: deve etichettare la scheda,
+     non competere con il titolo che sta sotto. */
+  .pubblico {
+    padding: 4px 9px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    color: var(--ink-2);
+    white-space: nowrap;
   }
 
   .segno {

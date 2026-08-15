@@ -45,6 +45,15 @@ const areaServita = [
   { '@type': 'Country', name: 'Italia' },
 ];
 
+/**
+ * I profili pubblici più la scheda Google, in un elenco solo.
+ *
+ * `sameAs` serve a dire «questo sito e quella scheda sono la stessa persona».
+ * Senza la scheda dentro, Google ha due schede da collegare a mano e spesso
+ * non le collega: il sito resta senza recensioni e la scheda senza sito.
+ */
+const profiliCollegati = [SITE.google, ...SITE.profili].filter(Boolean);
+
 const orari = SITE.orari.map((o) => ({
   '@type': 'OpeningHoursSpecification',
   dayOfWeek: o.giorni,
@@ -64,7 +73,7 @@ export const persona = {
   email: `mailto:${SITE.email}`,
   telephone: `+${SITE.whatsapp}`,
   address: indirizzo,
-  ...(SITE.profili.length > 0 && { sameAs: SITE.profili }),
+  ...(profiliCollegati.length > 0 && { sameAs: profiliCollegati }),
   knowsAbout: [
     'Sviluppo web',
     'Siti per attività locali',
@@ -100,7 +109,8 @@ export const attivita = {
   areaServed: areaServita,
   openingHoursSpecification: orari,
   founder: { '@id': ID.persona },
-  ...(SITE.profili.length > 0 && { sameAs: SITE.profili }),
+  ...(SITE.google && { hasMap: SITE.google }),
+  ...(profiliCollegati.length > 0 && { sameAs: profiliCollegati }),
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
     name: 'Servizi',

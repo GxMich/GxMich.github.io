@@ -43,6 +43,21 @@ export const SITE = {
   ],
 
   /**
+   * Le città che hanno una pagina loro.
+   *
+   * Solo dove c'è davvero qualcosa di diverso da dire: una pagina per ogni
+   * comune del raggio, con lo stesso testo e il nome sostituito, è contenuto
+   * duplicato — Google la riconosce e indebolisce anche le pagine buone.
+   * Trino non ce l'ha perché è la sede e ne parlano già home e contatti;
+   * Novara e Chivasso non ancora, e finché non ce l'hanno restano testo
+   * semplice nel piede senza che si rompa niente.
+   */
+  pagineZona: {
+    Vercelli: '/siti-web-vercelli',
+    'Casale Monferrato': '/siti-web-casale-monferrato',
+  },
+
+  /**
    * Coordinate del centro della zona servita. Non è l'indirizzo di casa: a
    * Google serve un punto per capire il raggio d'azione, e per chi lavora
    * senza sede aperta al pubblico il centro del paese va benissimo.
@@ -79,6 +94,26 @@ export const SITE = {
     'https://www.linkedin.com/in/michele-modica98',
     'https://github.com/GxMich',
   ],
+
+  /**
+   * La scheda Google (Profilo dell'attività).
+   *
+   * Sta fuori da `profili` perché non è un profilo social: è il pezzo che
+   * decide se compari nella mappa quando qualcuno cerca «sviluppatore web
+   * Vercelli», ed è l'unico posto dove qualcuno può lasciare una recensione
+   * pubblica. Per questo in pagina ha un'etichetta sua invece di finire
+   * nell'elenco «Altrove» insieme a LinkedIn e GitHub.
+   *
+   * L'indirizzo è quello corto ufficiale di Google (share.google): non scade e
+   * non si porta dietro i parametri di tracciamento della condivisione.
+   *
+   * Quando ti serve il link diretto per chiedere una recensione — quello che
+   * apre subito le stelline — lo trovi nella dashboard del profilo, alla voce
+   * «Chiedi recensioni»: è un indirizzo g.page/r/… e va messo qui sotto in
+   * `googleRecensioni`, non al posto di questo.
+   */
+  google: 'https://share.google/5jKMRITc1zvJk9pa7',
+  googleRecensioni: null,
 
   /**
    * Foto usata nei dati strutturati, dove serve un indirizzo pubblico stabile.

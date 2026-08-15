@@ -22,9 +22,13 @@ import { ID, persona, briciole } from '../lib/schema.ts';
 const tappe = [
   {
     anno: '2023',
-    titolo: 'Ho iniziato programmando da autodidatta',
+    /* La linea temporale si apre qui, quindi questa tappa dà il tono a tutte
+       le altre: la lezione va prima e il progetto sbagliato dopo, come prova.
+       Al contrario — com'era — la prima cosa che si leggeva era un fallimento,
+       e chi scorre in fretta si ferma alla prima cosa. */
+    titolo: 'Ho imparato che finire un progetto non basta',
     testo:
-      'Il primo progetto finito era un tracciatore di allenamenti uguale a centinaia di altri. Non lo apriva nessuno, me compreso. Mi ha insegnato la cosa che conta: finire non basta, bisogna risolvere qualcosa a qualcuno.',
+      "Ho cominciato da autodidatta, e il primo lavoro finito era un tracciatore di allenamenti uguale a centinaia di altri: non lo apriva nessuno, me compreso. Da lì è cambiato il modo di scegliere cosa costruire — prima cerco il problema di qualcuno, poi scrivo il codice.",
   },
   {
     anno: '2024 – 2025',
@@ -99,8 +103,8 @@ const jsonLd = [
 ---
 
 <Guscio
-  titolo="Chi sono e come lavoro — Michele, sviluppatore web"
-  descrizione="Sviluppatore web di Trino, fra Vercelli, Casale e Novara. Come ci sono arrivato, come lavoro e cosa resta una decisione mia."
+  titolo="Chi sono — sviluppatore web a Trino e Vercelli | Michele Modica"
+  descrizione="Sviluppatore web di Trino (VC), lavoro fra Vercelli, Casale Monferrato e Novara. Come ci sono arrivato, come lavoro e cosa resta una decisione mia."
   ogImage="/og/chi-sono.png"
   jsonLd={jsonLd}
 >

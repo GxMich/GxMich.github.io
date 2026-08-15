@@ -11,9 +11,11 @@
  * l'ordine non segue la quantità, segue chi paga.
  */
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import Guscio from '../../layouts/Guscio.astro';
 import SchedaSito from '../../components/comuni/SchedaSito.astro';
 import Invito from '../../components/sezioni/Invito.astro';
+import { originale } from '../../lib/immagini.ts';
 import { briciole, elencoProgetti } from '../../lib/schema.ts';
 
 const progetti = await getCollection('progetti');
@@ -76,6 +78,24 @@ const jsonLd = [
         Ognuno con il problema di partenza, la strada che ho scelto e perché quella, e cosa
         è cambiato davvero. Compreso quello che non ha funzionato.
       </p>
+
+      {/*
+        Perché tanti «su iniziativa».
+
+        Ogni scheda dichiara da dove nasce il lavoro, e sulla maggior parte c'è
+        scritto che l'ho scelto io. Detto senza spiegazione sembra una cosa da
+        nascondere, e chi valuta si chiede se ho clienti veri. Spiegato, dice
+        l'opposto: sono lavori fatti per intero, con vincoli veri, invece di
+        finti mockup — e sono l'unica cosa che potevo mostrare prima di avere
+        una fila di clienti da mostrare.
+      */}
+      <p class="testo-sm nota sfoca-entra" data-anima>
+        Su parecchi c'è scritto <strong>su iniziativa</strong>: li ho scelti io, non me li ha
+        commissionati nessuno. Li ho costruiti per intero lo stesso — contenuti veri,
+        vincoli veri, messi online — perché un portfolio di bozze non dimostra niente. Quelli
+        nati da un cliente e quelli nati da me sono etichettati uno per uno, così sai sempre
+        cosa stai guardando.
+      </p>
     </div>
   </header>
 
@@ -121,10 +141,35 @@ const jsonLd = [
             </p>
           </div>
 
+          {/*
+            Una miniatura per riga.
+
+            I siti qui sopra si guardano, i sistemi si leggevano soltanto: due
+            trattamenti diversi che facevano sembrare la seconda metà del
+            portfolio materiale di serie B. La miniatura è piccola e in fondo
+            alla riga di proposito — qui il titolo resta la porta d'ingresso,
+            l'immagine dice solo «c'è qualcosa da vedere». Decorativa, quindi
+            alt vuoto: il nome del progetto è già scritto accanto.
+          */}
           <ul class="elenco">
-            {sistemi.map((p) => (
+            {sistemi.map((p) => {
+              const miniatura = originale(p.data.anteprima);
+
+              return (
               <li class="riga-sistema sfoca-entra" data-anima>
                 <a href={`/progetti/${p.id}`}>
+                  {miniatura && (
+                    <span class="mini">
+                      <Image
+                        src={miniatura}
+                        alt=""
+                        widths={[160, 320]}
+                        sizes="120px"
+                        formats={['avif', 'webp']}
+                        loading="lazy"
+                      />
+                    </span>
+                  )}
                   <span class="nome h3">{p.data.titolo}</span>
                   <span class="testo-sm sunto">{p.data.riassunto}</span>
                   <span class="etichetta natura">{nature[p.data.natura]}</span>
@@ -136,7 +181,8 @@ const jsonLd = [
                   </span>
                 </a>
               </li>
-            ))}
+              );
+            })}
           </ul>
         </div>
       </section>
@@ -172,6 +218,19 @@ const jsonLd = [
 
   .testata .lede {
     margin-top: clamp(20px, 2.6vw, 32px);
+  }
+
+  .nota {
+    margin-top: var(--sp-5);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--rule);
+    max-width: 68ch;
+    color: var(--ink-2);
+  }
+
+  .nota strong {
+    color: var(--ink);
+    font-weight: 500;
   }
 
   .famiglia {
@@ -213,7 +272,7 @@ const jsonLd = [
 
   .riga-sistema a {
     display: grid;
-    grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) auto auto auto;
+    grid-template-columns: 104px minmax(0, 4fr) minmax(0, 6fr) auto auto auto;
     gap: var(--sp-3) clamp(16px, 2.6vw, 36px);
     align-items: center;
     padding: var(--sp-5) 0;
@@ -224,6 +283,38 @@ const jsonLd = [
 
   .riga-sistema a:hover {
     padding-inline: var(--sp-3);
+  }
+
+  /* Stessa cornice scura delle schede dei siti: la schermata chiara ha
+     bisogno di uno sfondo che la stacchi, altrimenti si scioglie nella
+     pagina. Il ritaglio è fisso perché le miniature restino allineate anche
+     quando gli originali hanno proporzioni diverse. */
+  .mini {
+    display: block;
+    background: var(--stage);
+    border-radius: var(--radius-2);
+    padding: 5px;
+    overflow: hidden;
+  }
+
+  .mini img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top center;
+    border-radius: 1px;
+    transition: transform var(--dur-3) var(--ease-out);
+  }
+
+  .riga-sistema a:hover .mini img {
+    transform: scale(1.04);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .riga-sistema a:hover .mini img {
+      transform: none;
+    }
   }
 
   .nome {
@@ -289,23 +380,39 @@ const jsonLd = [
       grid-template-columns: 1fr;
     }
 
+    /* La miniatura passa a colonna sua, alta quanto tutta la riga: sopra il
+       testo occuperebbe mezza schermata e trasformerebbe l'elenco in una
+       griglia, che è esattamente la forma che questa sezione non vuole. */
     .riga-sistema a {
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: 68px minmax(0, 1fr) auto;
+      column-gap: var(--sp-4);
       row-gap: var(--sp-2);
+      align-items: start;
+    }
+
+    .mini {
+      grid-column: 1;
+      grid-row: 1 / span 3;
+      align-self: center;
+    }
+
+    .nome {
+      grid-column: 2 / -1;
+      grid-row: 1;
     }
 
     .sunto {
-      grid-column: 1 / -1;
+      grid-column: 2 / -1;
       grid-row: 2;
     }
 
     .natura {
-      grid-column: 1;
+      grid-column: 2;
       grid-row: 3;
     }
 
     .stato {
-      grid-column: 2;
+      grid-column: 3;
       grid-row: 3;
       justify-self: end;
     }
