@@ -2,10 +2,14 @@
 /**
  * Home — direzione nuova.
  *
- * Frame 01 → 05 in questo passo: apertura, vetrina, due strade, metodo, prezzo.
- * I frame 06 → 10 (chi te lo fa, prova tecnica, domande, invito) arrivano nel
- * passo successivo. La versione precedente resta nella storia di git e in
- * archive/pre-redesign-v2-2026-08-03/.
+ * Dieci frame: apertura, vetrina, due strade, metodo, scelta, prezzo, chi te lo
+ * fa, prova tecnica, domande, invito. La versione precedente resta nella storia
+ * di git e in archive/pre-redesign-v2-2026-08-03/.
+ *
+ * L'ordine non è casuale ed è la cosa da non toccare a cuor leggero: cosa
+ * faccio (due strade) → come lo faccio (metodo) → rispetto a cos'altro
+ * (scelta) → quanto costa (prezzo) → chi sono (chi). Il confronto arriva
+ * prima del prezzo perché è lì che serve: dà il metro per leggerlo.
  */
 import { getCollection } from 'astro:content';
 import Guscio from '../layouts/Guscio.astro';
@@ -13,6 +17,7 @@ import Apertura from '../components/sezioni/Apertura.astro';
 import Vetrina from '../components/sezioni/Vetrina.astro';
 import DueStrade from '../components/sezioni/DueStrade.astro';
 import Metodo from '../components/sezioni/Metodo.astro';
+import Scelta from '../components/sezioni/Scelta.astro';
 import Prezzo from '../components/sezioni/Prezzo.astro';
 import Chi from '../components/sezioni/Chi.astro';
 import Sistemi from '../components/sezioni/Sistemi.astro';
@@ -84,6 +89,8 @@ const jsonLd = [persona, attivita, sitoWeb];
   <DueStrade />
 
   <Metodo />
+
+  <Scelta />
 
   <Prezzo />
 
