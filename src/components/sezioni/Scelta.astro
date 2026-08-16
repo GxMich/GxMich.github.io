@@ -1,0 +1,328 @@
+---
+/**
+ * Frame 05 — le tre strade, messe una accanto all'altra.
+ *
+ * Il ristoratore che arriva qui non ha in testa «agenzia o intelligenza
+ * artificiale»: ha in testa quanto costa, quanto ci mette, chi decide come
+ * viene, con chi parla se si rompe e di chi è il sito. Per questo le righe
+ * sono le sue domande e le colonne sono le tre strade, non il contrario: una
+ * sezione intitolata «perché io e non un'agenzia» gli chiederebbe di adottare
+ * una domanda che non è la sua, con il venditore che si autoassegna la
+ * risposta. Così invece esce uno strumento di decisione, e il confronto arriva
+ * come conseguenza.
+ *
+ * Sta fra Metodo e Prezzo perché è il punto esatto in cui uno pensa «sì, ma
+ * potrei anche…», e perché arrivare al prezzo avendo già il metro cambia come
+ * lo si legge. Dopo le quattro carte agganciate di Metodo, una sezione ferma è
+ * anche un sollievo.
+ *
+ * Nessun nome di marca. Oltre a invecchiare male, nominarli sposta il testo
+ * dentro la pubblicità comparativa, dove ogni affermazione dev'essere
+ * verificabile e oggettiva; le categorie generiche non hanno quel problema.
+ */
+const modi = [
+  {
+    indice: '01',
+    nome: 'Un generatore automatico',
+    sotto: "Descrivi l'attività, in un pomeriggio il sito c'è.",
+  },
+  {
+    indice: '02',
+    nome: "Un'agenzia",
+    sotto: 'Più persone: chi ti riceve, chi progetta, chi scrive.',
+  },
+  {
+    indice: '03',
+    nome: 'Io',
+    sotto: 'Una persona sola, pochi progetti per volta.',
+  },
+];
+
+/**
+ * Le risposte stanno nello stesso ordine di `modi`: la terza è sempre la mia.
+ *
+ * La riga «Con chi parli» è quella che tiene in piedi le altre quattordici
+ * celle, perché è l'unica in cui perdo, ed è dentro la griglia invece che in
+ * una nota a fondo pagina. Stessa meccanica del «Cosa manca» nei casi studio.
+ *
+ * Nessuna cifra inventata: «qualche decina», «quasi sempre», «di solito». Gli
+ * unici numeri sono i tre o quattro settimane e i 50-120 € l'anno, che sono
+ * già detti altrove sul sito e sono veri.
+ */
+const righe = [
+  {
+    domanda: 'Quanto costa',
+    risposte: [
+      'Un canone mensile di qualche decina di euro. Basso, e non finisce: si paga finché il sito esiste.',
+      'Quasi sempre più di me, perché dentro ci sono più stipendi. In cambio hanno più mani, e possono seguire anche social e campagne.',
+      "Una cifra sola, detta nella prima risposta. Fuori restano dominio e hosting, 50-120 € l'anno, che paghi tu.",
+    ],
+  },
+  {
+    domanda: 'Quanto tempo ci vuole',
+    risposte: [
+      'Un pomeriggio. È la cosa che sa fare meglio di chiunque.',
+      'Da qualche settimana a qualche mese, secondo quanto è pieno lo studio.',
+      'Tre o quattro settimane. Sotto la settimana non lavoro: comprimere si vede nel risultato.',
+    ],
+  },
+  {
+    domanda: 'Chi decide come viene',
+    risposte: [
+      'Un modello addestrato su milioni di siti che esistono già: propone la cosa media. Se il tuo concorrente descrive la stessa attività, esce lo stesso sito.',
+      "Un gruppo. Chi ti ha ascoltato spesso non è chi progetta, e un pezzo del racconto si perde nel passaggio.",
+      'Io, dopo essere venuto da te. La macchina la uso per esplorare in fretta e per il codice ripetitivo; cosa tenere e cosa togliere lo decido io.',
+    ],
+  },
+  {
+    domanda: 'Con chi parli quando qualcosa non va',
+    risposte: [
+      "Con un'assistenza a chat, che non sa cos'è la tua attività.",
+      'Con un referente, negli orari dello studio. Poi lo gira a chi di dovere.',
+      'Con me, sempre. Ma ho un lavoro a turni: rispondo la sera e nei fine settimana. È la riga in cui perdo.',
+    ],
+  },
+  {
+    domanda: 'Di chi è il sito',
+    risposte: [
+      'Della piattaforma. Vive lì finché paghi il canone, e spostarlo altrove di solito non si può.',
+      'Dipende dal contratto. Vale la pena chiedere a chi restano intestati dominio e hosting, prima di firmare.',
+      'Tuo. Dominio e hosting intestati a te e pagati da te: se domani vuoi cambiare, cambi senza chiedermelo.',
+    ],
+  },
+];
+
+const MIA = 2;
+---
+
+<section class="scelta" aria-labelledby="scelta-titolo">
+  <div class="contenitore">
+    <div class="intestazione">
+      <h2 id="scelta-titolo" class="h2 sfoca-entra" data-anima>Ci sono tre modi di farsi un sito.</h2>
+      <p class="lede sfoca-entra" data-anima>
+        Due non sono io, e a volte sono la scelta giusta. Qui c'è cosa cambia davvero — compresa
+        la riga in cui quello che conviene meno sono io.
+      </p>
+    </div>
+
+    <div class="tavola">
+      <div class="testa">
+        {
+          modi.map((m, i) => (
+            <div class:list={['colonna', { mia: i === MIA }]}>
+              <p class="dato indice">{m.indice}</p>
+              <p class="h4 nome">{m.nome}</p>
+              <p class="testo-sm sotto">{m.sotto}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      {
+        righe.map((r) => (
+          <div class="fascia sfoca-entra" data-anima>
+            <h3 class="etichetta domanda">{r.domanda}</h3>
+            <div class="celle">
+              {r.risposte.map((t, i) => (
+                <p class:list={['cella', 'testo-sm', { mia: i === MIA }]}>
+                  {/*
+                    Una griglia CSS non dichiara la relazione fra una cella e la
+                    sua colonna: senza questo, a chi usa un lettore di schermo
+                    la frase arriva senza soggetto. Sopra gli 860px l'etichetta
+                    resta solo per l'assistiva; sotto diventa visibile ed è
+                    l'unico modo di orientarsi, perché lì la testa non c'è più.
+                  */}
+                  <span class="chi etichetta solo-lettori">{modi[i].nome}</span>
+                  {t}
+                </p>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    {/*
+      La coda manda via due lettori su tre, ed è quello che rende credibile la
+      colonna 03: se le altre due non fossero mai la risposta giusta, la griglia
+      sopra sarebbe una brochure.
+    */}
+    <p class="testo-sm coda sfoca-entra" data-anima>
+      Se ti serve essere online la settimana prossima spendendo il meno possibile, la prima
+      colonna è la risposta giusta, e te lo dico prima di prendere il lavoro. Se ti serve una
+      squadra che segua anche social, campagne e video, è la seconda. La terza ha senso quando
+      vuoi che il sito somigli alla tua attività e non a un modello.
+    </p>
+  </div>
+</section>
+
+<style>
+  .scelta {
+    padding-block: var(--section);
+    background: var(--paper-sunk);
+  }
+
+  /* Stessa proporzione di Metodo e Domande: le intestazioni di sezione non
+     devono cambiare misura da una sezione all'altra. */
+  .intestazione {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(24px, 4vw, 64px);
+    align-items: start;
+    padding-bottom: clamp(32px, 5vw, 72px);
+  }
+
+  .intestazione h2 {
+    max-width: 14ch;
+  }
+
+  .tavola {
+    border-top: 1px solid var(--ink);
+  }
+
+  .testa,
+  .celle {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /**
+   * La testa si aggancia sotto l'intestazione del sito, che è a sua volta
+   * agganciata a quota zero ed è alta `--header-h`.
+   *
+   * Serve perché le cinque fasce sono più lunghe di una schermata: senza,
+   * arrivati alla terza domanda non si sa più quale colonna è quale, e
+   * l'alternativa — ripetere i tre nomi sopra ogni fascia — trasformerebbe la
+   * sezione in un elenco di quindici voci. Costa tre righe di CSS e nessun
+   * JavaScript.
+   */
+  .testa {
+    position: sticky;
+    top: var(--header-h);
+    z-index: var(--z-sticky);
+    background: var(--paper-sunk);
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .colonna,
+  .cella {
+    padding-inline: clamp(16px, 2vw, 28px);
+    border-left: 1px solid var(--rule);
+  }
+
+  .colonna:first-child,
+  .cella:first-child {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .colonna:last-child,
+  .cella:last-child {
+    padding-right: 0;
+  }
+
+  .colonna {
+    position: relative;
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+    padding-block: var(--sp-5);
+  }
+
+  .indice {
+    color: var(--ink-3);
+  }
+
+  .sotto {
+    max-width: 30ch;
+    color: var(--ink-2);
+  }
+
+  /**
+   * La mia colonna si distingue per peso ottico, non per tinta: un filetto
+   * d'accento sopra e il testo in `--ink` pieno invece che in `--ink-2`.
+   *
+   * Colorare la colonna, metterci una spunta o un badge «il più scelto» è
+   * esattamente il vestito da tabella comparativa che qui non serve — e in
+   * questo sito l'accento significa azione, non «questo è il migliore».
+   */
+  .colonna.mia::before {
+    content: '';
+    position: absolute;
+    inset: -1px 0 auto 0;
+    height: 2px;
+    background: var(--signal);
+  }
+
+  .fascia {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* La domanda sta a tutta riga sopra le tre risposte, non in una prima
+     colonna: toglie l'incrocio riga/colonna e fa leggere il blocco come un
+     documento invece che come un listino. Le colonne restano incolonnate
+     grazie ai filetti verticali fra le celle. */
+  .domanda {
+    padding: var(--sp-5) 0 var(--sp-3);
+    color: var(--ink);
+  }
+
+  .cella {
+    padding-bottom: var(--sp-5);
+    max-width: 42ch;
+    color: var(--ink-2);
+  }
+
+  .cella.mia {
+    color: var(--ink);
+  }
+
+  .coda {
+    margin-top: clamp(28px, 3.5vw, 44px);
+    max-width: 62ch;
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 860px) {
+    .intestazione {
+      grid-template-columns: 1fr;
+    }
+
+    /* Sotto gli 860px tre colonne di testo non stanno: la testa sparisce e
+       ogni cella si porta il nome della sua colonna. Si legge come cinque
+       domande con tre risposte etichettate ciascuna, che è l'unica forma che
+       regge a 375px senza scorrimento orizzontale né contenuto nascosto. */
+    .testa {
+      display: none;
+    }
+
+    .celle {
+      grid-template-columns: 1fr;
+    }
+
+    .cella {
+      border-left: 0;
+      padding-inline: 0;
+      max-width: none;
+    }
+
+    .cella + .cella {
+      padding-top: var(--sp-4);
+      border-top: 1px solid var(--rule);
+    }
+
+    .chi {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip-path: none;
+      display: block;
+      margin-bottom: var(--sp-2);
+    }
+
+    .cella.mia .chi {
+      color: var(--signal-ink);
+    }
+  }
+</style>
