@@ -96,20 +96,45 @@ const passaggio = {
       // Il tema per primo: se la scelta salvata arrivasse dopo il primo
       // disegno, chi ha scelto lo scuro vedrebbe un lampo bianco a ogni
       // pagina. Senza scelta salvata non si scrive niente e comanda il sistema.
-      try {
-        var salvato = localStorage.getItem('tema');
-        if (salvato === 'chiaro' || salvato === 'scuro') {
-          document.documentElement.dataset.tema = salvato;
+      function vestiRadice() {
+        try {
+          var salvato = localStorage.getItem('tema');
+          if (salvato === 'chiaro' || salvato === 'scuro') {
+            document.documentElement.dataset.tema = salvato;
+          }
+        } catch (e) {
+          /* navigazione privata: resta la preferenza di sistema */
         }
-      } catch (e) {
-        /* navigazione privata: resta la preferenza di sistema */
+
+        // Il contenuto si nasconde solo se c'è qualcuno che può rivelarlo.
+        // Senza questa riga, un errore di JavaScript lascia la pagina bianca.
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          document.documentElement.classList.add('puo-animare');
+        }
       }
 
-      // Il contenuto si nasconde solo se c'è qualcuno che può rivelarlo.
-      // Senza questa riga, un errore di JavaScript lascia la pagina bianca.
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        document.documentElement.classList.add('puo-animare');
-      }
+      vestiRadice();
+
+      /**
+       * E daccapo a ogni navigazione, perché il ClientRouter cancella quello
+       * che abbiamo appena scritto.
+       *
+       * Scambiando le pagine, Astro riporta gli attributi di <html> a quelli
+       * del documento in arrivo: quel documento è HTML statico e non ha né
+       * `data-tema` né la classe `puo-animare`, che nascono qui a runtime.
+       * Risultato: chi aveva scelto il chiaro con il sistema in scuro vedeva
+       * la pagina successiva tornare scura, e le comparse smettevano di
+       * montarsi dalla seconda pagina in poi.
+       *
+       * `astro:after-swap` scatta a DOM già scambiato ma prima del disegno,
+       * quindi si riscrive tutto senza che si veda un lampo. Il listener sta
+       * su `document`, che non viene sostituito, e infatti sopravvive alle
+       * navigazioni: questo script gira una volta sola per visita.
+       *
+       * Va tenuto qui dentro e non in Tema.astro: `astro:page-load` arriva
+       * troppo tardi — dopo il disegno — e il lampo si vedrebbe.
+       */
+      document.addEventListener('astro:after-swap', vestiRadice);
     </script>
 
     <ClientRouter fallback="none" />
