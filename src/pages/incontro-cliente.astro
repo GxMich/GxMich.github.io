@@ -910,8 +910,15 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
     align-content: start;
     max-height: calc(100vh - var(--header-h) - var(--sp-6));
     overflow-y: auto;
+    /* Si scorre ancora, ma senza la barra: su un riepilogo a fianco della
+       pagina era più rumore che aiuto. */
+    scrollbar-width: none;
     padding: var(--sp-5) 0 var(--sp-5) var(--sp-5);
     border-left: 1px solid var(--ink);
+  }
+
+  .riepilogo::-webkit-scrollbar {
+    display: none;
   }
 
   .r-cliente {
