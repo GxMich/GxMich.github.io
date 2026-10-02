@@ -65,6 +65,15 @@ for (const chiave of ['pacchetti', 'extra']) {
 }
 
 let password = process.env.PASSWORD_INCONTRO;
+if (!password && !process.stdin.isTTY) {
+  /* Senza tastiera collegata (per esempio dentro la shell di un assistente) la
+     domanda resterebbe in sospeso e il comando finirebbe senza scrivere niente. */
+  console.error(
+    'Qui non posso chiederti la password: apri un terminale tuo (PowerShell) nella cartella del\n' +
+      'progetto e lancia `npm run cifra` da lì.'
+  );
+  process.exit(1);
+}
 if (!password) {
   password = await chiedi('Nuova password: ');
   const conferma = await chiedi('Ripetila: ');
