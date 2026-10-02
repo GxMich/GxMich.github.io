@@ -1,0 +1,387 @@
+---
+/**
+ * Questionario per il preventivo di Casa di Nonna.
+ *
+ * Pagina riservata: nessun collegamento la raggiunge dal sito, è fuori dalla
+ * sitemap e porta noindex. Si arriva solo da un indirizzo dato a mano.
+ *
+ * Non c'è un server dietro. Il modulo compone il messaggio e apre WhatsApp con
+ * il testo già scritto: chi compila deve solo premere invio. Per questo non
+ * passa dal servizio dei contatti e non lascia dati da nessuna parte.
+ */
+import Guscio from '../layouts/Guscio.astro';
+import { SITE } from '../config.js';
+
+const foto = ['Sì, ho foto buone', 'Ne ho poche o vecchie', 'No, servono nuove foto'];
+const tipi = [
+  ['Solo vetrina (camere, foto, contatti)', 'Solo vetrina: camere, foto, contatti'],
+  ['Vetrina + richiesta di disponibilità', 'Vetrina con richiesta di disponibilità'],
+  ['Prenotazioni online con calendario', 'Prenotazioni online con calendario'],
+  ['Non so, vorrei un consiglio', 'Non so, vorrei un consiglio'],
+];
+const lingue = [
+  ['Italiano', 'Italiano'],
+  ['Inglese', 'Inglese'],
+  ['Altra lingua', "Un'altra lingua"],
+];
+const domini = [
+  ['Sì, intestato a me', 'Sì, è intestato a me'],
+  ['No, è intestato a chi ha fatto il sito', 'No, a chi ha fatto il sito'],
+  ['Non lo so', 'Non lo so'],
+  ['Ho le credenziali Wix', 'Ho le credenziali del pannello Wix'],
+];
+---
+
+<Guscio
+  titolo={`Preventivo per il sito — ${SITE.name}`}
+  descrizione="Poche domande per preparare la bozza gratuita e un preventivo preciso."
+  noindex={true}
+>
+  <section class="pagina">
+    <div class="contenitore dentro">
+      <header class="testata">
+        <p class="etichetta">Preventivo</p>
+        <h1 class="display">Raccontami cosa serve al tuo sito.</h1>
+        <p class="lede">
+          Sono poche domande e ci vogliono due minuti. In base alle risposte preparo la bozza
+          gratuita e un preventivo preciso, con prezzo una tantum e senza abbonamenti.
+        </p>
+      </header>
+
+      <form class="modulo" id="preventivo" data-whatsapp={SITE.whatsapp}>
+        <fieldset>
+          <legend>La struttura</legend>
+          <p class="campo">
+            <label for="camere">Quante camere ha?</label>
+            <input id="camere" name="camere" type="number" min="1" inputmode="numeric" placeholder="Es. 4" />
+          </p>
+          <div class="gruppo" role="radiogroup" aria-labelledby="q-foto">
+            <p class="domanda" id="q-foto">Ha foto delle camere e della struttura?</p>
+            {foto.map((v) => (
+              <label class="scelta"><input type="radio" name="foto" value={v} /><span>{v}</span></label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Cosa deve fare il sito</legend>
+          <div class="gruppo" role="radiogroup" aria-label="Cosa deve fare il sito">
+            {tipi.map(([v, e]) => (
+              <label class="scelta"><input type="radio" name="tipo" value={v} /><span>{e}</span></label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Lingue del sito</legend>
+          <div class="gruppo">
+            {lingue.map(([v, e]) => (
+              <label class="scelta"><input type="checkbox" name="lingua" value={v} /><span>{e}</span></label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Sito e dominio di oggi</legend>
+          <p class="campo">
+            <label for="wix">Quanto paga ogni anno per il sito Wix?</label>
+            <input id="wix" name="wix" type="text" placeholder="Es. circa 200 € l'anno, non lo so" />
+          </p>
+          <div class="gruppo" role="radiogroup" aria-labelledby="q-dominio">
+            <p class="domanda" id="q-dominio">Il dominio casadinonnavercelli.it è intestato a lei?</p>
+            {domini.map(([v, e]) => (
+              <label class="scelta"><input type="radio" name="dominio" value={v} /><span>{e}</span></label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Contatti e idee</legend>
+          <p class="campo">
+            <label for="contatti">Telefono, WhatsApp o email da mostrare sul sito</label>
+            <input id="contatti" name="contatti" type="text" placeholder="Es. 338 000 0000, info@..." />
+          </p>
+          <p class="campo">
+            <label for="esempi">Siti che le piacciono come esempio <span class="facoltativo">· facoltativo</span></label>
+            <input id="esempi" name="esempi" type="text" placeholder="Link o nome della struttura" />
+          </p>
+          <p class="campo">
+            <label for="budget">Che budget ha in mente <span class="facoltativo">· facoltativo</span></label>
+            <input id="budget" name="budget" type="text" placeholder="Es. fino a 500 €" />
+          </p>
+          <p class="campo">
+            <label for="note">Altro che vuole dirmi <span class="facoltativo">· facoltativo</span></label>
+            <textarea id="note" name="note" rows="4"></textarea>
+          </p>
+        </fieldset>
+
+        <button class="manda" type="submit">Invia le risposte su WhatsApp</button>
+        <p class="nota testo-sm">
+          Si apre WhatsApp con il messaggio già scritto: deve solo premere invio. Se non si
+          apre, mi scriva al <a href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>.
+        </p>
+      </form>
+    </div>
+  </section>
+</Guscio>
+
+<style>
+  .pagina {
+    padding-block: clamp(40px, 6vw, 88px) var(--section-sm);
+  }
+
+  .dentro {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: start;
+  }
+
+  .testata {
+    display: grid;
+    gap: var(--sp-4);
+    align-content: start;
+    position: sticky;
+    top: calc(var(--header-h) + var(--sp-5));
+  }
+
+  .testata .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .modulo {
+    display: grid;
+    gap: var(--sp-6);
+  }
+
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  legend {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    width: 100%;
+    padding: var(--sp-4) 0 0;
+    margin-bottom: var(--sp-5);
+    border-top: 1px solid var(--ink);
+  }
+
+  .campo {
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  label:not(.scelta) {
+    font-size: var(--t-body-sm);
+    color: var(--ink-2);
+  }
+
+  .facoltativo {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .domanda {
+    font-size: var(--t-body-sm);
+    color: var(--ink-2);
+    margin-bottom: var(--sp-2);
+  }
+
+  input[type='text'],
+  input[type='number'],
+  textarea {
+    font-size: var(--t-body);
+    color: var(--ink);
+    background: var(--paper-sunk);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-1);
+    padding: 12px 14px;
+    width: 100%;
+    transition: border-color var(--dur-1) var(--ease-out);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--ink-3);
+  }
+
+  input[type='text']:hover,
+  input[type='number']:hover,
+  textarea:hover {
+    border-color: var(--ink-3);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 110px;
+    line-height: 1.55;
+  }
+
+  .scelta {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) 0;
+    border-top: 1px solid var(--rule);
+    cursor: pointer;
+    color: var(--ink);
+    font-size: var(--t-body);
+  }
+
+  .gruppo .scelta:first-of-type {
+    border-top: 0;
+  }
+
+  /* Disegnati con i token e non nativi: quelli del browser seguono il tema di
+     sistema, non la scelta fatta con l'interruttore del sito. */
+  .scelta input {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    flex: none;
+    margin: 0;
+    background: var(--paper-sunk);
+    border: 1px solid var(--ink-3);
+    cursor: pointer;
+    display: grid;
+    place-content: center;
+    transition:
+      background-color var(--dur-1) var(--ease-out),
+      border-color var(--dur-1) var(--ease-out);
+  }
+
+  .scelta input[type='radio'] {
+    border-radius: 50%;
+  }
+
+  .scelta input[type='checkbox'] {
+    border-radius: var(--radius-1);
+  }
+
+  .scelta input::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--signal-on);
+    transform: scale(0);
+    transition: transform var(--dur-1) var(--ease-out);
+  }
+
+  .scelta input[type='radio']::after {
+    border-radius: 50%;
+  }
+
+  .scelta input:checked {
+    background: var(--signal);
+    border-color: var(--signal);
+  }
+
+  .scelta input:checked::after {
+    transform: scale(1);
+  }
+
+  .scelta:hover input:not(:checked) {
+    border-color: var(--ink);
+  }
+
+  .manda {
+    font-family: var(--font-ui);
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    background: var(--signal);
+    color: var(--signal-on);
+    border-radius: var(--radius-1);
+    padding: 14px 22px;
+    justify-self: start;
+    transition:
+      background-color var(--dur-1) var(--ease-out),
+      color var(--dur-1) var(--ease-out);
+  }
+
+  .manda:hover {
+    background: var(--signal-ink);
+    color: var(--paper);
+  }
+
+  .nota {
+    max-width: 52ch;
+    margin-top: calc(var(--sp-3) * -1);
+  }
+
+  .nota a {
+    color: var(--signal-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .nota a:hover {
+    border-bottom-color: var(--signal-ink);
+  }
+
+  @media (max-width: 860px) {
+    .dentro {
+      grid-template-columns: 1fr;
+      gap: var(--sp-6);
+    }
+
+    .testata {
+      position: static;
+    }
+
+    .manda {
+      justify-self: stretch;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  function montaPreventivo() {
+    const modulo = document.querySelector<HTMLFormElement>('#preventivo');
+    if (!modulo || modulo.dataset.montato !== undefined) return;
+    modulo.dataset.montato = 'si';
+
+    modulo.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const d = new FormData(modulo);
+      const v = (k: string) => (d.get(k) ?? '').toString().trim() || '-';
+      const lingue = d.getAll('lingua').join(', ') || '-';
+
+      const messaggio = [
+        'Salve Michele, ecco le risposte per il sito di Casa di Nonna.',
+        '',
+        `Camere: ${v('camere')}`,
+        `Foto: ${v('foto')}`,
+        `Cosa deve fare il sito: ${v('tipo')}`,
+        `Lingue: ${lingue}`,
+        `Costo Wix all'anno: ${v('wix')}`,
+        `Dominio: ${v('dominio')}`,
+        `Contatti da mostrare: ${v('contatti')}`,
+        `Siti di esempio: ${v('esempi')}`,
+        `Budget: ${v('budget')}`,
+        `Altro: ${v('note')}`,
+      ].join('\n');
+
+      window.location.href = `https://wa.me/${modulo.dataset.whatsapp}?text=${encodeURIComponent(messaggio)}`;
+    });
+  }
+
+  montaPreventivo();
+  document.addEventListener('astro:page-load', montaPreventivo);
+</script>
