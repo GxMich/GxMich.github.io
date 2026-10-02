@@ -217,3 +217,71 @@ stessi token e gli stessi caratteri del sito, senza scaricare niente da internet
 - **Testimonianze.** Zero, per scelta: meglio nessuna che una inventata.
 - **Teatro 26**, congelato in `.md.rimosso` finché non è anonimizzato.
 - **`/stile`** si toglie quando il lavoro è chiuso. Finché si tocca il sistema, serve.
+
+---
+
+## 8. Le pagine riservate dei preventivi
+
+Quattro pagine che non raggiunge nessun collegamento del sito: sono fuori dalla sitemap, hanno
+`noindex` e non caricano le misure di traffico (Clarity non può registrarle). Non vanno in
+`robots.txt`, perché elencarle lì le renderebbe pubbliche.
+
+| Indirizzo | A chi serve | Cosa fa |
+|---|---|---|
+| `/preventivo-richiesta` | il cliente | questionario dettagliato; compone il messaggio e apre WhatsApp o la posta |
+| `/incontro-cliente` | solo a me | appunti dell'incontro, richiesta, calcolo del prezzo, stampa. **Con password** |
+| `/preventivo-proposta#…` | il cliente, dopo la demo | il preventivo: versione di prova, pacchetti, extra, totale che si aggiorna, pulsanti per rispondere |
+| `/preventivo-casa-di-nonna` | quel cliente | la versione già fatta per Casa di Nonna |
+
+Le domande stanno in **`src/data/richiesta.js`**, una volta sola: il cliente le compila nella
+sua pagina, io le riempio all'incontro nella mia, e il messaggio che il cliente manda si
+rilegge con «Importa» senza ricopiare niente. Cambiare l'etichetta breve (`corta`) di una
+domanda cambia anche come si legge il messaggio.
+
+### Il link del preventivo
+
+Dalla pagina dell'incontro, «Copia il link» o «Mandagli il link su WhatsApp» generano
+l'indirizzo della pagina del preventivo. **Tutti i dati stanno nell'indirizzo, dopo il `#`**
+(compressi): il browser non li manda mai al server, quindi i prezzi di un cliente non finiscono
+in nessun archivio. Nel link ci sono solo cose che il cliente può vedere: niente ore, tariffa
+o appunti. Un link tagliato da un'app mostra «Questo link non è completo».
+
+Il pulsante «Accetto» manda a WhatsApp il messaggio con **pacchetto scelto e totale**: se
+qualcuno modificasse i prezzi nel link, li confronti con i tuoi e lo vedi subito. Il pulsante
+resta spento finché non sceglie un pacchetto, e sotto c'è la riga che dice che un clic non è
+un contratto. Il testo si adatta a tu, lei o voi (campo «Come ci si parla» nell'incontro).
+
+### La password, e cosa protegge davvero
+
+Il sito è statico e pubblico: una password controllata da JavaScript si aggira leggendo il
+sorgente. Per questo i **prezzi non sono nel codice**: sono in `src/data/listino.cifrato.json`,
+cifrati (AES-256-GCM, chiave derivata dalla password con PBKDF2, 600.000 giri). Senza password
+non si leggono, nemmeno guardando il sorgente. La password non è scritta da nessuna parte.
+
+- Il **listino in chiaro** è `scripts/listino-privato.json`, fuori da git. Modifica i prezzi lì
+  e rilancia `npm run cifra`: chiede la password (almeno 12 caratteri) e rigenera il file
+  cifrato, che poi si pubblica. Per cambiare la password basta rilanciarlo con una nuova.
+  **Tienine una copia di sicurezza**: se si perde, i prezzi si rileggono solo con la password.
+- Il file cifrato è pubblico, quindi chi lo scarica può provare password sul proprio computer
+  quanto vuole: la password deve essere lunga, non una parola.
+- La pagina funziona da `https` e da `localhost`. Su un indirizzo `http` della rete locale
+  il browser non offre la cifratura e la pagina lo dice.
+
+### Dove stanno gli appunti
+
+Nel `localStorage` del browser, su quel dispositivo, **in chiaro**: non vanno da nessuna parte e
+la password non li protegge, perché protegge la pagina e i prezzi, non un dispositivo già
+sbloccato. «Esporta» scarica una copia (un file JSON con gli appunti in chiaro), «Importa» la
+rimette. Svuotare i dati del sito dal browser cancella gli incontri.
+
+### Il listino, in breve
+
+Prezzi di partenza pensati per un lavoro svolto da un junior con l'aiuto dell'AI: **Essenziale
+300 €, Completo 600 €**, extra da 50 a 200 €, assistenza annuale 120 € (facoltativa). Sono una
+proposta: ogni prezzo si corregge al volo durante l'incontro, e il campo vuoto usa il listino.
+Il calcolo mostra anche le **ore stimate e la tariffa effettiva**, solo per te: non compaiono
+mai nel preventivo.
+
+Le diciture fiscali (prestazione occasionale, forfettario, IVA) e la ritenuta d'acconto del 20%
+sono proposte da far vedere al commercialista prima di usarle.
+

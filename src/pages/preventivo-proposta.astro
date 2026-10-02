@@ -1,0 +1,1031 @@
+---
+/**
+ * Il preventivo, per il cliente.
+ *
+ * Una pagina sola, che si legge da telefono: cosa riceve, quanto costa, cosa
+ * serve da lui e come si va avanti. In fondo risponde dalla pagina stessa:
+ * si apre WhatsApp o la posta con il messaggio già scritto.
+ *
+ * Non c'è un server dietro e non c'è un archivio di prezzi. Tutti i dati del
+ * preventivo stanno nel frammento dell'indirizzo (dopo il `#`), che il browser
+ * non invia mai: li genera la pagina dell'incontro (`/incontro-cliente`) e li
+ * legge questa. Un link senza dati, o tagliato, dice che è incompleto.
+ *
+ * Riservata come le altre: nessun collegamento la raggiunge, è fuori dalla
+ * sitemap, ha noindex e non carica le misure di traffico.
+ *
+ * Il testo parla in tu, in lei o in voi a seconda di quello che ho scelto
+ * all'incontro: i punti che cambiano sono segnati con `data-r`.
+ */
+import { getCollection } from 'astro:content';
+import '../styles/modulo.css';
+import Guscio from '../layouts/Guscio.astro';
+import { SITE } from '../config.js';
+
+const progetti = (await getCollection('progetti'))
+  .filter((p) => p.data.tipo === 'sito')
+  .sort((a, b) => b.data.anno - a.data.anno)
+  .slice(0, 3);
+
+const nature = {
+  cliente: 'Per un cliente',
+  iniziativa: 'Progetto personale',
+  interno: 'Lavoro interno',
+} as const;
+
+const passi = [
+  ['Conferma e acconto', 'La conferma arriva con il pulsante qui sotto; poi invio i dati per l’acconto.'],
+  ['Materiale', 'Servono logo, foto e informazioni, come da elenco.'],
+  ['Bozza', 'Il sito vero, nei tempi indicati, a partire dal materiale.'],
+  ['Modifiche', 'Si dice cosa cambiare e lo cambio. I giri inclusi sono indicati nelle condizioni.'],
+  ['Pubblicazione', 'Saldo e sito online. Poi un periodo di assistenza inclusa.'],
+];
+---
+
+<Guscio
+  titolo="Il tuo preventivo"
+  descrizione="Pagina riservata."
+  noindex={true}
+  senzaMisure={true}
+>
+  <section
+    class="pagina f"
+    data-proposta
+    data-whatsapp={SITE.whatsapp}
+    data-email={SITE.email}
+    data-telefono={SITE.whatsappLabel}
+    data-sede={`${SITE.city} (${SITE.provincia})`}
+  >
+    <div class="contenitore">
+      {/* Finché i dati non sono letti, o se il link è incompleto, si vede solo questo. */}
+      <div class="incompleto" data-incompleto>
+        <p class="etichetta">Preventivo</p>
+        <h2 class="display">Questo link non è completo.</h2>
+        <p class="lede">
+          Succede quando un link lungo viene tagliato da un’app. Scrivimi e te lo rimando.
+        </p>
+        <p class="azioni-semplici">
+          <a class="f-bottone" href={`https://wa.me/${SITE.whatsapp}`}>WhatsApp {SITE.whatsappLabel}</a>
+          <a class="f-bottone secondario" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+        </p>
+        <noscript><p class="testo-sm">Per leggere il preventivo serve JavaScript.</p></noscript>
+      </div>
+
+      <div data-contenuto hidden>
+        <header class="testata">
+          <p class="etichetta" data-v="meta"></p>
+          <h1 class="display" data-v="titolo">Preventivo</h1>
+          <p class="lede" data-v="presentazione"></p>
+          <p class="avviso testo-sm" data-scaduto hidden></p>
+        </header>
+
+        <div class="corpo">
+          <div class="sezioni">
+            {/* ------------------------------ in breve ------------------------------ */}
+            <section class="sezione" aria-labelledby="t-breve">
+              <h2 class="titolo-sez" id="t-breve"><span class="dato">01</span> In breve</h2>
+              <dl class="breve">
+                <div><dt class="etichetta">Cosa</dt><dd data-v="cosa"></dd></div>
+                <div><dt class="etichetta">Quando</dt><dd data-v="quando"></dd></div>
+                <div><dt class="etichetta">Quanto</dt><dd class="dato" data-v="quanto"></dd></div>
+              </dl>
+            </section>
+
+            {/* ------------------------------ la versione di prova ------------------------------ */}
+            <section class="sezione" aria-labelledby="t-prova" data-prova hidden>
+              <h2 class="titolo-sez" id="t-prova"><span class="dato">02</span> La versione di prova</h2>
+              <p class="testo">
+                Questa è la bozza che <span data-r="hai">hai</span> guardato. Se <span data-r="ti">ti</span> piace, il
+                sito vero parte da qui: cambiano i contenuti definitivi, non il lavoro fatto.
+              </p>
+              <p>
+                <a class="f-bottone secondario" data-prova-link href="#" target="_blank" rel="noopener">
+                  Versione di prova <span aria-hidden="true">↗</span>
+                </a>
+              </p>
+            </section>
+
+            {/* ------------------------------ pacchetti ------------------------------ */}
+            <section class="sezione" id="pacchetti" aria-labelledby="t-pacchetti" data-sez-pacchetti hidden>
+              <h2 class="titolo-sez" id="t-pacchetti"><span class="dato" data-num>03</span> I pacchetti</h2>
+              <p class="testo-sm">Basta un tocco per scegliere un pacchetto: il riepilogo si aggiorna da solo.</p>
+              <div class="pacchetti" role="radiogroup" aria-labelledby="t-pacchetti" data-pacchetti></div>
+              <p class="testo-sm">
+                Prenotazioni online, più lingue, un catalogo prodotti: ne parliamo e preparo un preventivo
+                a parte, su misura.
+              </p>
+            </section>
+
+            {/* ------------------------------ la proposta a voci ------------------------------ */}
+            <section class="sezione" aria-labelledby="t-voci" data-sez-voci hidden>
+              <h2 class="titolo-sez" id="t-voci"><span class="dato" data-num>03</span> Cosa comprende</h2>
+              <ul class="righe" data-voci></ul>
+            </section>
+
+            {/* ------------------------------ extra ------------------------------ */}
+            <section class="sezione" id="extra" aria-labelledby="t-extra" data-sez-extra hidden>
+              <h2 class="titolo-sez" id="t-extra"><span class="dato" data-num>04</span> Extra, se servono</h2>
+              <p class="testo-sm">Ogni extra si aggiunge con una spunta: il totale si aggiorna da solo.</p>
+              <ul class="extra-elenco" data-extra></ul>
+            </section>
+
+            {/* ------------------------------ cosa serve ------------------------------ */}
+            <section class="sezione" aria-labelledby="t-serve">
+              <h2 class="titolo-sez" id="t-serve"><span class="dato" data-num>05</span> Per partire mi servono</h2>
+              <ul class="elenco-semplice" data-serve></ul>
+              <p class="testo-sm">
+                Se non <span data-r="hai">hai</span> tutto, partiamo con quello che c’è e il resto si aggiunge
+                lungo la strada. Dove manca qualcosa metto un segnaposto ben visibile, non invento niente.
+              </p>
+            </section>
+
+            {/* ------------------------------ come si lavora ------------------------------ */}
+            <section class="sezione" aria-labelledby="t-come">
+              <h2 class="titolo-sez" id="t-come"><span class="dato" data-num>06</span> Come si lavora</h2>
+              <ol class="passi">
+                {
+                  passi.map(([t, d], i) => (
+                    <li>
+                      <span class="dato">{String(i + 1).padStart(2, '0')}</span>
+                      <span>
+                        <strong>{t}</strong>
+                        <span class="testo-sm">{d}</span>
+                      </span>
+                    </li>
+                  ))
+                }
+              </ol>
+              <p class="testo-sm" data-v="tempi-nota"></p>
+            </section>
+
+            {/* ------------------------------ costi ricorrenti ------------------------------ */}
+            <section class="sezione" aria-labelledby="t-costi">
+              <h2 class="titolo-sez" id="t-costi"><span class="dato" data-num>07</span> Costi che restano fuori, in chiaro</h2>
+              <table class="tabella">
+                <thead>
+                  <tr><th class="etichetta">Voce</th><th class="etichetta">Quanto</th><th class="etichetta">Chi lo paga</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Dominio e hosting</td>
+                    <td class="dato">circa 50–120 € l’anno</td>
+                    <td>Pagati direttamente al fornitore, intestati a <span data-r="te">te</span></td>
+                  </tr>
+                  <tr data-riga-assistenza hidden>
+                    <td>Aggiornamenti e assistenza</td>
+                    <td class="dato" data-v="assistenza-prezzo"></td>
+                    <td>Facoltativa</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="testo-sm">
+                Il dominio è sempre intestato a chi lo paga: se un giorno si cambia fornitore, il sito resta
+                suo e nessuno lo tiene in ostaggio. Non c’è nessun canone obbligatorio.
+              </p>
+            </section>
+
+            {/* ------------------------------ condizioni ------------------------------ */}
+            <section class="sezione" aria-labelledby="t-cond">
+              <h2 class="titolo-sez" id="t-cond"><span class="dato" data-num>08</span> Condizioni</h2>
+              <ul class="elenco-semplice" data-condizioni></ul>
+              <p class="testo-sm" data-v="fiscale"></p>
+            </section>
+
+            {/* ------------------------------ chi sono ------------------------------ */}
+            <section class="sezione" aria-labelledby="t-chi">
+              <h2 class="titolo-sez" id="t-chi"><span class="dato" data-num>09</span> Chi sono</h2>
+              <div class="chi">
+                <img class="ritratto" src="/img/michele.jpg" alt="Michele Modica" width="96" height="96" loading="lazy" />
+                <div>
+                  <p><strong>{SITE.name}</strong>, sviluppatore web a {SITE.city}.</p>
+                  <p class="testo-sm">
+                    Costruisco siti su misura per attività fra Vercelli, Casale Monferrato e Novara: prima
+                    capisco cosa fai, poi disegno il sito.
+                  </p>
+                </div>
+              </div>
+              <ul class="lavori">
+                {
+                  progetti.map((p) => (
+                    <li>
+                      <a href={`/progetti/${p.id}`} target="_blank" rel="noopener">
+                        <span class="etichetta">{nature[p.data.natura]}</span>
+                        <strong>{p.data.titolo}</strong>
+                        <span class="testo-sm">{p.data.riassunto}</span>
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+              <p class="testo-sm">
+                <a class="f-link" href="/" target="_blank" rel="noopener">Il mio sito</a> ·
+                <a class="f-link" href="/progetti" target="_blank" rel="noopener">tutti i lavori</a>
+              </p>
+            </section>
+
+            {/* ------------------------------ domande ------------------------------ */}
+            <section class="sezione" aria-labelledby="t-faq">
+              <h2 class="titolo-sez" id="t-faq"><span class="dato" data-num>10</span> Domande frequenti</h2>
+              <div class="faq">
+                <details>
+                  <summary>E se non mi piace?</summary>
+                  <p class="testo-sm">
+                    La versione di prova <span data-r="hai">hai</span> già potuto vederla e non costa niente. Nel
+                    lavoro vero ci sono <span data-v="giri">2</span> giri di modifiche per arrivare dove
+                    <span data-r="vuoi">vuoi</span>.
+                  </p>
+                </details>
+                <details>
+                  <summary>Chi possiede il sito?</summary>
+                  <p class="testo-sm">
+                    A saldo avvenuto, il sito e i contenuti sono <span data-r="tuoi">tuoi</span>. Anche il dominio è
+                    intestato a <span data-r="te">te</span>.
+                  </p>
+                </details>
+                <details>
+                  <summary>Posso modificarlo io dopo?</summary>
+                  <p class="testo-sm">
+                    Sì, e <span data-r="ti">ti</span> spiego come prima di chiudere il lavoro. Cambiare un orario,
+                    un prezzo o una foto non deve richiedere me. Per una modifica strutturale, invece, ci
+                    penso io.
+                  </p>
+                </details>
+                <details>
+                  <summary>Quanto ci vuole?</summary>
+                  <p class="testo-sm"><span data-v="tempi-faq"></span></p>
+                </details>
+                <details>
+                  <summary>Si trova su Google?</summary>
+                  <p class="testo-sm">
+                    Il sito è costruito per farsi trovare dalle persone della zona: titoli, indirizzo,
+                    telefono, scheda collegata. Nessuno può garantire una posizione precisa su Google, e non la
+                    prometto.
+                  </p>
+                </details>
+                <details>
+                  <summary>Cosa succede se non rispondo subito?</summary>
+                  <p class="testo-sm">Il preventivo vale <span data-v="validita">30</span> giorni: nessuna fretta.</p>
+                </details>
+              </div>
+            </section>
+          </div>
+
+          {/* ------------------------------ la scelta e i pulsanti ------------------------------ */}
+          <aside class="riepilogo" id="risposta" aria-label="Riepilogo e risposta">
+            <p class="etichetta">La tua scelta</p>
+
+            <p class="testo-sm vuoto" data-attesa>Per continuare serve scegliere un pacchetto.</p>
+
+            <div data-conto hidden>
+              <ul class="righe" data-righe></ul>
+              <dl class="totali">
+                <div class="tot" data-riga="subtotale" hidden><dt>Subtotale</dt><dd class="dato" data-v="subtotale"></dd></div>
+                <div class="tot" data-riga="sconto" hidden><dt data-v="sconto-nome">Sconto</dt><dd class="dato" data-v="sconto"></dd></div>
+                <div class="tot" data-riga="imponibile" hidden><dt>Imponibile</dt><dd class="dato" data-v="imponibile"></dd></div>
+                <div class="tot" data-riga="iva" hidden><dt data-v="iva-nome">IVA</dt><dd class="dato" data-v="iva"></dd></div>
+                <div class="tot totale"><dt>Totale</dt><dd class="dato" data-v="totale">—</dd></div>
+                <div class="tot" data-riga="ritenuta" hidden><dt>Ritenuta d’acconto 20%</dt><dd class="dato" data-v="ritenuta"></dd></div>
+                <div class="tot" data-riga="netto" hidden><dt>Netto da pagare</dt><dd class="dato" data-v="netto"></dd></div>
+                <div class="tot"><dt data-v="acconto-nome">Acconto</dt><dd class="dato" data-v="acconto"></dd></div>
+                <div class="tot"><dt>Saldo alla consegna</dt><dd class="dato" data-v="saldo"></dd></div>
+              </dl>
+              <p class="testo-sm" data-v="regime"></p>
+              <div class="blocco" data-annue hidden>
+                <p class="etichetta">Ogni anno, facoltativi</p>
+                <ul class="righe" data-righe-annue></ul>
+              </div>
+            </div>
+
+            <div class="comandi">
+              <button class="f-bottone" type="button" data-azione="accetto" disabled>Accetto il preventivo</button>
+              <p class="testo-sm">
+                Il messaggio che si apre è solo una conferma: l’accordo è completo quando <span data-r="ti">ti</span>
+                rispondo e arriva l’acconto. Fino a quel momento non c’è nessun impegno.
+              </p>
+              <button class="f-bottone secondario" type="button" data-azione="email">Per email</button>
+              <button class="f-bottone secondario" type="button" data-azione="domanda">Ho una domanda</button>
+              <a class="f-bottone secondario" data-telefono-link href={`tel:+${SITE.whatsapp}`}>Telefono</a>
+              <button class="f-bottone secondario" type="button" data-azione="stampa">Salva in PDF</button>
+            </div>
+
+            <div class="uscita" data-uscita hidden tabindex="-1">
+              <p class="etichetta">Il messaggio</p>
+              <p class="testo-sm" data-uscita-stato role="status"></p>
+              <textarea readonly rows="9" data-uscita-testo aria-label="Testo del messaggio"></textarea>
+              <p class="testo-sm">
+                Non si è aperto? Copia il testo e scrivimi al
+                <a class="f-link" href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>
+                o a <a class="f-link" href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+              </p>
+              <button class="f-bottone secondario" type="button" data-azione="copia-uscita">Copia il messaggio</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <div class="barra-totale" data-barra hidden>
+      <div class="barra-cifra">
+        <span class="etichetta" data-v="barra-etichetta">Da</span>
+        <span class="dato" data-v="barra-cifra">—</span>
+      </div>
+      <button class="f-bottone piccolo" type="button" data-barra-pacchetti>Pacchetti</button>
+      <button class="f-bottone piccolo" type="button" data-azione="accetto" data-barra-accetto hidden>Accetto</button>
+    </div>
+
+    <template data-t-pacchetto>
+      <label class="pacchetto">
+        <input class="solo-lettori" type="radio" name="pacchetto" />
+        <span class="p-etichetta etichetta" data-p="consigliato"></span>
+        <span class="p-nome h3" data-p="nome"></span>
+        <span class="p-per testo-sm" data-p="per"></span>
+        <span class="p-prezzo dato" data-p="prezzo"></span>
+        <ul class="p-include" data-p="include"></ul>
+      </label>
+    </template>
+    <template data-t-riga>
+      <li class="riga"><span class="r-d"></span><span class="r-t dato"></span></li>
+    </template>
+    <template data-t-extra>
+      <li class="extra">
+        <label class="f-scelta">
+          <input type="checkbox" />
+          <span><span data-e="nome"></span><small class="testo-sm" data-e="nota"></small></span>
+        </label>
+        <p class="extra-q">
+          <label class="solo-lettori" data-e="q-etichetta">Quantità</label>
+          <input type="number" min="1" step="1" inputmode="numeric" />
+        </p>
+        <p class="extra-p dato" data-e="prezzo"></p>
+      </li>
+    </template>
+    <template data-t-voce>
+      <li class="voce"></li>
+    </template>
+  </section>
+</Guscio>
+
+<style>
+  .pagina {
+    padding-block: clamp(40px, 6vw, 88px) var(--section-sm);
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  .incompleto {
+    display: grid;
+    gap: var(--sp-5);
+    max-width: 560px;
+    min-height: min(60vh, 520px);
+    align-content: center;
+  }
+
+  .azioni-semplici {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+  }
+
+  /* ------------------------------ testata ------------------------------ */
+  .testata {
+    display: grid;
+    gap: var(--sp-4);
+    padding-bottom: var(--sp-6);
+  }
+
+  .testata .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .avviso {
+    padding-left: var(--sp-3);
+    border-left: 2px solid var(--signal);
+    color: var(--ink);
+  }
+
+  .corpo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: start;
+  }
+
+  .sezioni {
+    display: grid;
+    gap: var(--sp-8);
+    min-width: 0;
+  }
+
+  .sezione {
+    display: grid;
+    gap: var(--sp-4);
+    align-content: start;
+  }
+
+  .titolo-sez {
+    display: flex;
+    gap: var(--sp-3);
+    align-items: baseline;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--ink);
+    font-size: var(--t-h3);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .titolo-sez .dato {
+    color: var(--ink-3);
+    font-weight: 400;
+  }
+
+  /* ------------------------------ in breve ------------------------------ */
+  .breve {
+    display: grid;
+  }
+
+  .breve > div {
+    display: grid;
+    grid-template-columns: 7ch minmax(0, 1fr);
+    gap: var(--sp-4);
+    padding-block: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+
+  .breve dd {
+    font-size: var(--t-lede);
+    letter-spacing: -0.01em;
+  }
+
+  .breve dd.dato {
+    font-size: var(--t-h3);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  /* ------------------------------ pacchetti ------------------------------ */
+  .pacchetti {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .pacchetto {
+    position: relative;
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+    padding: var(--sp-5) var(--sp-4);
+    border-right: 1px solid var(--rule);
+    cursor: pointer;
+    transition: background-color var(--dur-1) var(--ease-out);
+  }
+
+  .pacchetto:last-child {
+    border-right: 0;
+  }
+
+  .pacchetto:hover {
+    background: var(--paper-sunk);
+  }
+
+  .pacchetto::before {
+    content: '';
+    position: absolute;
+    inset: -1px 0 auto 0;
+    height: 3px;
+    background: var(--signal);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  .pacchetto:has(input:checked) {
+    background: var(--paper-sunk);
+  }
+
+  .pacchetto:has(input:checked)::before {
+    transform: scaleX(1);
+  }
+
+  .pacchetto:has(input:focus-visible) {
+    outline: 2px solid var(--ink);
+    outline-offset: -2px;
+  }
+
+  .p-etichetta {
+    min-height: 1.4em;
+    color: var(--signal-ink);
+  }
+
+  .p-prezzo {
+    font-size: var(--t-display);
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    margin-block: var(--sp-2);
+  }
+
+  .p-include {
+    display: grid;
+    gap: var(--sp-1);
+    margin-top: var(--sp-2);
+    padding-top: var(--sp-3);
+    border-top: 1px solid var(--rule);
+  }
+
+  .p-include :global(li) {
+    font-size: var(--t-body-sm);
+    color: var(--ink-2);
+  }
+
+  .p-include :global(li)::before {
+    content: '— ';
+    color: var(--ink-3);
+  }
+
+  /* ------------------------------ righe e extra ------------------------------ */
+  .righe {
+    display: grid;
+    border-top: 1px solid var(--rule);
+  }
+
+  .riga {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--sp-3);
+    align-items: baseline;
+    padding-block: var(--sp-2);
+    border-bottom: 1px solid var(--rule);
+    font-size: var(--t-body-sm);
+  }
+
+  .r-t {
+    white-space: nowrap;
+  }
+
+  .extra-elenco {
+    border-top: 1px solid var(--rule);
+  }
+
+  .extra {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 84px 130px;
+    gap: var(--sp-3);
+    align-items: center;
+    padding-block: var(--sp-2);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .extra .f-scelta {
+    border-top: 0;
+    align-items: flex-start;
+    padding-block: var(--sp-2);
+  }
+
+  .extra .f-scelta input {
+    margin-top: 2px;
+  }
+
+  .extra .f-scelta span {
+    display: grid;
+    gap: 2px;
+  }
+
+  .extra small {
+    color: var(--ink-3);
+  }
+
+  .extra-q,
+  .extra-p {
+    margin: 0;
+  }
+
+  .extra-p {
+    text-align: right;
+    font-size: var(--t-body-sm);
+  }
+
+  .extra-q input {
+    width: 100%;
+  }
+
+  .extra-q[hidden] {
+    visibility: hidden;
+  }
+
+  .elenco-semplice {
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  .elenco-semplice :global(li) {
+    padding-left: var(--sp-4);
+    position: relative;
+  }
+
+  .elenco-semplice :global(li)::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--ink-3);
+  }
+
+  /* ------------------------------ passi ------------------------------ */
+  .passi {
+    display: grid;
+    border-top: 1px solid var(--rule);
+  }
+
+  .passi li {
+    display: grid;
+    grid-template-columns: 2.5ch minmax(0, 1fr);
+    gap: var(--sp-3);
+    padding-block: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .passi .dato {
+    color: var(--ink-3);
+  }
+
+  .passi strong {
+    display: block;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  /* ------------------------------ tabella ------------------------------ */
+  .tabella {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-body-sm);
+  }
+
+  .tabella th {
+    text-align: left;
+    padding: var(--sp-2) var(--sp-3) var(--sp-2) 0;
+    border-bottom: 1px solid var(--ink);
+    font-weight: 500;
+  }
+
+  .tabella td {
+    padding: var(--sp-3) var(--sp-3) var(--sp-3) 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+
+  /* ------------------------------ chi sono ------------------------------ */
+  .chi {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: var(--sp-4);
+    align-items: center;
+  }
+
+  .ritratto {
+    width: 96px;
+    height: 96px;
+    object-fit: cover;
+    border-radius: var(--radius-1);
+  }
+
+  .lavori {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .lavori li {
+    border-right: 1px solid var(--rule);
+  }
+
+  .lavori li:last-child {
+    border-right: 0;
+  }
+
+  .lavori a {
+    display: grid;
+    gap: var(--sp-1);
+    padding: var(--sp-4);
+    text-decoration: none;
+    height: 100%;
+    align-content: start;
+    transition: background-color var(--dur-1) var(--ease-out);
+  }
+
+  .lavori a:hover {
+    background: var(--paper-sunk);
+  }
+
+  /* ------------------------------ domande ------------------------------ */
+  .faq {
+    border-top: 1px solid var(--rule);
+  }
+
+  .faq details {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .faq summary {
+    cursor: pointer;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    list-style: none;
+  }
+
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq summary::after {
+    content: '+';
+    font-family: var(--font-mono);
+    color: var(--ink-3);
+  }
+
+  .faq details[open] summary::after {
+    content: '−';
+  }
+
+  .faq details p {
+    padding-bottom: var(--sp-4);
+    max-width: 60ch;
+    animation: apri var(--dur-1) var(--ease-out);
+  }
+
+  @keyframes apri {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* ------------------------------ riepilogo ------------------------------ */
+  .riepilogo {
+    position: sticky;
+    top: calc(var(--header-h) + var(--sp-5));
+    display: grid;
+    gap: var(--sp-4);
+    align-content: start;
+    max-height: calc(100vh - var(--header-h) - var(--sp-6));
+    overflow-y: auto;
+    padding: var(--sp-5) 0 var(--sp-5) var(--sp-5);
+    border-left: 1px solid var(--ink);
+  }
+
+  .vuoto {
+    color: var(--ink-3);
+  }
+
+  .totali {
+    display: grid;
+  }
+
+  .tot {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    padding-block: var(--sp-2);
+    font-size: var(--t-body-sm);
+    color: var(--ink-2);
+  }
+
+  .tot dd {
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .tot.totale {
+    padding-block: var(--sp-3);
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    font-size: var(--t-h3);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .blocco {
+    display: grid;
+    gap: var(--sp-2);
+    padding-top: var(--sp-4);
+    margin-top: var(--sp-3);
+    border-top: 1px solid var(--rule);
+  }
+
+  .comandi {
+    display: grid;
+    gap: var(--sp-2);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule);
+  }
+
+  .comandi .testo-sm {
+    margin-bottom: var(--sp-2);
+  }
+
+  .uscita {
+    display: grid;
+    gap: var(--sp-3);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule);
+  }
+
+  .uscita textarea {
+    font-family: var(--font-mono);
+    font-size: var(--t-data);
+    line-height: 1.55;
+  }
+
+  /* ------------------------------ barra del totale ------------------------------ */
+  .barra-totale {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: var(--z-sticky);
+    display: none;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--gutter) calc(var(--sp-3) + env(safe-area-inset-bottom));
+    background: var(--paper);
+    border-top: 1px solid var(--ink);
+  }
+
+  .barra-cifra {
+    display: grid;
+    margin-right: auto;
+  }
+
+  .barra-cifra .dato {
+    font-size: var(--t-h3);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  @media (max-width: 1100px) {
+    .pagina {
+      padding-bottom: calc(var(--section-sm) + 72px);
+    }
+
+    .corpo {
+      grid-template-columns: 1fr;
+    }
+
+    .riepilogo {
+      position: static;
+      max-height: none;
+      overflow: visible;
+      padding: var(--sp-5) 0 0;
+      border-left: 0;
+      border-top: 1px solid var(--ink);
+    }
+
+    .barra-totale:not([hidden]) {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .pacchetti {
+      grid-template-columns: 1fr;
+    }
+
+    .pacchetto {
+      border-right: 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .pacchetto:last-child {
+      border-bottom: 0;
+    }
+
+    .lavori li {
+      border-right: 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .lavori li:last-child {
+      border-bottom: 0;
+    }
+
+    .extra {
+      grid-template-columns: 84px minmax(0, 1fr);
+      grid-template-areas:
+        'nome nome'
+        'q p';
+    }
+
+    .extra > :first-child {
+      grid-area: nome;
+    }
+
+    .extra-q {
+      grid-area: q;
+    }
+
+    .extra-p {
+      grid-area: p;
+      text-align: right;
+    }
+
+    .breve > div {
+      grid-template-columns: 1fr;
+      gap: var(--sp-1);
+    }
+  }
+</style>
+
+{/* La stampa: il preventivo come si legge sulla carta, senza pulsanti. Globale
+    perché deve arrivare anche all'intestazione e al piede, fuori da questa pagina. */}
+<style is:global>
+  @media print {
+    header.intestazione,
+    footer.piede,
+    .salta,
+    [data-sentinella],
+    astro-route-announcer,
+    .pagina .barra-totale,
+    .pagina .comandi,
+    .pagina .uscita,
+    .pagina [data-prova-link] {
+      display: none !important;
+    }
+
+    /* Su carta i token del tema scuro darebbero testo chiaro su foglio bianco. */
+    html,
+    body {
+      background: #fff !important;
+    }
+
+    .pagina {
+      --paper: #fff;
+      --paper-sunk: #f3f3f2;
+      --ink: #111;
+      --ink-2: #3d3d40;
+      --ink-3: #55565a;
+      --rule: #c9c9c8;
+      --signal-ink: #111;
+      background: #fff;
+      color: #111;
+      padding: 0 !important;
+    }
+
+    .pagina .contenitore {
+      padding-inline: 0;
+      max-width: none;
+    }
+
+    .pagina .corpo {
+      display: block;
+    }
+
+    .pagina .riepilogo {
+      position: static;
+      max-height: none;
+      overflow: visible;
+      border: 0;
+      padding: 0;
+      margin-top: 24px;
+      break-inside: avoid;
+    }
+
+    .pagina .sezione {
+      break-inside: avoid;
+    }
+
+    .pagina .pacchetto::before {
+      display: none;
+    }
+
+    .pagina a[href^='http']::after {
+      content: ' (' attr(href) ')';
+      font-size: 0.8em;
+      word-break: break-all;
+    }
+
+    @page {
+      size: A4;
+      margin: 16mm;
+    }
+  }
+</style>
+
+<script>
+  import { avviaProposta } from '../lib/proposta.ts';
+
+  avviaProposta();
+  document.addEventListener('astro:page-load', avviaProposta);
+</script>

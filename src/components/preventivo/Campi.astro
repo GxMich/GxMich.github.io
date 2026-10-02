@@ -1,0 +1,85 @@
+---
+/**
+ * Le domande della richiesta, disegnate dalle definizioni in data/richiesta.js.
+ *
+ * Le usano due pagine: il cliente le compila da solo, io le compilo con lui
+ * all'incontro. Con `incontro` compaiono anche i suggerimenti per me (`chiedi`)
+ * e si perde l'obbligatorietà, che davanti a un cliente è un ostacolo e non
+ * una garanzia.
+ */
+import '../../styles/modulo.css';
+import { SEZIONI } from '../../data/richiesta.js';
+
+interface Props {
+  incontro?: boolean;
+  /** Numero della prima sezione: nell'incontro ne esistono altre prima. */
+  da?: number;
+}
+
+const { incontro = false, da = 1 } = Astro.props;
+const num = (i: number) => String(da + i).padStart(2, '0');
+---
+
+{
+  SEZIONI.map((s, i) => (
+    <fieldset class="f-sezione" id={`sez-${s.id}`}>
+      <legend class="f-legenda">
+        <b>{num(i)}</b>
+        <span>{s.titolo}</span>
+      </legend>
+      {s.intro && !incontro && <p class="f-intro testo-sm">{s.intro}</p>}
+
+      {s.campi.map((c) => {
+        const id = `c-${c.id}`;
+        const obbl = c.obbl && !incontro;
+
+        if (c.tipo === 'scelta' || c.tipo === 'multi') {
+          const tipo = c.tipo === 'scelta' ? 'radio' : 'checkbox';
+          return (
+            <div class="f-gruppo" role={tipo === 'radio' ? 'radiogroup' : 'group'} aria-labelledby={`${id}-q`}>
+              <p class="f-domanda" id={`${id}-q`}>
+                {c.label}
+                {c.tipo === 'multi' && <span class="f-fac"> · puoi sceglierne più d’una</span>}
+              </p>
+              {c.opzioni.map((o: string) => (
+                <label class="f-scelta">
+                  <input type={tipo} name={c.id} value={o} />
+                  <span>{o}</span>
+                </label>
+              ))}
+              {incontro && c.chiedi && <p class="f-chiedi">{c.chiedi}</p>}
+            </div>
+          );
+        }
+
+        const attributi = {
+          id,
+          name: c.id,
+          required: obbl,
+          autocomplete: incontro ? 'off' : c.autocomplete,
+          placeholder: c.placeholder,
+        };
+
+        return (
+          <p class="f-campo">
+            <label class="f-label" for={id}>
+              {c.label}
+              {c.fac && !incontro && <span class="f-fac"> · facoltativo</span>}
+            </label>
+            {c.tipo === 'area' ? (
+              <textarea {...attributi} rows="3" maxlength="600" />
+            ) : (
+              <input
+                {...attributi}
+                type={c.tipo === 'testo' ? 'text' : c.tipo}
+                inputmode={c.tipo === 'tel' ? 'tel' : undefined}
+                maxlength="160"
+              />
+            )}
+            {incontro && c.chiedi && <span class="f-chiedi">{c.chiedi}</span>}
+          </p>
+        );
+      })}
+    </fieldset>
+  ))
+}

@@ -18,6 +18,9 @@ interface Props {
   descrizione: string;
   ogImage?: string;
   noindex?: boolean;
+  /** Le pagine riservate non caricano nemmeno la fascia delle misure di traffico:
+   *  chi scrive lì dentro non deve finire in una registrazione di Clarity. */
+  senzaMisure?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
@@ -26,6 +29,7 @@ const {
   descrizione,
   ogImage = '/og/home.png',
   noindex = false,
+  senzaMisure = false,
   jsonLd,
 } = Astro.props;
 
@@ -156,7 +160,7 @@ const passaggio = {
 
     <Piede transition:animate="none" />
 
-    <Consenso />
+    {!senzaMisure && <Consenso />}
 
     <script>
       // Le comparse valgono per ogni pagina: montarle qui evita che ogni

@@ -1,0 +1,1281 @@
+---
+/**
+ * La pagina che uso davanti al cliente: appunti, richiesta e prezzo.
+ *
+ * Riservata in tre modi, e nessuno basta da solo:
+ *  - non la raggiunge nessun collegamento, è fuori dalla sitemap e porta noindex;
+ *  - non carica le misure di traffico, quindi niente di quello che scrivo qui
+ *    può finire in una registrazione di Clarity;
+ *  - i prezzi non sono nel sorgente: sono cifrati (scripts/cifra-listino.mjs) e
+ *    si aprono solo con la password. Il sorgente della pagina contiene
+ *    soltanto il testo cifrato e i nomi dei servizi, che sono già pubblici.
+ *
+ * Gli appunti degli incontri restano nel browser di questo dispositivo
+ * (localStorage) e non vanno da nessuna parte. Sono in chiaro: chi ha in mano
+ * il dispositivo sbloccato li legge. Per una copia di sicurezza c'è "Esporta".
+ *
+ * Le domande sono le stesse del modulo che compila il cliente
+ * (data/richiesta.js), e il messaggio che manda si rilegge qui con "Importa".
+ */
+import Guscio from '../layouts/Guscio.astro';
+import Campi from '../components/preventivo/Campi.astro';
+import cifrato from '../data/listino.cifrato.json';
+import { SITE } from '../config.js';
+import {
+  SEZIONI,
+  MATERIALI,
+  STATI_MATERIALE,
+  PACCHETTI,
+  EXTRA,
+  REGIMI,
+  CONDIZIONI,
+} from '../data/richiesta.js';
+
+const indice = [
+  ['incontro', 'Incontro'],
+  ...SEZIONI.map((s) => [s.id, s.sigla]),
+  ['raccolta', 'Da chiedere'],
+  ['appunti', 'Appunti'],
+  ['prezzo', 'Prezzo'],
+];
+
+const unitaDi = { pagine: 'a pagina', lingue: 'a lingua', giri: 'a giro' };
+const registri = [
+  ['tu', 'Tu'],
+  ['lei', 'Lei'],
+  ['voi', 'Voi'],
+];
+const decide = ['Decide da solo', 'Decide con soci o famiglia', 'Decide un’altra persona'];
+const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preventivi', 'Non procede'];
+---
+
+<Guscio
+  titolo="Incontro con il cliente"
+  descrizione="Pagina riservata."
+  noindex={true}
+  senzaMisure={true}
+>
+  <section
+    class="pagina f"
+    data-incontro
+    data-whatsapp={SITE.whatsapp}
+    data-email={SITE.email}
+    data-telefono={SITE.whatsappLabel}
+    data-mittente={SITE.name}
+    data-sede={`${SITE.city} (${SITE.provincia})`}
+  >
+    <div class="contenitore">
+      {/* ------------------------------ la porta ------------------------------ */}
+      <div class="porta" data-porta>
+        <div class="porta-dentro">
+          <p class="etichetta">Area riservata</p>
+          <h1 class="display">Solo per me.</h1>
+          <p class="lede">Appunti, richieste e prezzi degli incontri con i clienti.</p>
+
+          <form class="porta-form" data-porta-form>
+            <p class="f-campo">
+              <label class="f-label" for="parola">Password</label>
+              <input id="parola" type="password" autocomplete="current-password" required />
+            </p>
+            <button class="f-bottone" type="submit">Entra</button>
+            <p class="testo-sm errore" data-porta-errore role="alert" hidden></p>
+          </form>
+
+          <p class="testo-sm f-nota">
+            I prezzi non sono nel codice della pagina: ci sono solo cifrati, e la password è la
+            chiave per leggerli.
+          </p>
+          <noscript><p class="testo-sm">Serve JavaScript per aprire questa pagina.</p></noscript>
+        </div>
+      </div>
+
+      {/* ------------------------------ lo strumento ------------------------------ */}
+      <div class="strumento" data-strumento hidden>
+        <div class="barra">
+          <div class="barra-titolo">
+            <p class="etichetta">Incontro con il cliente</p>
+            <h2 class="h2" data-titolo>Nuovo incontro</h2>
+          </div>
+
+          <div class="barra-comandi">
+            <p class="f-campo elenco">
+              <label class="solo-lettori" for="elenco">Incontri salvati</label>
+              <select id="elenco" data-elenco></select>
+            </p>
+            <button class="f-bottone secondario piccolo" type="button" data-azione="nuovo">Nuovo</button>
+            <button class="f-bottone secondario piccolo" type="button" data-azione="elimina">Elimina</button>
+            <button class="f-bottone secondario piccolo" type="button" data-azione="esporta">Esporta</button>
+            <label class="f-bottone secondario piccolo" for="importa">Importa</label>
+            <input class="solo-lettori" id="importa" type="file" accept=".json,application/json" data-importa />
+            <button class="f-bottone secondario piccolo" type="button" data-azione="blocca">Blocca</button>
+          </div>
+        </div>
+
+        <p class="testo-sm stato" data-stato role="status"></p>
+
+        <nav class="indice" aria-label="Sezioni della pagina">
+          {
+            indice.map(([id, nome], i) => (
+              <a href={`#sez-${id}`}>
+                <span class="dato">{String(i + 1).padStart(2, '0')}</span>
+                {nome}
+              </a>
+            ))
+          }
+        </nav>
+
+        <div class="corpo">
+          <form class="modulo" data-form autocomplete="off">
+            {/* 01 · l'incontro */}
+            <fieldset class="f-sezione" id="sez-incontro">
+              <legend class="f-legenda"><b>01</b><span>L’incontro</span></legend>
+
+              <details class="importa-richiesta">
+                <summary>Il cliente mi ha già mandato la richiesta</summary>
+                <div class="importa-dentro">
+                  <p class="testo-sm">
+                    Incolla qui il messaggio che ti è arrivato: le risposte vanno nei campi giusti.
+                    Quello che non riconosco finisce negli appunti, senza perdere niente.
+                  </p>
+                  <textarea rows="6" data-importa-testo aria-label="Messaggio del cliente"></textarea>
+                  <button class="f-bottone secondario piccolo" type="button" data-azione="importa-richiesta">
+                    Importa le risposte
+                  </button>
+                  <p class="testo-sm" data-importa-esito role="status"></p>
+                </div>
+              </details>
+
+              <p class="f-campo">
+                <label class="f-label" for="i-data">Data dell’incontro</label>
+                <input id="i-data" type="date" name="i.data" />
+              </p>
+              <p class="f-campo">
+                <label class="f-label" for="i-luogo">Dove ci vediamo</label>
+                <input id="i-luogo" type="text" name="i.luogo" maxlength="160" />
+              </p>
+              <p class="f-campo">
+                <label class="f-label" for="i-presenti">Chi c’è</label>
+                <input id="i-presenti" type="text" name="i.presenti" maxlength="160" />
+              </p>
+              <p class="f-campo">
+                <label class="f-label" for="i-prova">Link alla versione di prova <span class="f-fac">· compare nel preventivo</span></label>
+                <input id="i-prova" type="text" name="i.prova" maxlength="200" placeholder="Es. https://…" inputmode="url" />
+              </p>
+              <p class="f-campo">
+                <label class="f-label" for="i-numero">Numero del preventivo</label>
+                <input id="i-numero" type="text" name="i.numero" maxlength="20" />
+              </p>
+              <div class="f-gruppo" role="radiogroup" aria-labelledby="q-registro">
+                <p class="f-domanda" id="q-registro">Come ci si parla nei messaggi</p>
+                {
+                  registri.map(([v, e]) => (
+                    <label class="f-scelta">
+                      <input type="radio" name="i.registro" value={v} />
+                      <span>{e}</span>
+                    </label>
+                  ))
+                }
+              </div>
+            </fieldset>
+
+            {/* 02–09 · le domande del cliente */}
+            <Campi incontro={true} da={2} />
+
+            {/* 10 · cosa serve dal cliente */}
+            <fieldset class="f-sezione" id="sez-raccolta">
+              <legend class="f-legenda"><b>10</b><span>Cosa mi serve da lui</span></legend>
+              <p class="f-intro testo-sm">
+                Segna lo stato di ogni cosa. Quello che resta «Da chiedere» o «In parte» finisce nel
+                preventivo, nella riga «Per partire mi servono».
+              </p>
+              <ul class="materiali">
+                {
+                  MATERIALI.map((m) => (
+                    <li class="materiale">
+                      <span class="m-nome">{m.nome}</span>
+                      <div class="seg" role="radiogroup" aria-label={`${m.nome}: stato`}>
+                        {STATI_MATERIALE.map(([v, e]) => (
+                          <label class="seg-voce">
+                            <input class="solo-lettori" type="radio" name={`m.${m.id}`} value={v} />
+                            <span>{e}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </li>
+                  ))
+                }
+              </ul>
+            </fieldset>
+
+            {/* 11 · appunti */}
+            <fieldset class="f-sezione" id="sez-appunti">
+              <legend class="f-legenda"><b>11</b><span>Appunti e cose da fare</span></legend>
+
+              <p class="f-campo">
+                <label class="f-label" for="i-appunti">Appunti dell’incontro</label>
+                <textarea id="i-appunti" name="i.appunti" rows="9"></textarea>
+              </p>
+              <p class="f-campo">
+                <label class="f-label" for="i-dubbi">Dubbi o obiezioni emersi</label>
+                <textarea id="i-dubbi" name="i.dubbi" rows="3"></textarea>
+              </p>
+
+              <div class="f-gruppo" role="radiogroup" aria-labelledby="q-decide">
+                <p class="f-domanda" id="q-decide">Chi decide</p>
+                {
+                  decide.map((v) => (
+                    <label class="f-scelta">
+                      <input type="radio" name="i.decide" value={v} />
+                      <span>{v}</span>
+                    </label>
+                  ))
+                }
+              </div>
+              <div class="f-gruppo" role="radiogroup" aria-labelledby="q-esito">
+                <p class="f-domanda" id="q-esito">Com’è andata</p>
+                {
+                  esiti.map((v) => (
+                    <label class="f-scelta">
+                      <input type="radio" name="i.esito" value={v} />
+                      <span>{v}</span>
+                    </label>
+                  ))
+                }
+              </div>
+              <p class="f-campo">
+                <label class="f-label" for="i-risposta">Quando mi dà una risposta</label>
+                <input id="i-risposta" type="text" name="i.risposta" maxlength="160" />
+              </p>
+
+              <div class="azioni-elenco">
+                <p class="f-domanda" id="q-azioni">Cose che ho promesso di fare</p>
+                <ul class="azioni" data-azioni aria-labelledby="q-azioni"></ul>
+                <div class="azione-nuova">
+                  <label class="solo-lettori" for="azione-testo">Nuova cosa da fare</label>
+                  <input id="azione-testo" type="text" data-azione-testo maxlength="160" placeholder="Es. mandargli la bozza entro venerdì" />
+                  <button class="f-bottone secondario piccolo" type="button" data-azione="aggiungi-azione">Aggiungi</button>
+                </div>
+              </div>
+            </fieldset>
+
+            {/* 12 · prezzo */}
+            <fieldset class="f-sezione" id="sez-prezzo">
+              <legend class="f-legenda"><b>12</b><span>Prezzo e condizioni</span></legend>
+
+              <div class="f-gruppo" role="radiogroup" aria-labelledby="q-pacchetto">
+                <p class="f-domanda" id="q-pacchetto">Pacchetto</p>
+                <div class="pacchetti">
+                  {
+                    PACCHETTI.map((p) => (
+                      <label class="pacchetto">
+                        <input class="solo-lettori" type="radio" name="p.pacchetto" value={p.id} />
+                        <span class="p-nome h3">{p.nome}</span>
+                        <span class="p-per testo-sm">{p.perChi}</span>
+                        <span class="p-prezzo dato" data-prezzo-pacchetto={p.id}>
+                          {p.id === 'misura' ? 'A voci' : '—'}
+                        </span>
+                        <ul class="p-include">
+                          {p.include.map((v: string) => (
+                            <li class="testo-sm">{v}</li>
+                          ))}
+                        </ul>
+                      </label>
+                    ))
+                  }
+                </div>
+              </div>
+
+              <p class="f-campo prezzo-pacchetto" data-campo-pk>
+                <label class="f-label" for="p-pk">Prezzo del pacchetto, in euro <span class="f-fac">· lascia vuoto per il listino</span></label>
+                <input id="p-pk" type="number" name="p.pk" min="0" step="0.01" inputmode="decimal" />
+              </p>
+
+              <div>
+                <p class="f-domanda" id="q-extra">Extra</p>
+                <ul class="extra-elenco" aria-labelledby="q-extra">
+                  {
+                    EXTRA.map((e) => (
+                      <li class="extra" data-extra={e.id}>
+                        <label class="f-scelta extra-nome">
+                          <input type="checkbox" name={`x.${e.id}.on`} value="1" />
+                          <span>
+                            {e.nome}
+                            {e.nota && <small class="testo-sm">{e.nota}</small>}
+                          </span>
+                        </label>
+                        <p class="extra-q">
+                          {e.unita ? (
+                            <>
+                              <label class="solo-lettori" for={`x-${e.id}-q`}>Quantità</label>
+                              <input id={`x-${e.id}-q`} type="number" name={`x.${e.id}.q`} min="1" step="1" inputmode="numeric" placeholder="1" />
+                            </>
+                          ) : null}
+                        </p>
+                        <p class="extra-p">
+                          <label class="solo-lettori" for={`x-${e.id}-p`}>Prezzo in euro</label>
+                          <input id={`x-${e.id}-p`} type="number" name={`x.${e.id}.p`} min="0" step="0.01" inputmode="decimal" data-prezzo-extra={e.id} />
+                          <span class="dato unita">{e.ricorrente ? 'all’anno' : e.unita ? unitaDi[e.unita as keyof typeof unitaDi] : 'una tantum'}</span>
+                        </p>
+                        <output class="extra-t dato" data-tot-extra={e.id}></output>
+                      </li>
+                    ))
+                  }
+                </ul>
+              </div>
+
+              <div>
+                <p class="f-domanda" id="q-voci">Voci a parte</p>
+                <p class="testo-sm voci-intro">
+                  Per tutto quello che non è in elenco: una richiesta su misura, un lavoro a ore, un
+                  costo da girare al cliente. Le ore servono solo a me.
+                </p>
+                <ul class="voci" data-voci aria-labelledby="q-voci"></ul>
+                <button class="f-bottone secondario piccolo" type="button" data-azione="aggiungi-voce">
+                  Aggiungi una voce
+                </button>
+              </div>
+
+              <div class="coppia">
+                <p class="f-campo">
+                  <label class="f-label" for="p-sconto-tipo">Sconto</label>
+                  <select id="p-sconto-tipo" name="p.sconto-tipo">
+                    <option value="">Nessuno</option>
+                    <option value="euro">In euro</option>
+                    <option value="perc">In percentuale</option>
+                  </select>
+                </p>
+                <p class="f-campo">
+                  <label class="f-label" for="p-sconto">Quanto</label>
+                  <input id="p-sconto" type="number" name="p.sconto" min="0" step="0.01" inputmode="decimal" />
+                </p>
+              </div>
+              <p class="f-campo">
+                <label class="f-label" for="p-motivo">Motivo dello sconto <span class="f-fac">· compare nel preventivo</span></label>
+                <input id="p-motivo" type="text" name="p.motivo" maxlength="80" placeholder="Es. pagamento alla consegna del sito" />
+              </p>
+
+              <div class="f-gruppo" role="radiogroup" aria-labelledby="q-regime">
+                <p class="f-domanda" id="q-regime">Regime fiscale</p>
+                {
+                  REGIMI.map((r) => (
+                    <label class="f-scelta">
+                      <input type="radio" name="p.regime" value={r.id} />
+                      <span>{r.nome}</span>
+                    </label>
+                  ))
+                }
+                <p class="testo-sm">Le diciture sono proposte: falle vedere al commercialista prima di usarle.</p>
+              </div>
+              <label class="f-scelta" data-ritenuta>
+                <input type="checkbox" name="p.ritenuta" value="1" />
+                <span>Il cliente è un’attività e trattiene la ritenuta d’acconto del 20%</span>
+              </label>
+
+              <div class="coppia">
+                <p class="f-campo">
+                  <label class="f-label" for="p-acconto">Acconto alla conferma, %</label>
+                  <input id="p-acconto" type="number" name="p.acconto" min="0" max="100" step="1" inputmode="numeric" />
+                </p>
+                <p class="f-campo">
+                  <label class="f-label" for="p-validita">Validità, giorni</label>
+                  <input id="p-validita" type="number" name="p.validita" min="1" step="1" inputmode="numeric" />
+                </p>
+                <p class="f-campo">
+                  <label class="f-label" for="p-giri">Giri di modifica inclusi</label>
+                  <input id="p-giri" type="number" name="p.giri" min="0" step="1" inputmode="numeric" />
+                </p>
+                <p class="f-campo">
+                  <label class="f-label" for="p-assistenza">Assistenza dopo la pubblicazione, giorni</label>
+                  <input id="p-assistenza" type="number" name="p.assistenza" min="0" step="1" inputmode="numeric" />
+                </p>
+              </div>
+              <p class="f-campo">
+                <label class="f-label" for="p-tempi">Tempi</label>
+                <input id="p-tempi" type="text" name="p.tempi" maxlength="120" />
+              </p>
+              <p class="f-campo">
+                <label class="f-label" for="p-ore">Ore di lavoro stimate <span class="f-fac">· solo per me · lascia vuoto per il calcolo automatico</span></label>
+                <input id="p-ore" type="number" name="p.ore" min="0" step="0.5" inputmode="decimal" data-ore-manuali />
+              </p>
+            </fieldset>
+          </form>
+
+          {/* ------------------------------ il riepilogo ------------------------------ */}
+          <aside class="riepilogo" id="riepilogo" aria-label="Riepilogo del preventivo">
+            <p class="etichetta">Preventivo <span data-v="numero"></span></p>
+            <p class="r-cliente h3" data-v="cliente">—</p>
+
+            <ul class="righe" data-righe></ul>
+            <p class="testo-sm vuoto" data-vuoto>Scegli un pacchetto o aggiungi una voce.</p>
+
+            <dl class="totali">
+              <div class="tot" data-riga="subtotale" hidden><dt>Subtotale</dt><dd class="dato" data-v="subtotale"></dd></div>
+              <div class="tot" data-riga="sconto" hidden><dt data-v="sconto-nome">Sconto</dt><dd class="dato" data-v="sconto"></dd></div>
+              <div class="tot" data-riga="imponibile" hidden><dt>Imponibile</dt><dd class="dato" data-v="imponibile"></dd></div>
+              <div class="tot" data-riga="iva" hidden><dt>IVA 22%</dt><dd class="dato" data-v="iva"></dd></div>
+              <div class="tot totale"><dt>Totale</dt><dd class="dato" data-v="totale">0 €</dd></div>
+              <div class="tot" data-riga="ritenuta" hidden><dt>Ritenuta d’acconto 20%</dt><dd class="dato" data-v="ritenuta"></dd></div>
+              <div class="tot" data-riga="netto" hidden><dt>Netto da pagare</dt><dd class="dato" data-v="netto"></dd></div>
+              <div class="tot" data-riga="acconto"><dt data-v="acconto-nome">Acconto</dt><dd class="dato" data-v="acconto">0 €</dd></div>
+              <div class="tot" data-riga="saldo"><dt>Saldo alla consegna</dt><dd class="dato" data-v="saldo">0 €</dd></div>
+            </dl>
+
+            <div class="blocco" data-annue hidden>
+              <p class="etichetta">Ogni anno, facoltativi</p>
+              <ul class="righe" data-righe-annue></ul>
+            </div>
+
+            <p class="testo-sm fuori">{CONDIZIONI.dominioHosting}</p>
+
+            <div class="blocco interno">
+              <p class="etichetta">Solo per me · non compare nel preventivo</p>
+              <dl class="totali">
+                <div class="tot"><dt>Ore stimate</dt><dd class="dato" data-v="ore">—</dd></div>
+                <div class="tot"><dt>Tariffa effettiva</dt><dd class="dato" data-v="tariffa">—</dd></div>
+              </dl>
+              <p class="testo-sm" data-v="tariffa-nota"></p>
+            </div>
+
+            <div class="blocco" data-controlli-blocco hidden>
+              <p class="etichetta">Da controllare</p>
+              <ul class="avvisi" data-avvisi></ul>
+            </div>
+
+            <div class="blocco azioni-fine">
+              <p class="etichetta">La pagina del preventivo</p>
+              <p class="testo-sm">
+                Una pagina sola, con la versione di prova, i pacchetti e i pulsanti per rispondere. I
+                prezzi viaggiano nel link e non passano da nessun server.
+              </p>
+              <button class="f-bottone" type="button" data-azione="wa-link">Mandagli il link su WhatsApp</button>
+              <button class="f-bottone secondario" type="button" data-azione="copia-link">Copia il link</button>
+              <button class="f-bottone secondario" type="button" data-azione="apri-proposta">Guarda come la vede lui</button>
+              <p class="etichetta spazio">Il preventivo scritto</p>
+              <button class="f-bottone secondario" type="button" data-azione="wa-cliente">Scrivigli il testo su WhatsApp</button>
+              <p class="testo-sm" data-dest></p>
+              <button class="f-bottone secondario" type="button" data-azione="email-cliente">Scrivigli per email</button>
+              <button class="f-bottone secondario" type="button" data-azione="copia-preventivo">Copia il preventivo</button>
+              <button class="f-bottone secondario" type="button" data-azione="stampa">Stampa o salva in PDF</button>
+              <p class="etichetta spazio">Per me</p>
+              <button class="f-bottone secondario" type="button" data-azione="copia-appunti">Copia gli appunti</button>
+              <p class="testo-sm" data-esito role="status"></p>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      {/* Il foglio che esce in stampa: si compone da solo e sullo schermo non si vede. */}
+      <article class="foglio" data-foglio aria-hidden="true"></article>
+    </div>
+
+    {/* Su telefono il riepilogo sta in fondo alla pagina: questa barra tiene il totale sotto gli occhi. */}
+    <a class="barra-totale" href="#riepilogo" data-barra-totale hidden>
+      <span class="etichetta">Totale</span>
+      <span class="dato" data-v="totale-barra">0 €</span>
+      <span class="verso">Riepilogo <span aria-hidden="true">↓</span></span>
+    </a>
+
+    <template data-t-riga>
+      <li class="riga"><span class="r-d"></span><span class="r-t dato"></span></li>
+    </template>
+    <template data-t-voce>
+      <li class="voce">
+        <input type="text" data-vc="d" aria-label="Descrizione" placeholder="Descrizione" maxlength="120" />
+        <input type="number" data-vc="q" min="1" step="1" inputmode="numeric" aria-label="Quantità" placeholder="1" />
+        <input type="number" data-vc="p" min="0" step="0.01" inputmode="decimal" aria-label="Prezzo di una unità, in euro" placeholder="€" />
+        <input type="number" data-vc="h" min="0" step="0.5" inputmode="decimal" aria-label="Ore stimate, solo per me" placeholder="ore" />
+        <button class="f-bottone secondario piccolo" type="button" data-azione="togli-voce">Togli</button>
+      </li>
+    </template>
+    <template data-t-azione>
+      <li class="azione">
+        <label class="f-scelta"><input type="checkbox" /><span></span></label>
+        <button class="f-bottone secondario piccolo" type="button" data-azione="togli-azione">Togli</button>
+      </li>
+    </template>
+    <template data-t-avviso>
+      <li class="avviso testo-sm"></li>
+    </template>
+
+    <script is:inline type="application/json" id="listino-cifrato" set:html={JSON.stringify(cifrato)} />
+  </section>
+</Guscio>
+
+<style>
+  .pagina {
+    padding-block: clamp(40px, 6vw, 88px) var(--section-sm);
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  /* ------------------------------ la porta ------------------------------ */
+  .porta {
+    min-height: min(70vh, 640px);
+    display: grid;
+    align-items: center;
+  }
+
+  .porta-dentro {
+    display: grid;
+    gap: var(--sp-5);
+    max-width: 440px;
+  }
+
+  .porta-dentro .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .porta-form {
+    display: grid;
+    gap: var(--sp-4);
+  }
+
+  .errore {
+    color: var(--signal-ink);
+  }
+
+  /* ------------------------------ la barra in cima ------------------------------ */
+  .barra {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: var(--sp-5);
+    padding-bottom: var(--sp-5);
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .barra-titolo {
+    display: grid;
+    gap: var(--sp-2);
+    min-width: 0;
+  }
+
+  .barra-titolo h2 {
+    overflow-wrap: anywhere;
+  }
+
+  .barra-comandi {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .elenco {
+    min-width: 220px;
+  }
+
+  .elenco select {
+    min-height: 40px;
+    padding-block: 8px;
+  }
+
+  label.f-bottone {
+    cursor: pointer;
+  }
+
+  .stato {
+    min-height: 1.5em;
+    margin-top: var(--sp-3);
+    color: var(--ink-3);
+  }
+
+  .indice {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-5);
+    padding-block: var(--sp-4) var(--sp-6);
+  }
+
+  .indice a {
+    display: inline-flex;
+    gap: var(--sp-2);
+    align-items: baseline;
+    text-decoration: none;
+    color: var(--ink-2);
+    font-size: var(--t-body-sm);
+    padding-block: var(--sp-1);
+    border-bottom: 1px solid transparent;
+  }
+
+  .indice a:hover {
+    color: var(--ink);
+    border-bottom-color: var(--ink);
+  }
+
+  .indice .dato {
+    color: var(--ink-3);
+  }
+
+  /* ------------------------------ corpo ------------------------------ */
+  .corpo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: start;
+  }
+
+  .modulo {
+    display: grid;
+    gap: var(--sp-8);
+    min-width: 0;
+  }
+
+  .importa-richiesta {
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-1);
+    background: var(--paper-sunk);
+  }
+
+  .importa-richiesta summary {
+    cursor: pointer;
+    padding: var(--sp-3) var(--sp-4);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+  }
+
+  .importa-dentro {
+    display: grid;
+    gap: var(--sp-3);
+    padding: 0 var(--sp-4) var(--sp-4);
+  }
+
+  .importa-dentro .f-bottone {
+    justify-self: start;
+  }
+
+  .coppia {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--sp-4);
+  }
+
+  /* ------------------------------ cosa serve da lui ------------------------------ */
+  .materiali {
+    border-top: 1px solid var(--rule);
+  }
+
+  .materiale {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--sp-3) var(--sp-5);
+    align-items: center;
+    padding-block: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .m-nome {
+    font-size: var(--t-body-sm);
+  }
+
+  .seg {
+    display: flex;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-1);
+    overflow: hidden;
+  }
+
+  .seg-voce {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .seg-voce + .seg-voce {
+    border-left: 1px solid var(--rule);
+  }
+
+  .seg-voce span {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 6px 12px;
+    font-size: var(--t-body-sm);
+    white-space: nowrap;
+    color: var(--ink-2);
+    transition: background-color var(--dur-1) var(--ease-out);
+  }
+
+  .seg-voce:hover span {
+    background: var(--paper-sunk);
+  }
+
+  .seg-voce input:checked + span {
+    background: var(--signal);
+    color: var(--signal-on);
+    font-weight: 500;
+  }
+
+  .seg-voce:has(input:focus-visible) {
+    outline: 2px solid var(--ink);
+    outline-offset: -2px;
+  }
+
+  /* ------------------------------ azioni ------------------------------ */
+  .azioni {
+    border-top: 1px solid var(--rule);
+  }
+
+  .azione {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--sp-3);
+    align-items: center;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .azione .f-scelta {
+    border-top: 0;
+  }
+
+  .azione :global(input:checked + span) {
+    color: var(--ink-3);
+    text-decoration: line-through;
+  }
+
+  .azione-nuova {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--sp-2);
+    margin-top: var(--sp-3);
+  }
+
+  /* ------------------------------ pacchetti ------------------------------ */
+  .pacchetti {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .pacchetto {
+    position: relative;
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+    padding: var(--sp-5) var(--sp-4);
+    border-right: 1px solid var(--rule);
+    cursor: pointer;
+    transition: background-color var(--dur-1) var(--ease-out);
+  }
+
+  .pacchetto:last-child {
+    border-right: 0;
+  }
+
+  .pacchetto:hover {
+    background: var(--paper-sunk);
+  }
+
+  /* Il filo d'accento sopra la scelta fatta: è l'azione, e l'arancio vale azione. */
+  .pacchetto::before {
+    content: '';
+    position: absolute;
+    inset: -1px 0 auto 0;
+    height: 3px;
+    background: var(--signal);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  .pacchetto:has(input:checked) {
+    background: var(--paper-sunk);
+  }
+
+  .pacchetto:has(input:checked)::before {
+    transform: scaleX(1);
+  }
+
+  .pacchetto:has(input:focus-visible) {
+    outline: 2px solid var(--ink);
+    outline-offset: -2px;
+  }
+
+  .p-prezzo {
+    font-size: var(--t-h3);
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .p-include {
+    display: grid;
+    gap: var(--sp-1);
+    margin-top: var(--sp-2);
+    padding-top: var(--sp-3);
+    border-top: 1px solid var(--rule);
+  }
+
+  .p-include li::before {
+    content: '— ';
+    color: var(--ink-3);
+  }
+
+  .prezzo-pacchetto {
+    max-width: 320px;
+  }
+
+  /* ------------------------------ extra ------------------------------ */
+  .extra-elenco {
+    border-top: 1px solid var(--rule);
+  }
+
+  .extra {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 84px 150px 92px;
+    gap: var(--sp-3);
+    align-items: center;
+    padding-block: var(--sp-2);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .extra .f-scelta {
+    border-top: 0;
+    align-items: flex-start;
+    padding-block: var(--sp-2);
+  }
+
+  .extra .f-scelta input {
+    margin-top: 2px;
+  }
+
+  .extra-nome span {
+    display: grid;
+    gap: 2px;
+  }
+
+  .extra-nome small {
+    color: var(--ink-3);
+  }
+
+  .extra-q,
+  .extra-p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .extra-p input,
+  .extra-q input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .extra-p .unita {
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  .extra-t {
+    text-align: right;
+    color: var(--ink);
+  }
+
+  .extra:not(:has(input[type='checkbox']:checked)) .extra-t {
+    color: var(--ink-3);
+  }
+
+  /* ------------------------------ voci a parte ------------------------------ */
+  .voci-intro {
+    margin-bottom: var(--sp-3);
+    max-width: 58ch;
+  }
+
+  .voci {
+    display: grid;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-3);
+  }
+
+  .voce {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 72px 104px 72px auto;
+    gap: var(--sp-2);
+    align-items: center;
+  }
+
+  /* ------------------------------ il riepilogo ------------------------------ */
+  .riepilogo {
+    position: sticky;
+    top: calc(var(--header-h) + var(--sp-5));
+    display: grid;
+    gap: var(--sp-4);
+    align-content: start;
+    max-height: calc(100vh - var(--header-h) - var(--sp-6));
+    overflow-y: auto;
+    padding: var(--sp-5) 0 var(--sp-5) var(--sp-5);
+    border-left: 1px solid var(--ink);
+  }
+
+  .r-cliente {
+    overflow-wrap: anywhere;
+  }
+
+  .righe {
+    display: grid;
+    border-top: 1px solid var(--rule);
+  }
+
+  .riga {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--sp-3);
+    align-items: baseline;
+    padding-block: var(--sp-2);
+    border-bottom: 1px solid var(--rule);
+    font-size: var(--t-body-sm);
+  }
+
+  .r-t {
+    white-space: nowrap;
+  }
+
+  .vuoto {
+    color: var(--ink-3);
+  }
+
+  .totali {
+    display: grid;
+  }
+
+  .tot {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    padding-block: var(--sp-2);
+    font-size: var(--t-body-sm);
+    color: var(--ink-2);
+  }
+
+  .tot dd {
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .tot.totale {
+    padding-block: var(--sp-3);
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    font-size: var(--t-h3);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .blocco {
+    display: grid;
+    gap: var(--sp-2);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule);
+  }
+
+  .blocco.interno {
+    border-top-style: dashed;
+  }
+
+  .fuori {
+    padding-top: var(--sp-3);
+  }
+
+  .avvisi {
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  .avviso {
+    padding-left: var(--sp-3);
+    border-left: 1px solid var(--ink-3);
+  }
+
+  .azioni-fine {
+    gap: var(--sp-2);
+  }
+
+  .azioni-fine .spazio {
+    margin-top: var(--sp-4);
+  }
+
+  /* ------------------------------ barra del totale ------------------------------ */
+  .barra-totale {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: var(--z-sticky);
+    display: none;
+    align-items: baseline;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--gutter) calc(var(--sp-3) + env(safe-area-inset-bottom));
+    background: var(--paper);
+    border-top: 1px solid var(--ink);
+    text-decoration: none;
+  }
+
+  .barra-totale .dato {
+    font-size: var(--t-h3);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .barra-totale .verso {
+    margin-left: auto;
+    font-size: var(--t-body-sm);
+    color: var(--signal-ink);
+  }
+
+  @media (max-width: 1100px) {
+    .pagina {
+      padding-bottom: calc(var(--section-sm) + 72px);
+    }
+
+    .corpo {
+      grid-template-columns: 1fr;
+    }
+
+    .riepilogo {
+      position: static;
+      max-height: none;
+      overflow: visible;
+      padding: var(--sp-5) 0 0;
+      border-left: 0;
+      border-top: 1px solid var(--ink);
+    }
+
+    .barra-totale:not([hidden]) {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .pacchetti {
+      grid-template-columns: 1fr;
+    }
+
+    .pacchetto {
+      border-right: 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .pacchetto:last-child {
+      border-bottom: 0;
+    }
+
+    .materiale {
+      grid-template-columns: 1fr;
+    }
+
+    .seg-voce {
+      flex: 1 1 auto;
+    }
+
+    .seg-voce span {
+      justify-content: center;
+      padding-inline: 6px;
+      font-size: 13px;
+    }
+
+    .extra {
+      grid-template-areas:
+        'nome nome'
+        'q p'
+        'tot tot';
+      grid-template-columns: 96px minmax(0, 1fr);
+      row-gap: var(--sp-2);
+    }
+
+    .extra-nome {
+      grid-area: nome;
+    }
+
+    .extra-q {
+      grid-area: q;
+    }
+
+    .extra-p {
+      grid-area: p;
+    }
+
+    .extra-t {
+      grid-area: tot;
+      text-align: left;
+    }
+
+    .voce {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .voce > :first-child {
+      grid-column: 1 / -1;
+    }
+
+    .voce > :last-child {
+      grid-column: 1 / -1;
+    }
+
+    .barra-comandi {
+      width: 100%;
+    }
+
+    .elenco {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+
+{/* Il foglio e la stampa. Globali perché il foglio si compone da JavaScript e
+    gli stili con ambito non arriverebbero ai suoi elementi. */}
+<style is:global>
+  .foglio {
+    display: none;
+  }
+
+  @media print {
+    /* Fuori tutto, tranne il foglio: intestazione, piede, barra, comandi. */
+    header.intestazione,
+    footer.piede,
+    .salta,
+    [data-sentinella],
+    astro-route-announcer,
+    .pagina .porta,
+    .pagina .strumento,
+    .pagina .barra-totale {
+      display: none !important;
+    }
+
+    /* Su carta i token del tema scuro darebbero testo chiaro su foglio bianco:
+       il foglio ridefinisce i suoi, con la stessa tecnica del palco. */
+    html,
+    body {
+      background: #fff !important;
+    }
+
+    .pagina {
+      padding: 0 !important;
+    }
+
+    .pagina .contenitore {
+      padding-inline: 0;
+      max-width: none;
+    }
+
+    .foglio {
+      --paper: #fff;
+      --ink: #111;
+      --ink-2: #3d3d40;
+      --ink-3: #55565a;
+      --rule: #c9c9c8;
+      display: block;
+      background: #fff;
+      color: var(--ink);
+      font-size: 11pt;
+      line-height: 1.5;
+    }
+
+    @page {
+      size: A4;
+      margin: 18mm 16mm;
+    }
+  }
+
+  .fg-testata {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .fg-titolo {
+    font-size: 26pt;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  .fg-meta {
+    font-family: var(--font-mono);
+    font-size: 9pt;
+    text-align: right;
+    color: var(--ink-2);
+  }
+
+  .fg-parti {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-block: 18px;
+  }
+
+  .fg-et {
+    font-family: var(--font-mono);
+    font-size: 8pt;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 4px;
+  }
+
+  .fg-tabella {
+    width: 100%;
+    border-collapse: collapse;
+    margin-block: 8px 4px;
+  }
+
+  .fg-tabella td {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+
+  .fg-tabella td:last-child {
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .fg-tabella .fg-tot td {
+    border-bottom: 0;
+    border-top: 2px solid var(--ink);
+    font-size: 14pt;
+    font-weight: 700;
+  }
+
+  .fg-sez {
+    margin-top: 16px;
+    break-inside: avoid;
+  }
+
+  .fg-sez ul {
+    margin: 0;
+    padding-left: 18px;
+    list-style: disc;
+  }
+
+  .fg-sez ol {
+    margin: 0;
+    padding-left: 18px;
+    list-style: decimal;
+  }
+
+  .fg-sez li {
+    padding-block: 1px;
+  }
+
+  .fg-piccolo {
+    font-size: 9.5pt;
+    color: var(--ink-2);
+  }
+</style>
+
+<script>
+  import { avviaIncontro } from '../lib/incontro.ts';
+
+  avviaIncontro();
+  document.addEventListener('astro:page-load', avviaIncontro);
+</script>

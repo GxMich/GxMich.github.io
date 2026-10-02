@@ -1,0 +1,317 @@
+---
+/**
+ * La richiesta di preventivo, per chiunque mi chieda un sito.
+ *
+ * È la versione generale del questionario di Casa di Nonna: le domande vengono
+ * da data/richiesta.js, le stesse che uso di persona all'incontro, così quello
+ * che il cliente scrive qui lo rilego nella pagina dell'incontro senza
+ * ricopiare niente.
+ *
+ * Pagina riservata: nessun collegamento la raggiunge dal sito, è fuori dalla
+ * sitemap, porta noindex e non carica le misure di traffico. Si arriva solo da
+ * un indirizzo dato a mano.
+ *
+ * Non c'è un server dietro. Il modulo compone il messaggio e apre WhatsApp (o
+ * la posta) con il testo già scritto: il messaggio parte quando chi scrive
+ * preme invio. Nessun dato passa da qui.
+ */
+import Guscio from '../layouts/Guscio.astro';
+import Campi from '../components/preventivo/Campi.astro';
+import { SITE } from '../config.js';
+
+const passi = [
+  ['Compili quello che sai', 'Il resto lo salti: non serve avere tutto pronto.'],
+  ['Si apre WhatsApp', 'Con il messaggio già scritto. Parte quando premi invio tu.'],
+  ['Ti rispondo io', 'Con la bozza gratuita e un preventivo preciso, a prezzo fisso.'],
+];
+---
+
+<Guscio
+  titolo={`Raccontami cosa serve al tuo sito — ${SITE.name}`}
+  descrizione="Le domande per preparare la bozza gratuita e un preventivo preciso."
+  noindex={true}
+  senzaMisure={true}
+>
+  <section class="pagina f">
+    <div class="contenitore dentro">
+      <header class="testata">
+        <p class="etichetta">Preventivo</p>
+        <h1 class="display">Raccontami cosa serve al tuo sito.</h1>
+        <p class="lede">
+          Più mi dici, più il preventivo è preciso. Rispondi a quello che sai e salta il resto:
+          bastano dieci minuti.
+        </p>
+
+        <ol class="passi">
+          {
+            passi.map(([t, d], i) => (
+              <li>
+                <span class="dato">{String(i + 1).padStart(2, '0')}</span>
+                <span>
+                  <strong>{t}</strong>
+                  <span class="testo-sm">{d}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ol>
+      </header>
+
+      <form
+        class="modulo"
+        id="richiesta"
+        data-whatsapp={SITE.whatsapp}
+        data-email={SITE.email}
+      >
+        <Campi />
+
+        <div class="invio">
+          <div class="azioni">
+            <button class="f-bottone" type="button" data-azione="whatsapp">Invia su WhatsApp</button>
+            <button class="f-bottone secondario" type="button" data-azione="email">Invia per email</button>
+            <button class="f-bottone secondario" type="button" data-azione="copia">Copia il testo</button>
+          </div>
+          <p class="f-nota testo-sm">
+            Quello che scrivi resta sul tuo telefono finché non premi invio: questo sito non lo riceve
+            e non lo salva. Il messaggio mi serve solo per prepararti la proposta.
+            <a class="f-link" href="/privacy">Come tratto i dati</a>
+          </p>
+        </div>
+
+        <div class="uscita" data-uscita hidden tabindex="-1">
+          <p class="etichetta">Il messaggio</p>
+          <p class="testo-sm" data-uscita-stato role="status"></p>
+          <textarea readonly rows="10" data-uscita-testo aria-label="Testo del messaggio"></textarea>
+          <p class="testo-sm">
+            Non si è aperto? Copia il testo e scrivimi al
+            <a class="f-link" href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>
+            o a <a class="f-link" href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+          </p>
+          <button class="f-bottone secondario" type="button" data-azione="copia-uscita">Copia il messaggio</button>
+        </div>
+      </form>
+    </div>
+  </section>
+</Guscio>
+
+<style>
+  .pagina {
+    padding-block: clamp(40px, 6vw, 88px) var(--section-sm);
+  }
+
+  .dentro {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: start;
+  }
+
+  .testata {
+    display: grid;
+    gap: var(--sp-4);
+    align-content: start;
+    position: sticky;
+    top: calc(var(--header-h) + var(--sp-5));
+  }
+
+  .testata .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .passi {
+    display: grid;
+    margin-top: var(--sp-4);
+    border-top: 1px solid var(--ink);
+  }
+
+  .passi li {
+    display: grid;
+    grid-template-columns: 2.5ch minmax(0, 1fr);
+    gap: var(--sp-3);
+    padding-block: var(--sp-4);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .passi .dato {
+    color: var(--ink-3);
+  }
+
+  .passi strong {
+    display: block;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .modulo {
+    display: grid;
+    gap: var(--sp-7);
+  }
+
+  .invio {
+    display: grid;
+    gap: var(--sp-4);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--ink);
+  }
+
+  .azioni {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+  }
+
+  .uscita {
+    display: grid;
+    gap: var(--sp-3);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--rule);
+  }
+
+  .uscita[hidden] {
+    display: none;
+  }
+
+  .uscita textarea {
+    font-family: var(--font-mono);
+    font-size: var(--t-data);
+    line-height: 1.55;
+  }
+
+  .uscita .f-bottone {
+    justify-self: start;
+  }
+
+  @media (max-width: 860px) {
+    .dentro {
+      grid-template-columns: 1fr;
+      gap: var(--sp-6);
+    }
+
+    .testata {
+      position: static;
+    }
+
+    .azioni .f-bottone {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+
+<script>
+  import {
+    leggiRichiesta,
+    scriviRichiesta,
+    componiMessaggio,
+    linkWhatsApp,
+    linkEmail,
+    copia,
+    LIMITE_WHATSAPP,
+    type Valori,
+  } from '../lib/richiesta.ts';
+
+  const BOZZA = 'richiesta-bozza';
+  const APERTURA = 'Salve Michele, ecco la mia richiesta per il sito.';
+
+  function montaRichiesta() {
+    const modulo = document.querySelector<HTMLFormElement>('#richiesta');
+    if (!modulo || modulo.dataset.montato !== undefined) return;
+    modulo.dataset.montato = 'si';
+
+    const uscita = modulo.querySelector<HTMLElement>('[data-uscita]')!;
+    const stato = modulo.querySelector<HTMLElement>('[data-uscita-stato]')!;
+    const area = modulo.querySelector<HTMLTextAreaElement>('[data-uscita-testo]')!;
+
+    /* La bozza vive nella scheda, non nel dispositivo: sopravvive a un
+       ricaricamento, sparisce chiudendo. Così non resta niente di personale
+       su un telefono prestato. */
+    try {
+      const salvata = sessionStorage.getItem(BOZZA);
+      if (salvata) scriviRichiesta(modulo, JSON.parse(salvata) as Valori);
+    } catch {
+      /* navigazione privata: si parte da vuoto */
+    }
+
+    let attesa: number | undefined;
+    const salvaBozza = () => {
+      window.clearTimeout(attesa);
+      attesa = window.setTimeout(() => {
+        try {
+          sessionStorage.setItem(BOZZA, JSON.stringify(leggiRichiesta(modulo)));
+        } catch {
+          /* niente bozza, nessun danno */
+        }
+      }, 300);
+    };
+    /* Invio con il tasto Invio dentro un campo: non deve ricaricare la pagina. */
+    modulo.addEventListener('submit', (e) => e.preventDefault());
+    modulo.addEventListener('input', salvaBozza);
+    modulo.addEventListener('change', salvaBozza);
+
+    const messaggio = () => componiMessaggio(leggiRichiesta(modulo), APERTURA);
+
+    const mostra = (testo: string, nota: string) => {
+      area.value = testo;
+      stato.textContent = nota;
+      uscita.hidden = false;
+      uscita.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+
+    /* Il nome e un recapito servono per rispondere: il resto si può saltare. */
+    const valido = () => {
+      if (modulo.checkValidity()) return true;
+      modulo.reportValidity();
+      return false;
+    };
+
+    modulo.addEventListener('click', async (e) => {
+      const bottone = (e.target as HTMLElement).closest<HTMLElement>('[data-azione]');
+      if (!bottone) return;
+      const azione = bottone.dataset.azione;
+
+      if (azione === 'copia-uscita') {
+        const ok = await copia(area.value);
+        stato.textContent = ok ? 'Copiato. Incollalo nella chat o nella mail.' : 'Non riesco a copiare da solo: seleziona il testo qui sotto e copialo.';
+        return;
+      }
+
+      if (azione === 'copia') {
+        const testo = messaggio();
+        const ok = await copia(testo);
+        mostra(testo, ok ? 'Copiato. Incollalo dove vuoi: WhatsApp, mail o un messaggio.' : 'Non riesco a copiare da solo: seleziona il testo qui sotto e copialo.');
+        return;
+      }
+
+      if (!valido()) return;
+      const testo = messaggio();
+
+      if (azione === 'whatsapp') {
+        const numero = modulo.dataset.whatsapp!;
+        if (testo.length <= LIMITE_WHATSAPP) {
+          mostra(testo, 'Si sta aprendo WhatsApp con il messaggio già scritto: premi invio per mandarlo.');
+          window.location.href = linkWhatsApp(numero, testo);
+        } else {
+          /* Oltre la soglia alcune app tagliano il testo senza dirlo: si apre
+             la chat vuota e il messaggio è già negli appunti. */
+          const ok = await copia(testo);
+          mostra(
+            testo,
+            ok
+              ? 'Il messaggio è lungo per stare in un link: l’ho copiato. Si apre la chat, incollalo e premi invio.'
+              : 'Il messaggio è lungo per stare in un link. Copialo da qui sotto e incollalo nella chat che si apre.'
+          );
+          window.location.href = linkWhatsApp(numero);
+        }
+      }
+
+      if (azione === 'email') {
+        const nome = (leggiRichiesta(modulo).nome as string) || 'nuova richiesta';
+        mostra(testo, 'Si sta aprendo la tua posta con il messaggio già scritto: premi invia.');
+        window.location.href = linkEmail(modulo.dataset.email!, `Richiesta sito web — ${nome}`, testo);
+      }
+    });
+  }
+
+  montaRichiesta();
+  document.addEventListener('astro:page-load', montaRichiesta);
+</script>

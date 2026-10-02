@@ -10,6 +10,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "og": "node scripts/generate-og.mjs",
+    "cifra": "node scripts/cifra-listino.mjs",
     "contrasti": "node scripts/contrasti.mjs",
     "peso": "node scripts/peso-js.mjs",
     "caratteri": "node scripts/caratteri.mjs",

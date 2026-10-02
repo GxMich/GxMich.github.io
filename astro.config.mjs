@@ -15,7 +15,8 @@ export default defineConfig({
     filter: (pagina) =>
       !pagina.includes('/privacy') &&
       !pagina.includes('/stile') &&
-      !pagina.includes('/preventivo-'),
+      !pagina.includes('/preventivo-') &&
+      !pagina.includes('/incontro-'),
   })],
   build: {
     inlineStylesheets: 'auto',

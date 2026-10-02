@@ -13,3 +13,8 @@ scripts/fonts/
 
 # snapshot filesystem pre-redesign, fuori dal versionamento
 archive/
+
+# listino in chiaro per la pagina dell'incontro: nel repository va solo la
+# versione cifrata (src/data/listino.cifrato.json). Fare una copia di sicurezza
+# di questo file altrove: se si perde, i prezzi si rileggono solo con la password.
+scripts/listino-privato.json

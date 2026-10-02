@@ -1,0 +1,300 @@
+/* ============================================================================
+   MODULO — i controlli delle due pagine riservate (richiesta e incontro).
+
+   Globale ma con il prefisso `f-`: così non può toccare nient'altro, e le due
+   pagine disegnano gli stessi campi allo stesso modo senza ricopiare la regola.
+   Solo token: nessun colore o misura scritti a mano.
+   ============================================================================ */
+
+.f-sezione {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: var(--sp-5);
+}
+
+.f-legenda {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  width: 100%;
+  padding: var(--sp-4) 0 0;
+  margin-bottom: var(--sp-5);
+  border-top: 1px solid var(--ink);
+}
+
+.f-legenda b {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.f-intro {
+  margin-top: calc(var(--sp-3) * -1);
+  max-width: 56ch;
+}
+
+.f-campo {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.f-label,
+.f-domanda {
+  font-size: var(--t-body-sm);
+  color: var(--ink-2);
+}
+
+.f-domanda {
+  margin-bottom: var(--sp-2);
+}
+
+.f-fac {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* Il suggerimento per me: compare solo nell'incontro. Un filo a sinistra e
+   l'etichetta mono lo separano dalle domande vere, senza colore. */
+.f-chiedi {
+  display: block;
+  margin-top: var(--sp-1);
+  padding-left: var(--sp-3);
+  border-left: 1px solid var(--ink-3);
+  font-size: var(--t-body-sm);
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+.f-chiedi::before {
+  content: 'Chiedi · ';
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.f input[type='text'],
+.f input[type='tel'],
+.f input[type='email'],
+.f input[type='number'],
+.f input[type='date'],
+.f input[type='password'],
+.f select,
+.f textarea {
+  font-size: var(--t-body);
+  color: var(--ink);
+  background: var(--paper-sunk);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-1);
+  padding: 12px 14px;
+  min-height: 48px;
+  width: 100%;
+  transition: border-color var(--dur-1) var(--ease-out);
+}
+
+.f select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-3) 50%),
+    linear-gradient(135deg, var(--ink-3) 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) 50%,
+    calc(100% - 15px) 50%;
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 40px;
+}
+
+.f input::placeholder,
+.f textarea::placeholder {
+  color: var(--ink-3);
+}
+
+.f input[type='text']:hover,
+.f input[type='tel']:hover,
+.f input[type='email']:hover,
+.f input[type='number']:hover,
+.f input[type='date']:hover,
+.f input[type='password']:hover,
+.f select:hover,
+.f textarea:hover {
+  border-color: var(--ink-3);
+}
+
+.f textarea {
+  resize: vertical;
+  min-height: 110px;
+  line-height: 1.55;
+}
+
+/* Cifre incolonnate: i prezzi si leggono a colpo d'occhio. */
+.f input[type='number'] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scelte disegnate con i token e non native: quelle del browser seguono il
+   tema di sistema, non l'interruttore del sito. */
+.f-gruppo {
+  display: grid;
+}
+
+.f-scelta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 48px;
+  padding: var(--sp-2) 0;
+  border-top: 1px solid var(--rule);
+  cursor: pointer;
+  color: var(--ink);
+  font-size: var(--t-body);
+}
+
+.f-gruppo > .f-scelta:first-of-type {
+  border-top: 0;
+}
+
+.f-scelta input {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  margin: 0;
+  background: var(--paper-sunk);
+  border: 1px solid var(--ink-3);
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    border-color var(--dur-1) var(--ease-out);
+}
+
+.f-scelta input[type='radio'] {
+  border-radius: 50%;
+}
+
+.f-scelta input[type='checkbox'] {
+  border-radius: var(--radius-1);
+}
+
+.f-scelta input::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--signal-on);
+  transform: scale(0);
+  transition: transform var(--dur-1) var(--ease-out);
+}
+
+.f-scelta input[type='radio']::after {
+  border-radius: 50%;
+}
+
+.f-scelta input:checked {
+  background: var(--signal);
+  border-color: var(--signal);
+}
+
+.f-scelta input:checked::after {
+  transform: scale(1);
+}
+
+.f-scelta:hover input:not(:checked) {
+  border-color: var(--ink);
+}
+
+/* Pulsanti. Il pieno è l'unica azione che usa l'arancio. */
+.f-bottone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 48px;
+  padding: 12px 22px;
+  font-family: var(--font-ui);
+  font-size: var(--t-body-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  border-radius: var(--radius-1);
+  background: var(--signal);
+  color: var(--signal-on);
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    border-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out);
+}
+
+.f-bottone:hover {
+  background: var(--signal-ink);
+  color: var(--paper);
+}
+
+.f-bottone.secondario {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+}
+
+.f-bottone.secondario:hover {
+  background: transparent;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.f-bottone.piccolo {
+  min-height: 40px;
+  padding: 8px 14px;
+}
+
+.f-bottone:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.f-bottone:disabled:hover {
+  background: var(--signal);
+  color: var(--signal-on);
+}
+
+.f-bottone.secondario:disabled:hover {
+  background: transparent;
+  border-color: var(--rule);
+  color: var(--ink);
+}
+
+.f-link {
+  color: var(--signal-ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+}
+
+.f-link:hover {
+  border-bottom-color: var(--signal-ink);
+}
+
+.f-nota {
+  max-width: 58ch;
+}
+
+@media (max-width: 860px) {
+  /* 16px: sotto, iOS ingrandisce la pagina a ogni tocco su un campo. */
+  .f input,
+  .f select,
+  .f textarea {
+    font-size: 16px;
+  }
+}
