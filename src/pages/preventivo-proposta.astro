@@ -60,9 +60,10 @@ const passi = [
       {/* Finché i dati non sono letti, o se il link è incompleto, si vede solo questo. */}
       <div class="incompleto" data-incompleto>
         <p class="etichetta">Preventivo</p>
-        <h2 class="display">Questo link non è completo.</h2>
-        <p class="lede">
-          Succede quando un link lungo viene tagliato da un’app. Scrivimi e te lo rimando.
+        <h2 class="display" data-incompleto-titolo>Questo preventivo si apre dal suo link.</h2>
+        <p class="lede" data-incompleto-testo>
+          Questa pagina mostra il preventivo solo a chi ha il link che gli è stato mandato. Se non lo trovi,
+          scrivimi e te lo rimando.
         </p>
         <p class="azioni-semplici">
           <a class="f-bottone" href={`https://wa.me/${SITE.whatsapp}`}>WhatsApp {SITE.whatsappLabel}</a>

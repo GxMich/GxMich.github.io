@@ -24,6 +24,7 @@ import {
   ALIQUOTA_RITENUTA,
 } from '../data/richiesta.js';
 import { apri, cifraturaDisponibile, type Cifrato } from './cifratura.ts';
+import { Trascrizione, trascrizioneDisponibile } from './trascrizione.ts';
 import { REGISTRI, registroDi, totali, eur, codifica, type Proposta } from './preventivo.ts';
 import {
   leggiCampo,
@@ -213,6 +214,7 @@ class Pannello {
   private timerSalva: number | undefined;
   private timerElimina: number | undefined;
   private collegato = false;
+  private trascrizione: Trascrizione | null = null;
 
   constructor(private readonly r: HTMLElement) {
     this.cifrato = JSON.parse(document.getElementById('listino-cifrato')!.textContent!) as Cifrato;
@@ -236,6 +238,7 @@ class Pannello {
       'p.giri': String(CONDIZIONI.giriDiModifica),
       'p.assistenza': String(CONDIZIONI.assistenzaGiorni),
       'p.tempi': CONDIZIONI.tempi,
+      'i.parla': 'Cliente',
     };
   }
 
@@ -303,6 +306,7 @@ class Pannello {
   }
 
   private blocca() {
+    this.trascrizione?.ferma();
     window.clearTimeout(this.timerSalva);
     this.salva();
     try {
@@ -367,6 +371,8 @@ class Pannello {
   }
 
   private carica(m: Registrato) {
+    /* La trascrizione scrive nell'incontro aperto: cambiando incontro si ferma. */
+    this.trascrizione?.ferma();
     this.corrente = m;
     this.azioni = m.azioni.map((a) => ({ ...a }));
 
@@ -819,6 +825,8 @@ class Pannello {
     if (testo(s['i.risposta'])) note.push(`Risposta entro: ${testo(s['i.risposta'])}`);
     if (note.length) out.push('', 'APPUNTI', ...note);
 
+    if (testo(s['i.trascrizione'])) out.push('', 'TRASCRIZIONE', testo(s['i.trascrizione']));
+
     if (this.azioni.length) {
       out.push('', 'DA FARE', ...this.azioni.map((a) => `${a.fatto ? '[x]' : '[ ]'} ${a.t}`));
     }
@@ -986,6 +994,44 @@ class Pannello {
     return `${window.location.origin}/preventivo-proposta#${await codifica(this.proposta(s, c))}`;
   }
 
+  /* ------------------------------ trascrizione ------------------------------ */
+
+  private trascrivi() {
+    const stato = this.q('[data-trascr-stato]');
+
+    if (this.trascrizione?.attiva) {
+      this.trascrizione.ferma();
+      return;
+    }
+    if (!trascrizioneDisponibile()) {
+      stato.textContent = 'Questo browser non sa trascrivere la voce: usa Chrome, Edge o Safari.';
+      return;
+    }
+
+    const area = this.q<HTMLTextAreaElement>('#i-trascrizione');
+    this.trascrizione = new Trascrizione({
+      finale: (t) => {
+        const chi = leggiCampo(this.f, 'i.parla') === 'Io' ? 'Io' : 'Cliente';
+        /* Il riconoscitore italiano non mette maiuscole né punti. */
+        const frase = `${t[0].toUpperCase()}${t.slice(1)}${/[.!?…]$/.test(t) ? '' : '.'}`;
+        area.value += `${area.value && !area.value.endsWith('\n') ? '\n' : ''}${chi}: ${frase}`;
+        area.scrollTop = area.scrollHeight;
+        area.dispatchEvent(new Event('input', { bubbles: true }));
+      },
+      provvisorio: (t) => (this.q('[data-trascr-provvisorio]').textContent = t),
+      stato: (attiva, msg) => {
+        stato.textContent = msg;
+        this.tutti('[data-azione="trascrivi"]').forEach((b) => {
+          b.classList.toggle('attiva', attiva);
+          b.setAttribute('aria-pressed', String(attiva));
+        });
+        this.q('[data-trascr-etichetta]').textContent = attiva ? 'Ferma la trascrizione' : 'Accendi la trascrizione';
+        this.q('[data-trascr-barra]').hidden = !attiva;
+      },
+    });
+    this.trascrizione.avvia();
+  }
+
   /* ------------------------------ gli eventi ------------------------------ */
 
   private cambiato() {
@@ -1046,6 +1092,7 @@ class Pannello {
     });
 
     window.addEventListener('beforeprint', () => this.ricalcola());
+    window.addEventListener('pagehide', () => this.trascrizione?.ferma());
   }
 
   private nuovaAzione() {
@@ -1106,6 +1153,10 @@ class Pannello {
 
       case 'blocca':
         this.blocca();
+        break;
+
+      case 'trascrivi':
+        this.trascrivi();
         break;
 
       case 'importa-richiesta':

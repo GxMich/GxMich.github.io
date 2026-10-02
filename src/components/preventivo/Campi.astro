@@ -25,12 +25,15 @@ const num = (i: number) => String(da + i).padStart(2, '0');
     <fieldset class="f-sezione" id={`sez-${s.id}`}>
       <legend class="f-legenda">
         <b>{num(i)}</b>
-        <span>{s.titolo}</span>
+        <span>{incontro && s.t3 ? s.t3 : s.titolo}</span>
       </legend>
       {s.intro && !incontro && <p class="f-intro testo-sm">{s.intro}</p>}
 
       {s.campi.map((c) => {
         const id = `c-${c.id}`;
+        /* All'incontro le domande sono mie, non del cliente: stesse risposte, parole in terza persona. */
+        const etichetta = incontro && c.l3 ? c.l3 : c.label;
+        const mostra = (o: string) => (incontro && c.o3?.[o]) || o;
         const obbl = c.obbl && !incontro;
 
         if (c.tipo === 'scelta' || c.tipo === 'multi') {
@@ -38,13 +41,13 @@ const num = (i: number) => String(da + i).padStart(2, '0');
           return (
             <div class="f-gruppo" role={tipo === 'radio' ? 'radiogroup' : 'group'} aria-labelledby={`${id}-q`}>
               <p class="f-domanda" id={`${id}-q`}>
-                {c.label}
+                {etichetta}
                 {c.tipo === 'multi' && <span class="f-fac"> · puoi sceglierne più d’una</span>}
               </p>
               {c.opzioni.map((o: string) => (
                 <label class="f-scelta">
                   <input type={tipo} name={c.id} value={o} />
-                  <span>{o}</span>
+                  <span>{mostra(o)}</span>
                 </label>
               ))}
               {incontro && c.chiedi && <p class="f-chiedi">{c.chiedi}</p>}
@@ -63,7 +66,7 @@ const num = (i: number) => String(da + i).padStart(2, '0');
         return (
           <p class="f-campo">
             <label class="f-label" for={id}>
-              {c.label}
+              {etichetta}
               {c.fac && !incontro && <span class="f-fac"> · facoltativo</span>}
             </label>
             {c.tipo === 'area' ? (

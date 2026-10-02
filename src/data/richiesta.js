@@ -20,6 +20,9 @@
 
 /**
  * tipo: testo | tel | email | area | scelta (una sola) | multi (più d'una)
+ * l3, o3, t3: le stesse parole dette da me e non al cliente («Ha già un sito?» e
+ *   non «Hai già un sito?»). Servono solo nell'incontro: il valore resta quello
+ *   del modulo, così il messaggio del cliente si rilegge senza adattamenti.
  * obbl: obbligatorio nel modulo del cliente
  * fac:  mostra "facoltativo" (solo testo e area: i gruppi di scelta si saltano)
  * chiedi: suggerimento per me, visibile solo nell'incontro
@@ -28,11 +31,12 @@ export const SEZIONI = [
   {
     id: 'attivita',
     sigla: 'La tua attività',
+    t3: 'L’attività',
     titolo: 'La tua attività',
     intro: 'Chi sei e come ti trovo. Solo nome, comune e un recapito sono obbligatori.',
     campi: [
       { id: 'nome', label: "Nome dell'attività", corta: 'Attività', tipo: 'testo', obbl: true, autocomplete: 'organization' },
-      { id: 'referente', label: 'Il tuo nome', corta: 'Referente', tipo: 'testo', obbl: true, autocomplete: 'name' },
+      { id: 'referente', label: 'Il tuo nome', corta: 'Referente', l3: 'Nome del referente', tipo: 'testo', obbl: true, autocomplete: 'name' },
       { id: 'comune', label: 'Comune dove si trova', corta: 'Comune', tipo: 'testo', obbl: true, autocomplete: 'address-level2' },
       {
         id: 'settore',
@@ -53,18 +57,18 @@ export const SEZIONI = [
       {
         id: 'descrizione',
         label: 'Cosa fai, in due righe',
-        corta: 'Cosa fa',
+        corta: 'Cosa fa', l3: 'Cosa fa l’attività',
         tipo: 'area',
         fac: true,
         chiedi: "Fatti spiegare l'attività con le sue parole: sono quelle da usare nei testi.",
       },
       { id: 'telefono', label: 'Telefono o WhatsApp', corta: 'Telefono', tipo: 'tel', obbl: true, autocomplete: 'tel' },
       { id: 'email', label: 'Email', corta: 'Email', tipo: 'email', fac: true, autocomplete: 'email' },
-      { id: 'contatto', label: 'Come preferisci essere ricontattato', corta: 'Preferisce', tipo: 'scelta', opzioni: ['WhatsApp', 'Telefonata', 'Email'] },
+      { id: 'contatto', label: 'Come preferisci essere ricontattato', corta: 'Preferisce', l3: 'Come preferisce essere ricontattato', tipo: 'scelta', opzioni: ['WhatsApp', 'Telefonata', 'Email'] },
       {
         id: 'fascia',
         label: 'Quando sei più facile da trovare',
-        corta: 'Orari per sentirci',
+        corta: 'Orari per sentirci', l3: 'Quando è più facile da trovare',
         tipo: 'testo',
         fac: true,
         placeholder: 'Es. dopo le 15, tranne il lunedì',
@@ -74,13 +78,14 @@ export const SEZIONI = [
   {
     id: 'oggi',
     sigla: 'Presenza online',
+    t3: 'Presenza online di oggi',
     titolo: 'Com’è messa oggi la tua presenza online',
     intro: 'Mi serve per capire da dove si parte e cosa si può recuperare.',
     campi: [
       {
         id: 'sito',
         label: 'Hai già un sito?',
-        corta: 'Sito di oggi',
+        corta: 'Sito di oggi', o3: { 'Sì, ho già un sito': 'Sì, ha già un sito', 'Ho solo i social o la scheda Google': 'Ha solo i social o la scheda Google', 'Non ho niente online': 'Non ha niente online' }, l3: 'Ha già un sito?',
         tipo: 'scelta',
         opzioni: ['Sì, ho già un sito', 'Ho solo i social o la scheda Google', 'Non ho niente online'],
         chiedi: 'Se ce l’ha: chi l’ha fatto, quando, e se c’è un rinnovo in scadenza.',
@@ -89,7 +94,7 @@ export const SEZIONI = [
       {
         id: 'sitoCosto',
         label: 'Quanto spendi ogni anno per sito e dominio',
-        corta: 'Spesa annua di oggi',
+        corta: 'Spesa annua di oggi', l3: 'Quanto spende ogni anno per sito e dominio',
         tipo: 'testo',
         fac: true,
         placeholder: 'Es. circa 200 € l’anno, non lo so',
@@ -98,7 +103,7 @@ export const SEZIONI = [
       {
         id: 'dominio',
         label: 'Il dominio (l’indirizzo .it o .com) è intestato a te?',
-        corta: 'Dominio',
+        corta: 'Dominio', o3: { 'Sì, è intestato a me': 'Sì, è intestato a lui', 'Non ho un dominio': 'Non ha un dominio' }, l3: 'Il dominio è intestato a lui?',
         tipo: 'scelta',
         opzioni: ['Sì, è intestato a me', 'No, è intestato a chi ha fatto il sito', 'Non lo so', 'Non ho un dominio'],
         chiedi: 'Se non è suo, è la prima cosa da sistemare: senza il dominio non si sposta niente.',
@@ -110,13 +115,14 @@ export const SEZIONI = [
   {
     id: 'obiettivi',
     sigla: 'Cosa deve fare',
+    t3: 'Cosa deve fare il sito',
     titolo: 'Cosa deve fare il sito per te',
     intro: 'Scegli tutto quello che ti serve: se sono tante cose, poi ne parliamo e le mettiamo in ordine.',
     campi: [
       {
         id: 'obiettivi',
         label: 'Cosa vuoi ottenere',
-        corta: 'Obiettivi',
+        corta: 'Obiettivi', o3: { 'Farmi trovare da chi non mi conosce': 'Farsi trovare da chi non lo conosce' }, l3: 'Cosa vuole ottenere',
         tipo: 'multi',
         opzioni: [
           'Farmi trovare da chi non mi conosce',
@@ -129,8 +135,8 @@ export const SEZIONI = [
         ],
         chiedi: 'Fai scegliere i due più importanti: se tutto è prioritario, niente lo è.',
       },
-      { id: 'clienti', label: 'Chi sono i tuoi clienti', corta: 'Clienti', tipo: 'area', fac: true, placeholder: 'Es. famiglie della zona, turisti, aziende' },
-      { id: 'distingue', label: 'Cosa ti distingue dagli altri della zona', corta: 'Cosa lo distingue', tipo: 'area', fac: true },
+      { id: 'clienti', label: 'Chi sono i tuoi clienti', corta: 'Clienti', l3: 'Chi sono i suoi clienti', tipo: 'area', fac: true, placeholder: 'Es. famiglie della zona, turisti, aziende' },
+      { id: 'distingue', label: 'Cosa ti distingue dagli altri della zona', corta: 'Cosa lo distingue', l3: 'Cosa lo distingue dagli altri della zona', tipo: 'area', fac: true },
     ],
   },
   {
@@ -196,13 +202,14 @@ export const SEZIONI = [
   {
     id: 'materiali',
     sigla: 'Cosa hai già',
+    t3: 'Cosa ha già',
     titolo: 'Cosa hai già',
     intro: 'Se non hai tutto, si parte con quello che c’è: dove manca qualcosa metto un segnaposto ben visibile, non invento niente.',
     campi: [
       {
         id: 'logo',
         label: 'Logo',
-        corta: 'Logo',
+        corta: 'Logo', o3: { 'Ce l’ho ma è piccolo o sfocato': 'Ce l’ha ma è piccolo o sfocato', 'No, non ce l’ho': 'No, non ce l’ha' },
         tipo: 'scelta',
         opzioni: ['Sì, in buona qualità', 'Ce l’ho ma è piccolo o sfocato', 'No, non ce l’ho'],
       },
@@ -217,7 +224,7 @@ export const SEZIONI = [
       {
         id: 'testi',
         label: 'Testi',
-        corta: 'Testi',
+        corta: 'Testi', o3: { 'Li scrivo io': 'Li scrive lui', 'Ho già dei testi da sistemare': 'Ha già dei testi da sistemare', 'Preferisco che li scriva tu': 'Preferisce che li scriva io' },
         tipo: 'scelta',
         opzioni: ['Li scrivo io', 'Ho già dei testi da sistemare', 'Preferisco che li scriva tu'],
       },
@@ -233,6 +240,7 @@ export const SEZIONI = [
   {
     id: 'stile',
     sigla: 'Come lo immagini',
+    t3: 'Come lo immagina',
     titolo: 'Come lo immagini',
     intro: 'Non serve essere precisi: due esempi che ti piacciono dicono più di mille parole.',
     campi: [
@@ -243,8 +251,8 @@ export const SEZIONI = [
         tipo: 'multi',
         opzioni: ['Elegante', 'Familiare e caldo', 'Moderno', 'Essenziale', 'Colorato', 'Professionale', 'Rustico'],
       },
-      { id: 'esempi', label: 'Siti che ti piacciono', corta: 'Siti che gli piacciono', tipo: 'area', fac: true, placeholder: 'Link o nome dell’attività' },
-      { id: 'evitare', label: 'Cose che non vuoi', corta: 'Da evitare', tipo: 'area', fac: true },
+      { id: 'esempi', label: 'Siti che ti piacciono', corta: 'Siti che gli piacciono', l3: 'Siti che gli piacciono', tipo: 'area', fac: true, placeholder: 'Link o nome dell’attività' },
+      { id: 'evitare', label: 'Cose che non vuoi', corta: 'Da evitare', l3: 'Cose che non vuole', tipo: 'area', fac: true },
       { id: 'colori', label: 'Colori da usare o da evitare', corta: 'Colori', tipo: 'testo', fac: true },
     ],
   },
@@ -257,16 +265,16 @@ export const SEZIONI = [
       {
         id: 'quando',
         label: 'Quando vorresti il sito online',
-        corta: 'Quando lo vuole',
+        corta: 'Quando lo vuole', l3: 'Quando vuole il sito online',
         tipo: 'scelta',
         opzioni: ['Il prima possibile', 'Entro un mese', 'Entro tre mesi', 'Senza fretta', 'Ho una data precisa'],
         chiedi: 'Di solito servono 3–4 settimane, sotto la settimana non si lavora: se la data è prima, dillo adesso.',
       },
-      { id: 'data', label: 'Se hai una data precisa', corta: 'Data precisa', tipo: 'testo', fac: true, placeholder: 'Apertura, stagione, evento…' },
+      { id: 'data', label: 'Se hai una data precisa', corta: 'Data precisa', l3: 'Se ha una data precisa', tipo: 'testo', fac: true, placeholder: 'Apertura, stagione, evento…' },
       {
         id: 'budget',
         label: 'Che budget hai in mente',
-        corta: 'Budget',
+        corta: 'Budget', o3: { 'Non lo so, consigliami': 'Non lo sa: va consigliato' }, l3: 'Che budget ha in mente',
         tipo: 'scelta',
         opzioni: ['Fino a 400 €', 'Tra 400 e 800 €', 'Tra 800 e 1.500 €', 'Oltre 1.500 €', 'Non lo so, consigliami'],
       },
@@ -280,11 +288,11 @@ export const SEZIONI = [
       {
         id: 'conosciuto',
         label: 'Come mi hai conosciuto',
-        corta: 'Mi ha conosciuto tramite',
+        corta: 'Mi ha conosciuto tramite', l3: 'Come mi ha conosciuto',
         tipo: 'scelta',
         opzioni: ['Passaparola', 'Ricerca su Google', 'Social', 'Di persona', 'Altro'],
       },
-      { id: 'note', label: 'Altro che vuoi dirmi', corta: 'Altro', tipo: 'area', fac: true },
+      { id: 'note', label: 'Altro che vuoi dirmi', corta: 'Altro', l3: 'Altro da segnare', tipo: 'area', fac: true },
     ],
   },
 ];

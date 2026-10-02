@@ -33,7 +33,7 @@ import {
 
 const indice = [
   ['incontro', 'Incontro'],
-  ...SEZIONI.map((s) => [s.id, s.sigla]),
+  ...SEZIONI.map((s) => [s.id, s.t3 ?? s.sigla]),
   ['raccolta', 'Da chiedere'],
   ['appunti', 'Appunti'],
   ['prezzo', 'Prezzo'],
@@ -102,6 +102,9 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
               <label class="solo-lettori" for="elenco">Incontri salvati</label>
               <select id="elenco" data-elenco></select>
             </p>
+            <button class="f-bottone secondario piccolo attiva" type="button" data-azione="trascrivi" data-trascr-barra hidden>
+              <span class="punto" aria-hidden="true"></span> Ferma la trascrizione
+            </button>
             <button class="f-bottone secondario piccolo" type="button" data-azione="nuovo">Nuovo</button>
             <button class="f-bottone secondario piccolo" type="button" data-azione="elimina">Elimina</button>
             <button class="f-bottone secondario piccolo" type="button" data-azione="esporta">Esporta</button>
@@ -210,6 +213,39 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
             {/* 11 · appunti */}
             <fieldset class="f-sezione" id="sez-appunti">
               <legend class="f-legenda"><b>11</b><span>Appunti e cose da fare</span></legend>
+
+              <div class="trascrizione" data-trascrizione>
+                <p class="f-domanda" id="q-trascrizione">Trascrizione dell’incontro</p>
+                <p class="testo-sm">
+                  Accendila e quello che si dice diventa testo qui sotto, riga per riga. Si salva solo il
+                  testo: l’audio non viene conservato.
+                </p>
+                <div class="trascr-comandi">
+                  <button class="f-bottone" type="button" data-azione="trascrivi" data-trascr-principale aria-pressed="false">
+                    <span class="punto" aria-hidden="true"></span>
+                    <span data-trascr-etichetta>Accendi la trascrizione</span>
+                  </button>
+                  <div class="seg" role="radiogroup" aria-label="Chi sta parlando">
+                    <label class="seg-voce">
+                      <input class="solo-lettori" type="radio" name="i.parla" value="Cliente" />
+                      <span>Parla il cliente</span>
+                    </label>
+                    <label class="seg-voce">
+                      <input class="solo-lettori" type="radio" name="i.parla" value="Io" />
+                      <span>Parlo io</span>
+                    </label>
+                  </div>
+                </div>
+                <p class="testo-sm" data-trascr-stato role="status"></p>
+                <p class="testo-sm trascr-provvisorio" data-trascr-provvisorio aria-hidden="true"></p>
+                <label class="solo-lettori" for="i-trascrizione">Testo trascritto</label>
+                <textarea id="i-trascrizione" name="i.trascrizione" rows="9" placeholder="Qui compare il testo, e lo puoi correggere a mano."></textarea>
+                <p class="testo-sm f-nota">
+                  <strong>Avvisa il cliente prima di accenderla.</strong> Il riconoscimento della voce lo
+                  fa il servizio del browser (Google in Chrome ed Edge, Apple in Safari): l’audio passa da
+                  lì per diventare testo. Non distingue chi parla, per questo c’è l’interruttore sopra.
+                </p>
+              </div>
 
               <p class="f-campo">
                 <label class="f-label" for="i-appunti">Appunti dell’incontro</label>
@@ -655,6 +691,60 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: var(--sp-4);
+  }
+
+  /* ------------------------------ trascrizione ------------------------------ */
+  .trascrizione {
+    display: grid;
+    gap: var(--sp-3);
+    padding-bottom: var(--sp-5);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .trascr-comandi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    align-items: center;
+  }
+
+  .punto {
+    width: 10px;
+    height: 10px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--signal-on);
+  }
+
+  /* Acceso: il bottone si svuota e il punto prende l'arancio. Il movimento
+     serve a far capire che sta ascoltando, e con "riduci movimento" si ferma
+     da solo (regola globale in base.css). */
+  .f-bottone.attiva {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+  }
+
+  .f-bottone.attiva:hover {
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .attiva .punto {
+    background: var(--signal);
+    animation: pulsa 1.4s var(--ease-inout) infinite;
+  }
+
+  @keyframes pulsa {
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  .trascr-provvisorio {
+    min-height: 1.5em;
+    color: var(--ink-3);
+    font-style: italic;
   }
 
   /* ------------------------------ cosa serve da lui ------------------------------ */

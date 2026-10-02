@@ -476,8 +476,25 @@ export async function avviaProposta() {
   if (!radice || radice.dataset.montato !== undefined) return;
   radice.dataset.montato = 'si';
 
-  const proposta = await decodifica(window.location.hash.slice(1));
-  if (!proposta) return;
+  const frammento = window.location.hash.slice(1);
+  const proposta = await decodifica(frammento);
+  if (!proposta) {
+    /* Tre cose diverse, e dirle bene serve a chi legge: un indirizzo aperto
+       senza il suo link non è un link rotto, e un browser vecchio non è colpa
+       di nessuno. */
+    const titolo = radice.querySelector('[data-incompleto-titolo]')!;
+    const testo = radice.querySelector('[data-incompleto-testo]')!;
+    if (frammento.startsWith('z.') && typeof DecompressionStream === 'undefined') {
+      titolo.textContent = 'Questo browser non riesce ad aprirlo.';
+      testo.textContent =
+        'Il preventivo si legge con una versione recente di Chrome, Safari, Edge o Firefox. Aprilo da lì, oppure scrivimi e ti mando il testo.';
+    } else if (frammento) {
+      titolo.textContent = 'Questo link non è completo.';
+      testo.textContent =
+        'Succede quando un link lungo viene tagliato da un’app. Scrivimi e te lo rimando.';
+    }
+    return;
+  }
 
   new Proposta_(radice, proposta).monta();
 }
