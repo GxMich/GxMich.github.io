@@ -251,6 +251,15 @@ class Proposta_ {
 
   /* ------------------------------ il calcolo ------------------------------ */
 
+  /**
+   * Lo sconto l'ho pensato per il pacchetto che ho proposto io: se il cliente ne
+   * sceglie un altro, ad esempio uno che costa quanto lo sconto, non vale più.
+   * Senza pacchetti da scegliere (a misura) vale sempre.
+   */
+  private scontoValido(pacchetto: string) {
+    return !this.conPacchetti || pacchetto === this.p.cons;
+  }
+
   private calcola(pacchetto: string) {
     const { p } = this;
     const righe: Riga[] = [];
@@ -279,7 +288,7 @@ class Proposta_ {
     const subtotale = righe.reduce((n, x) => n + x.t, 0);
     const t = totali(
       subtotale,
-      { tipo: p.sc.tipo, val: p.sc.val },
+      this.scontoValido(pacchetto) ? { tipo: p.sc.tipo, val: p.sc.val } : { tipo: '', val: 0 },
       this.regime.iva,
       p.rit === 1 && this.regime.id === 'occasionale',
       ALIQUOTA_RITENUTA,
@@ -336,6 +345,7 @@ class Proposta_ {
     };
     const conSconto = c.t.sconto > 0;
     const conIva = c.t.iva > 0;
+    this.q('[data-nota-sconto]').hidden = conSconto || p.sc.tipo === '' || p.sc.val <= 0;
     riga('subtotale', conSconto || conIva);
     riga('sconto', conSconto);
     riga('imponibile', conIva && conSconto);
