@@ -3,13 +3,19 @@
  * Frame 05 — le tre strade, messe una accanto all'altra.
  *
  * Il ristoratore che arriva qui non ha in testa «agenzia o intelligenza
- * artificiale»: ha in testa quanto costa, quanto ci mette, chi decide come
- * viene, con chi parla se si rompe e di chi è il sito. Per questo le righe
- * sono le sue domande e le colonne sono le tre strade, non il contrario: una
- * sezione intitolata «perché io e non un'agenzia» gli chiederebbe di adottare
- * una domanda che non è la sua, con il venditore che si autoassegna la
- * risposta. Così invece esce uno strumento di decisione, e il confronto arriva
- * come conseguenza.
+ * artificiale»: ha in testa quanto costa, di chi è il sito, chi decide come
+ * viene e con chi parla se serve. Per questo le righe sono le sue domande e le
+ * colonne sono le tre strade, non il contrario: una sezione intitolata «perché
+ * io e non un'agenzia» gli chiederebbe di adottare una domanda che non è la
+ * sua.
+ *
+ * Il terreno del confronto è scelto, ed è la parte che fa il lavoro.
+ *
+ * Non si può scrivere «costo meno di un'agenzia»: sarebbe una cifra inventata,
+ * e i preventivi degli altri non li conosco. Il vantaggio che invece è vero e
+ * si può dire senza numeri è un altro, e pesa di più: il sito si paga una
+ * volta invece che per sempre, e resta intestato a chi lo compra. Le quattro
+ * righe sono ordinate per portare lì, e la coda ci chiude sopra.
  *
  * Sta fra Metodo e Prezzo perché è il punto esatto in cui uno pensa «sì, ma
  * potrei anche…», e perché arrivare al prezzo avendo già il metro cambia come
@@ -20,74 +26,129 @@
  * dentro la pubblicità comparativa, dove ogni affermazione dev'essere
  * verificabile e oggettiva; le categorie generiche non hanno quel problema.
  */
+/**
+ * `breve` esiste solo per il telefono, dove il nome per esteso non sta.
+ *
+ * Là ogni cella si apre con «GENERATORE · Per sempre.» su una riga sola: con
+ * «Un generatore automatico» quella riga ne diventava tre, e dodici celle da
+ * tre righe sono il muro di testo che questa sezione deve evitare. È anche
+ * l'etichetta che sentono i lettori di schermo su ogni larghezza, quindi resta
+ * una parola che identifica la strada senza bisogno del contesto.
+ */
 const modi = [
   {
     indice: '01',
     nome: 'Un generatore automatico',
+    breve: 'Generatore',
     sotto: "Descrivi l'attività, in un pomeriggio il sito c'è.",
   },
   {
     indice: '02',
     nome: "Un'agenzia",
+    breve: 'Agenzia',
     sotto: 'Più persone: chi ti riceve, chi progetta, chi scrive.',
   },
   {
     indice: '03',
     nome: 'Io',
-    sotto: 'Una persona sola, pochi progetti per volta.',
+    breve: 'Io',
+    sotto: 'Una persona sola: chi ti ascolta è chi costruisce.',
   },
 ];
 
 /**
  * Le risposte stanno nello stesso ordine di `modi`: la terza è sempre la mia.
  *
- * La riga «Con chi parli» è quella che tiene in piedi le altre quattordici
- * celle, perché è l'unica in cui perdo, ed è dentro la griglia invece che in
- * una nota a fondo pagina. Stessa meccanica del «Cosa manca» nei casi studio.
+ * Ogni cella è spezzata in due, e la ragione è il telefono.
  *
- * Nessuna cifra inventata: «qualche decina», «quasi sempre», «di solito». Gli
- * unici numeri sono i tre o quattro settimane e i 50-120 € l'anno, che sono
- * già detti altrove sul sito e sono veri.
+ * Prima ogni cella era un paragrafo unico da centosettanta caratteri: su
+ * schermo largo si leggeva, su telefono diventavano dodici blocchi di testo
+ * fitto uno sotto l'altro e non si capiva più niente a colpo d'occhio. Adesso
+ * `sintesi` è la risposta in due o tre parole — si scorrono tutte e dodici in
+ * pochi secondi — e `dettaglio` è la frase che la spiega a chi si ferma. La
+ * sintesi sta in inchiostro pieno, il dettaglio in grigio: chi ha fretta legge
+ * solo la prima riga di ogni cella e ha comunque capito il confronto.
+ *
+ * Tetto che mi sono dato: sintesi entro 26 caratteri, dettaglio entro 115.
+ *
+ * Quattro righe e non cinque: «quanto tempo ci vuole» è uscita. Era l'unica in
+ * cui un generatore vince in modo netto — un pomeriggio contro tre settimane —
+ * e la risposta c'è già due volte, nelle domande in fondo alla home e su
+ * /servizi.
+ *
+ * L'ordine porta dove il vantaggio è più solido: si comincia da quanto a lungo
+ * paghi e si chiude su chi resta padrone del sito.
+ *
+ * Nessuna cifra inventata: «un canone», «quasi sempre», «di solito». L'unico
+ * numero sono i 50-120 € l'anno di dominio e hosting, già detti in Prezzo.
  */
 const righe = [
   {
-    domanda: 'Quanto costa',
+    domanda: 'Per quanto tempo paghi',
     risposte: [
-      'Un canone mensile di qualche decina di euro. Basso, e non finisce: si paga finché il sito esiste.',
-      'Quasi sempre più di me, perché dentro ci sono più stipendi. In cambio hanno più mani, e possono seguire anche social e campagne.',
-      "Una cifra sola, detta nella prima risposta. Fuori restano dominio e hosting, 50-120 € l'anno, che paghi tu.",
-    ],
-  },
-  {
-    domanda: 'Quanto tempo ci vuole',
-    risposte: [
-      'Un pomeriggio. È la cosa che sa fare meglio di chiunque.',
-      'Da qualche settimana a qualche mese, secondo quanto è pieno lo studio.',
-      'Tre o quattro settimane. Sotto la settimana non lavoro: comprimere si vede nel risultato.',
+      {
+        sintesi: 'Per sempre.',
+        dettaglio: 'Il canone non finisce: si paga finché il sito esiste.',
+      },
+      {
+        sintesi: 'Una volta, ma di più.',
+        dettaglio: 'Nel preventivo ci sono più stipendi da coprire prima che qualcuno apra il tuo lavoro.',
+      },
+      {
+        sintesi: 'Una volta sola.',
+        dettaglio: "Cifra detta subito. Poi restano dominio e hosting, 50-120 € l'anno, che paghi tu.",
+      },
     ],
   },
   {
     domanda: 'Chi decide come viene',
     risposte: [
-      'Un modello addestrato su milioni di siti che esistono già: propone la cosa media. Se il tuo concorrente descrive la stessa attività, esce lo stesso sito.',
-      "Un gruppo. Chi ti ha ascoltato spesso non è chi progetta, e un pezzo del racconto si perde nel passaggio.",
-      'Io, dopo essere venuto da te. La macchina la uso per esplorare in fretta e per il codice ripetitivo; cosa tenere e cosa togliere lo decido io.',
+      {
+        sintesi: 'Un modello.',
+        dettaglio: 'Propone la cosa media: chi fa il tuo mestiere lo descrive uguale e ottiene lo stesso sito.',
+      },
+      {
+        sintesi: 'Un gruppo.',
+        dettaglio: 'Chi ti ascolta spesso non è chi progetta, e nel passaggio si perde quello che ti distingue.',
+      },
+      {
+        sintesi: 'Io, dopo averti ascoltato.',
+        dettaglio: 'La macchina la uso per andare veloce, non per scegliere.',
+      },
     ],
   },
   {
-    domanda: 'Con chi parli quando qualcosa non va',
+    domanda: 'Con chi parli quando serve',
     risposte: [
-      "Con un'assistenza a chat, che non sa cos'è la tua attività.",
-      'Con un referente, negli orari dello studio. Poi lo gira a chi di dovere.',
-      'Con me, sempre. Ma ho un lavoro a turni: rispondo la sera e nei fine settimana. È la riga in cui perdo.',
+      {
+        sintesi: 'Con una chat.',
+        dettaglio: 'Non sa cosa fai, e una riga del tuo sito non te la cambia.',
+      },
+      {
+        sintesi: 'Con un referente.',
+        dettaglio: 'Negli orari dello studio. Poi lo gira a chi di dovere, e tu aspetti il giro.',
+      },
+      {
+        sintesi: 'Con me.',
+        dettaglio: 'Chi ti risponde è chi ha scritto il codice. Ho un lavoro a turni: scrivo la sera e nei fine settimana.',
+      },
     ],
   },
   {
-    domanda: 'Di chi è il sito',
+    domanda: 'Di chi è, quando è finito',
     risposte: [
-      'Della piattaforma. Vive lì finché paghi il canone, e spostarlo altrove di solito non si può.',
-      'Dipende dal contratto. Vale la pena chiedere a chi restano intestati dominio e hosting, prima di firmare.',
-      'Tuo. Dominio e hosting intestati a te e pagati da te: se domani vuoi cambiare, cambi senza chiedermelo.',
+      {
+        sintesi: 'Della piattaforma.',
+        dettaglio: 'Il giorno che smetti di pagare, smette anche il sito.',
+      },
+      {
+        sintesi: 'Dipende dal contratto.',
+        dettaglio: 'Da chiedere prima di firmare: se dominio e hosting sono loro, cambiare vuol dire ricominciare.',
+      },
+      {
+        sintesi: 'Tuo, dal primo giorno.',
+        dettaglio: 'Dominio e hosting intestati a te. Se vuoi cambiare sviluppatore, cambi senza chiedermelo.',
+      },
     ],
   },
 ];
@@ -98,15 +159,24 @@ const MIA = 2;
 <section class="scelta" aria-labelledby="scelta-titolo">
   <div class="contenitore">
     <div class="intestazione">
-      <h2 id="scelta-titolo" class="h2 sfoca-entra" data-anima>Ci sono tre modi di farsi un sito.</h2>
+      <h2 id="scelta-titolo" class="h2 sfoca-entra" data-anima>
+        Tre modi di farsi un sito. La differenza si vede dopo.
+      </h2>
+      {/*
+        Il lede dice quali sono le domande che contano prima di rispondere, ed
+        è lì che si gioca la sezione: sono le quattro su cui il confronto è a
+        mio favore, e sono anche quelle vere. Il prezzo del primo giorno è
+        l'unico terreno su cui un canone sembra conveniente.
+      */}
       <p class="lede sfoca-entra" data-anima>
-        Due non sono io, e a volte sono la scelta giusta. Qui c'è cosa cambia davvero — compresa
-        la riga in cui quello che conviene meno sono io.
+        Il prezzo del primo giorno dice poco. Quello che cambia davvero è per quanto tempo
+        continui a pagare, chi decide come viene, con chi parli quando serve e di chi è il
+        sito quando è finito.
       </p>
     </div>
 
     <div class="tavola">
-      <div class="testa">
+      <div class="testa" data-anima>
         {
           modi.map((m, i) => (
             <div class:list={['colonna', { mia: i === MIA }]}>
@@ -120,11 +190,11 @@ const MIA = 2;
 
       {
         righe.map((r) => (
-          <div class="fascia sfoca-entra" data-anima>
+          <div class="fascia" data-anima>
             <h3 class="etichetta domanda">{r.domanda}</h3>
             <div class="celle">
               {r.risposte.map((t, i) => (
-                <p class:list={['cella', 'testo-sm', { mia: i === MIA }]}>
+                <p class:list={['cella', { mia: i === MIA }]}>
                   {/*
                     Una griglia CSS non dichiara la relazione fra una cella e la
                     sua colonna: senza questo, a chi usa un lettore di schermo
@@ -132,8 +202,9 @@ const MIA = 2;
                     resta solo per l'assistiva; sotto diventa visibile ed è
                     l'unico modo di orientarsi, perché lì la testa non c'è più.
                   */}
-                  <span class="chi etichetta solo-lettori">{modi[i].nome}</span>
-                  {t}
+                  <span class="chi etichetta solo-lettori">{modi[i].breve}</span>
+                  <strong class="sintesi">{t.sintesi}</strong>
+                  <span class="dettaglio testo-sm">{t.dettaglio}</span>
                 </p>
               ))}
             </div>
@@ -143,15 +214,16 @@ const MIA = 2;
     </div>
 
     {/*
-      La coda manda via due lettori su tre, ed è quello che rende credibile la
-      colonna 03: se le altre due non fossero mai la risposta giusta, la griglia
-      sopra sarebbe una brochure.
+      La coda chiude sul vantaggio, ma lascia in piedi una via d'uscita vera:
+      senza quella la griglia sopra diventa una brochure, e chi legge lo sente.
+      L'uscita è una sola e la più stretta delle due che c'erano prima — la
+      stessa che il sito dichiara già in Prezzo e fra i «non per» di /servizi,
+      quindi non si contraddice con niente.
     */}
     <p class="testo-sm coda sfoca-entra" data-anima>
-      Se ti serve essere online la settimana prossima spendendo il meno possibile, la prima
-      colonna è la risposta giusta, e te lo dico prima di prendere il lavoro. Se ti serve una
-      squadra che segua anche social, campagne e video, è la seconda. La terza ha senso quando
-      vuoi che il sito somigli alla tua attività e non a un modello.
+      Se ti serve essere online la settimana prossima spendendo il meno possibile, un
+      generatore basta, e te lo dico prima di prendere il lavoro. In tutti gli altri casi la
+      differenza è questa: <strong>paghi una volta, e quello che paghi resta tuo.</strong>
     </p>
   </div>
 </section>
@@ -173,7 +245,7 @@ const MIA = 2;
   }
 
   .intestazione h2 {
-    max-width: 14ch;
+    max-width: 20ch;
   }
 
   .tavola {
@@ -254,6 +326,24 @@ const MIA = 2;
     background: var(--signal);
   }
 
+  /**
+   * Il filetto d'accento si tira da sinistra quando la testa entra in vista.
+   *
+   * Si anima solo lo pseudo-elemento, mai `.testa`: quella è agganciata, e una
+   * trasformazione su un elemento `sticky` gli crea un blocco contenitore
+   * nuovo e gli fa perdere l'aggancio. Costa una riga, ma se la si sbaglia si
+   * rompe la cosa più utile della sezione.
+   */
+  :global(html.puo-animare) .colonna.mia::before {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--dur-4) var(--ease-out) 160ms;
+  }
+
+  :global(html.puo-animare) .testa.visibile .colonna.mia::before {
+    transform: scaleX(1);
+  }
+
   .fascia {
     border-bottom: 1px solid var(--rule);
   }
@@ -267,14 +357,42 @@ const MIA = 2;
     color: var(--ink);
   }
 
+  /**
+   * Due livelli dentro la cella, ed è quello che la rende leggibile in fretta.
+   *
+   * `sintesi` è la risposta, in inchiostro pieno: incolonnate, le tre sintesi
+   * di una riga si confrontano con un'occhiata sola. `dettaglio` è la frase
+   * che spiega, in grigio, per chi si ferma. Non c'è un peso tipografico nuovo:
+   * è lo stesso salto `--ink` / `--ink-2` che distingue già la mia colonna
+   * dalle altre due, usato qui sull'asse verticale invece che orizzontale.
+   */
   .cella {
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
     padding-bottom: var(--sp-5);
     max-width: 42ch;
+  }
+
+  .sintesi {
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    letter-spacing: -0.01em;
     color: var(--ink-2);
   }
 
-  .cella.mia {
+  .dettaglio {
+    color: var(--ink-3);
+  }
+
+  /* La mia colonna sale di un gradino su entrambi i livelli: resta una
+     differenza di peso, non di colore. */
+  .cella.mia .sintesi {
     color: var(--ink);
+  }
+
+  .cella.mia .dettaglio {
+    color: var(--ink-2);
   }
 
   .coda {
@@ -283,13 +401,66 @@ const MIA = 2;
     color: var(--ink-2);
   }
 
+  /* L'ultima mezza riga è la sola cosa che deve restare in testa uscendo da
+     qui: torna a inchiostro pieno mentre il resto della coda sta in grigio.
+     Stesso trattamento dello `strong` in Chi, senza inventare un peso nuovo. */
+  .coda strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* --------------------------------------------------------------------------
+     MOVIMENTO
+
+     `.sfoca-entra` sfoca e alza l'elemento intero: applicato a una fascia
+     faceva entrare la domanda e le tre risposte come un blocco solo, e quello
+     che si vuole qui è il contrario — le risposte devono arrivare in fila da
+     sinistra a destra, nell'ordine in cui si leggono, così l'occhio impara la
+     direzione della griglia mentre la sezione compare.
+
+     Tutto in CSS: la regola del sito è scorrimento a GSAP, micro-interazioni al
+     foglio di stile, e questa non è legata allo scorrimento — l'osservatore
+     mette `.visibile` una volta e finisce lì. Nessun peso in più sulla home.
+
+     Il cancello è `.puo-animare`, che il guscio scrive solo se l'utente non ha
+     chiesto meno movimento: chi l'ha chiesto vede il testo fermo e al suo posto.
+     -------------------------------------------------------------------------- */
+  :global(html.puo-animare) .fascia .domanda,
+  :global(html.puo-animare) .fascia .cella {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity var(--dur-3) var(--ease-out),
+      transform var(--dur-3) var(--ease-out);
+  }
+
+  :global(html.puo-animare) .fascia.visibile .domanda,
+  :global(html.puo-animare) .fascia.visibile .cella {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* La domanda per prima, poi le tre risposte a rincorrersi. Ottanta
+     millisecondi: si sente come una direzione, non come un'attesa. */
+  :global(html.puo-animare) .fascia .cella:nth-child(1) {
+    transition-delay: 90ms;
+  }
+
+  :global(html.puo-animare) .fascia .cella:nth-child(2) {
+    transition-delay: 170ms;
+  }
+
+  :global(html.puo-animare) .fascia .cella:nth-child(3) {
+    transition-delay: 250ms;
+  }
+
   @media (max-width: 860px) {
     .intestazione {
       grid-template-columns: 1fr;
     }
 
     /* Sotto gli 860px tre colonne di testo non stanno: la testa sparisce e
-       ogni cella si porta il nome della sua colonna. Si legge come cinque
+       ogni cella si porta il nome della sua colonna. Si legge come quattro
        domande con tre risposte etichettate ciascuna, che è l'unica forma che
        regge a 375px senza scorrimento orizzontale né contenuto nascosto. */
     .testa {
@@ -300,14 +471,27 @@ const MIA = 2;
       grid-template-columns: 1fr;
     }
 
+    /**
+     * Su telefono la cella diventa due righe e basta:
+     *
+     *   GENERATORE · Per sempre.
+     *   Il canone non finisce: si paga finché il sito esiste.
+     *
+     * Il primo tentativo metteva il nome della strada in una colonna a
+     * sinistra: misurato, si mangiava 140 dei 327 pixel disponibili, il
+     * dettaglio andava a capo quattro volte e la cella arrivava a 150px. In
+     * fila, dodici celle così facevano tremila pixel di muro. Sulla stessa
+     * riga il nome costa quello che occupa e nient'altro.
+     */
     .cella {
+      display: block;
       border-left: 0;
       padding-inline: 0;
       max-width: none;
+      padding-block: var(--sp-4);
     }
 
     .cella + .cella {
-      padding-top: var(--sp-4);
       border-top: 1px solid var(--rule);
     }
 
@@ -317,12 +501,40 @@ const MIA = 2;
       height: auto;
       overflow: visible;
       clip-path: none;
-      display: block;
-      margin-bottom: var(--sp-2);
+      display: inline;
+    }
+
+    /* Il punto mediano separa senza pesare come un trattino, e sta nel testo:
+       se fosse un bordo si spezzerebbe quando la riga va a capo. */
+    .chi::after {
+      content: ' · ';
     }
 
     .cella.mia .chi {
       color: var(--signal-ink);
+    }
+
+    .sintesi {
+      display: inline;
+    }
+
+    .dettaglio {
+      display: block;
+      margin-top: var(--sp-2);
+    }
+
+    /* Impilate, le risposte non si rincorrono più da sinistra a destra: la
+       fila diventa verticale e i ritardi di prima leggerebbero come lentezza. */
+    :global(html.puo-animare) .fascia .cella:nth-child(1) {
+      transition-delay: 60ms;
+    }
+
+    :global(html.puo-animare) .fascia .cella:nth-child(2) {
+      transition-delay: 110ms;
+    }
+
+    :global(html.puo-animare) .fascia .cella:nth-child(3) {
+      transition-delay: 160ms;
     }
   }
 </style>
