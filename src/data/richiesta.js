@@ -26,6 +26,11 @@
  * obbl: obbligatorio nel modulo del cliente
  * fac:  mostra "facoltativo" (solo testo e area: i gruppi di scelta si saltano)
  * chiedi: suggerimento per me, visibile solo nell'incontro
+ * solo: domanda (o intera sezione) che esiste soltanto nell'incontro. Viene dal
+ *   questionario di scoperta: le faccio io a voce, il cliente non le vede nel
+ *   suo modulo. Le etichette sono già in terza persona.
+ * se:   [[campo, valore], …] la domanda compare solo se uno di quei campi ha quel
+ *   valore (scelta uguale, o voce presente fra le multiple).
  */
 export const SEZIONI = [
   {
@@ -73,6 +78,16 @@ export const SEZIONI = [
         fac: true,
         placeholder: 'Es. dopo le 15, tranne il lunedì',
       },
+      { id: 'anni', label: 'Da quanti anni esiste l’attività', corta: 'Anni di attività', tipo: 'testo', solo: true, fac: true },
+      {
+        id: 'squadra',
+        label: 'Quante sedi e quante persone ci lavorano',
+        corta: 'Sedi e persone',
+        tipo: 'testo',
+        solo: true,
+        fac: true,
+        chiedi: 'Più sedi vuol dire più pagine e più schede Google: contale per il preventivo.',
+      },
     ],
   },
   {
@@ -110,6 +125,54 @@ export const SEZIONI = [
       },
       { id: 'social', label: 'Pagine social e scheda Google', corta: 'Social e Google', tipo: 'testo', fac: true, placeholder: 'Link o nome' },
       { id: 'problemi', label: 'Cosa non va nel sito o nella presenza di oggi', corta: 'Cosa non va oggi', tipo: 'area', fac: true },
+      {
+        id: 'sitoChi',
+        label: 'Chi ha fatto il sito di oggi e chi lo gestisce',
+        corta: 'Chi gestisce il sito',
+        tipo: 'testo',
+        solo: true,
+        fac: true,
+        se: [['sito', 'Sì, ho già un sito']],
+      },
+      {
+        id: 'accessi',
+        label: 'A cosa ha accesso oggi',
+        corta: 'Accessi che ha',
+        tipo: 'multi',
+        solo: true,
+        se: [['sito', 'Sì, ho già un sito']],
+        opzioni: [
+          'Pannello del sito',
+          'Dominio',
+          'Hosting',
+          'Posta collegata al dominio',
+          'Google Analytics',
+          'Google Search Console',
+          'Scheda Google',
+          'Niente o non lo sa',
+        ],
+        chiedi: 'Senza dominio e hosting non si sposta niente: segnati cosa può darti subito.',
+      },
+      {
+        id: 'nonVa',
+        label: 'Cosa non funziona nel sito di oggi',
+        corta: 'Problemi del sito',
+        tipo: 'multi',
+        solo: true,
+        se: [['sito', 'Sì, ho già un sito']],
+        opzioni: [
+          'Design vecchio',
+          'Sul telefono funziona male',
+          'È lento',
+          'Non si trova su Google',
+          'Non porta contatti',
+          'Informazioni vecchie',
+          'Difficile da aggiornare',
+          'Non rappresenta l’attività',
+          'Servizi poco chiari',
+          'Problemi di sicurezza',
+        ],
+      },
     ],
   },
   {
@@ -137,6 +200,149 @@ export const SEZIONI = [
       },
       { id: 'clienti', label: 'Chi sono i tuoi clienti', corta: 'Clienti', l3: 'Chi sono i suoi clienti', tipo: 'area', fac: true, placeholder: 'Es. famiglie della zona, turisti, aziende' },
       { id: 'distingue', label: 'Cosa ti distingue dagli altri della zona', corta: 'Cosa lo distingue', l3: 'Cosa lo distingue dagli altri della zona', tipo: 'area', fac: true },
+      {
+        id: 'successo',
+        label: 'Fra 6–12 mesi, cosa dovrebbe essere successo per dire «il sito ha funzionato»',
+        corta: 'Sito riuscito se',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+        chiedi: 'Lascia parlare prima di suggerire opzioni. Non promettere numeri: si costruisce il percorso e si misura.',
+      },
+      {
+        id: 'unProblema',
+        label: 'Se il sito potesse risolvere un solo problema, quale sarebbe',
+        corta: 'Il problema da risolvere',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+      },
+      {
+        id: 'impressione',
+        label: 'Che impressione deve avere chi arriva sul sito, nei primi 10 secondi',
+        corta: 'Prima impressione',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+      },
+      {
+        id: 'tempoPerso',
+        label: 'Cosa gli fa perdere più tempo oggi, e cosa vorrebbe che il sito facesse al posto suo',
+        corta: 'Tempo perso',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+        chiedi: 'Domande ripetute, telefonate per gli orari, richieste di preventivo: è lì che il sito si ripaga.',
+      },
+    ],
+  },
+  {
+    id: 'pubblico',
+    sigla: 'Chi sono i clienti',
+    t3: 'Chi sono i suoi clienti',
+    titolo: 'Chi sono i clienti',
+    solo: true,
+    campi: [
+      {
+        id: 'tipoClienti',
+        label: 'Clienti privati, aziende o entrambi',
+        corta: 'Tipo di clienti',
+        tipo: 'scelta',
+        solo: true,
+        opzioni: ['Privati', 'Aziende', 'Entrambi'],
+      },
+      {
+        id: 'raggio',
+        label: 'Da dove vengono i clienti',
+        corta: 'Zona dei clienti',
+        tipo: 'scelta',
+        solo: true,
+        opzioni: ['Solo il paese o la zona', 'La provincia o la regione', 'Tutta Italia', 'Anche dall’estero'],
+      },
+      {
+        id: 'canali',
+        label: 'Come lo trovano oggi i clienti',
+        corta: 'Canali di oggi',
+        tipo: 'multi',
+        solo: true,
+        opzioni: [
+          'Passaparola',
+          'Google',
+          'Google Maps',
+          'Instagram',
+          'Facebook',
+          'TikTok',
+          'LinkedIn',
+          'Portali di settore',
+          'Pubblicità',
+          'Eventi o volantini',
+          'Clienti ricorrenti',
+        ],
+      },
+      { id: 'perche', label: 'Perché i clienti scelgono lui e non un concorrente', corta: 'Perché lo scelgono', tipo: 'area', solo: true, fac: true },
+      {
+        id: 'dubbiClienti',
+        label: 'Quali dubbi hanno i clienti prima di contattarlo, e cosa li blocca',
+        corta: 'Dubbi dei clienti',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+        chiedi: 'Sono le risposte che il sito deve dare senza che nessuno debba telefonare.',
+      },
+      { id: 'clientiDaEvitare', label: 'Che clienti non vorrebbe', corta: 'Clienti da evitare', tipo: 'area', solo: true, fac: true },
+    ],
+  },
+  {
+    id: 'offerta',
+    sigla: 'Cosa vende',
+    t3: 'Cosa vende e cosa deve succedere',
+    titolo: 'Cosa vende',
+    solo: true,
+    campi: [
+      {
+        id: 'servizi',
+        label: 'Principali prodotti o servizi, con prezzo o fascia di prezzo',
+        corta: 'Servizi e prodotti',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+      },
+      {
+        id: 'daSpingere',
+        label: 'Quello che vorrebbe vendere di più, o che rende di più',
+        corta: 'Da spingere',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+      },
+      { id: 'nonMostrare', label: 'Cosa NON vuole promuovere sul sito', corta: 'Da non mostrare', tipo: 'area', solo: true, fac: true },
+      {
+        id: 'domandeFreq',
+        label: 'Le domande che i clienti fanno più spesso',
+        corta: 'Domande più frequenti',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+        chiedi: 'Diventano la sezione «Domande frequenti» del sito, con le sue parole.',
+      },
+      {
+        id: 'cta',
+        label: 'L’azione più importante che deve compiere chi visita il sito',
+        corta: 'Azione principale',
+        tipo: 'scelta',
+        solo: true,
+        opzioni: [
+          'Chiamare',
+          'Scrivere su WhatsApp',
+          'Compilare un modulo o chiedere un preventivo',
+          'Prenotare',
+          'Chiedere disponibilità',
+          'Venire in negozio o nel locale',
+          'Acquistare online',
+          'Altro',
+        ],
+        chiedi: 'Una sola: è quella che il sito mette in evidenza ovunque.',
+      },
     ],
   },
   {
@@ -197,6 +403,38 @@ export const SEZIONI = [
         fac: true,
         placeholder: 'Es. 4 camere, circa 30 piatti',
       },
+      {
+        id: 'prenotazioniTipo',
+        label: 'Prenotazione automatica o solo una richiesta da confermare',
+        corta: 'Tipo di prenotazione',
+        tipo: 'scelta',
+        solo: true,
+        se: [['funzioni', 'Prenotazioni online con calendario']],
+        opzioni: ['Automatica, con conferma subito', 'Solo richiesta, conferma lui a mano'],
+        chiedi: 'Con incasso anticipato o caparra siamo fuori dal mio perimetro: dillo adesso.',
+      },
+      {
+        id: 'prenotazioniDettagli',
+        label: 'Orari, durata, operatori, sedi, regole di cancellazione',
+        corta: 'Dettagli prenotazioni',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+        se: [['funzioni', 'Prenotazioni online con calendario']],
+      },
+      {
+        id: 'venditaDettagli',
+        label: 'Quanti prodotti, che pagamenti, che spedizioni, chi gestisce gli ordini',
+        corta: 'Dettagli vendita online',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+        se: [
+          ['funzioni', 'Vendita online con carrello'],
+          ['obiettivi', 'Vendere online'],
+        ],
+        chiedi: 'Un negozio con magazzino e spedizioni è un altro lavoro: serve per decidere se mandarlo altrove o preventivarlo a parte.',
+      },
     ],
   },
   {
@@ -254,6 +492,108 @@ export const SEZIONI = [
       { id: 'esempi', label: 'Siti che ti piacciono', corta: 'Siti che gli piacciono', l3: 'Siti che gli piacciono', tipo: 'area', fac: true, placeholder: 'Link o nome dell’attività' },
       { id: 'evitare', label: 'Cose che non vuoi', corta: 'Da evitare', l3: 'Cose che non vuole', tipo: 'area', fac: true },
       { id: 'colori', label: 'Colori da usare o da evitare', corta: 'Colori', tipo: 'testo', fac: true },
+      {
+        id: 'sentire',
+        label: 'Come deve sentirsi una persona entrando nel sito',
+        corta: 'Come deve far sentire',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+        chiedi: 'Meglio delle caselle da spuntare: è la frase che guida il design.',
+      },
+    ],
+  },
+  {
+    id: 'visibilita',
+    sigla: 'Google e misure',
+    t3: 'Google, recensioni e misure',
+    titolo: 'Google e misure',
+    solo: true,
+    campi: [
+      {
+        id: 'googleCosa',
+        label: 'Quali servizi e in quali città vuole farsi trovare su Google',
+        corta: 'Da trovare su Google',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+        chiedi: 'Non promettere mai la prima posizione: si imposta bene la base e si misura.',
+      },
+      {
+        id: 'schedaGoogle',
+        label: 'La scheda Google dell’attività',
+        corta: 'Scheda Google',
+        tipo: 'scelta',
+        solo: true,
+        opzioni: ['Curata e aggiornata', 'C’è ma trascurata', 'Non c’è', 'Non lo sa'],
+      },
+      {
+        id: 'recensioniStato',
+        label: 'Recensioni su Google o altre piattaforme',
+        corta: 'Recensioni',
+        tipo: 'scelta',
+        solo: true,
+        opzioni: ['Diverse e recenti', 'Poche', 'Nessuna', 'Non lo sa'],
+      },
+      { id: 'concorrenti', label: 'Quali concorrenti compaiono prima di lui su Google', corta: 'Concorrenti', tipo: 'area', solo: true, fac: true },
+      {
+        id: 'misurare',
+        label: 'Cosa vuole misurare',
+        corta: 'Da misurare',
+        tipo: 'multi',
+        solo: true,
+        opzioni: ['Visite', 'Da dove arrivano', 'Chiamate', 'Click su WhatsApp', 'Prenotazioni', 'Richieste di preventivo', 'Vendite'],
+      },
+    ],
+  },
+  {
+    id: 'gestione',
+    sigla: 'Dopo la pubblicazione',
+    t3: 'Strumenti e gestione dopo la pubblicazione',
+    titolo: 'Dopo la pubblicazione',
+    solo: true,
+    campi: [
+      {
+        id: 'strumenti',
+        label: 'Strumenti che usa già e che il sito dovrebbe collegare',
+        corta: 'Strumenti in uso',
+        tipo: 'multi',
+        solo: true,
+        opzioni: [
+          'Google Calendar',
+          'Booking, TheFork o simili',
+          'Newsletter (Mailchimp, Brevo)',
+          'WhatsApp Business',
+          'Gestionale o fatturazione',
+          'Instagram o Facebook',
+          'Niente di particolare',
+        ],
+      },
+      {
+        id: 'chiAggiorna',
+        label: 'Chi aggiornerà il sito',
+        corta: 'Chi lo aggiorna',
+        tipo: 'scelta',
+        solo: true,
+        opzioni: ['Lui da solo', 'Io', 'Tutti e due', 'Quasi mai: sito fermo'],
+      },
+      {
+        id: 'tempoSettimana',
+        label: 'Quanto tempo può dedicare ogni settimana al sito',
+        corta: 'Tempo a settimana',
+        tipo: 'scelta',
+        solo: true,
+        opzioni: ['Nessuno', 'Una mezz’ora', 'Una o due ore', 'Di più'],
+        chiedi: 'Cambia la soluzione: se non ha tempo, niente blog e niente da aggiornare a mano.',
+      },
+      {
+        id: 'assistenzaTipo',
+        label: 'Assistenza dopo la pubblicazione',
+        corta: 'Assistenza',
+        tipo: 'scelta',
+        solo: true,
+        opzioni: ['Nessuna, se la cava', 'Interventi quando servono', 'Un canone annuale'],
+      },
     ],
   },
   {
@@ -277,6 +617,40 @@ export const SEZIONI = [
         corta: 'Budget', o3: { 'Non lo so, consigliami': 'Non lo sa: va consigliato' }, l3: 'Che budget ha in mente',
         tipo: 'scelta',
         opzioni: ['Fino a 400 €', 'Tra 400 e 800 €', 'Tra 800 e 1.500 €', 'Oltre 1.500 €', 'Non lo so, consigliami'],
+      },
+      {
+        id: 'budgetCosa',
+        label: 'Cosa deve comprendere quel budget',
+        corta: 'Il budget comprende',
+        tipo: 'multi',
+        solo: true,
+        opzioni: ['Dominio e hosting', 'Foto', 'Logo', 'Testi', 'Manutenzione', 'Pubblicità'],
+      },
+      {
+        id: 'altriPreventivi',
+        label: 'Ha chiesto preventivi anche ad altri',
+        corta: 'Altri preventivi',
+        tipo: 'scelta',
+        solo: true,
+        opzioni: ['Sì', 'No, solo il mio', 'Non lo so'],
+      },
+      {
+        id: 'esperienza',
+        label: 'Ha già lavorato con agenzie o freelance, e com’è andata',
+        corta: 'Esperienze passate',
+        tipo: 'area',
+        solo: true,
+        fac: true,
+        chiedi: 'Se un lavoro precedente è andato male, capire perché evita di ripetere lo stesso errore.',
+      },
+      {
+        id: 'approvazione',
+        label: 'Chi approva testi e grafica, e quanto ci mette di solito a decidere',
+        corta: 'Chi approva e tempi',
+        tipo: 'testo',
+        solo: true,
+        fac: true,
+        chiedi: 'Quasi tutti i ritardi vengono da qui.',
       },
     ],
   },
@@ -418,3 +792,72 @@ export const REGIMI = [
 ];
 
 export const ALIQUOTA_RITENUTA = 20;
+
+/**
+ * Le regole fiscali della prestazione occasionale, in un posto solo. Sono
+ * quelle in vigore quando le ho verificate (ottobre 2026): vanno ricontrollate
+ * ogni anno, e fatte vedere al commercialista prima di fidarsi.
+ *
+ *  - bollo: 2 € su ogni ricevuta senza IVA sopra 77,47 € (DPR 642/1972)
+ *  - INPS: la Gestione Separata scatta sopra 5.000 € incassati nell'anno solare
+ *    da tutti i committenti insieme, ma il contributo si calcola solo sulla
+ *    parte oltre i 5.000. Se il cliente è sostituto d'imposta lo versa lui in F24:
+ *    2/3 a suo carico e 1/3 trattenuto a me (circolare INPS 103/2004).
+ *    L'aliquota è il 26,07% per chi non ha altra copertura, il 24% per chi ce l'ha
+ *    (per esempio perché è dipendente): qui il massimo, per non sottostimare.
+ *
+ * Gli importi sono in centesimi, come tutto il resto.
+ */
+export const BOLLO = { importo: 200, sopra: 7747 };
+
+/** La dicitura più completa della ricevuta/preventivo, usata da /incontro-cliente-v2. */
+export const DICITURA_OCCASIONALE =
+  'Prestazione di lavoro autonomo occasionale (art. 2222 c.c.), svolta senza abitualità: operazione fuori campo IVA ai sensi dell’art. 5 del DPR 633/1972.';
+export const INPS = { franchigia: 500000, aliquota: 26.07 };
+
+/** Le frasi del questionario per le quattro occasioni in cui servono. */
+export const COPIONE = [
+  {
+    id: 'apertura',
+    titolo: 'Per aprire',
+    testo:
+      'Oggi non voglio proporle qualcosa a caso. Prima vorrei capire bene l’attività, come lavorate oggi, cosa vorreste ottenere e quali problemi volete risolvere. Mi prenderò qualche appunto e poi, sulla base di quello, le preparo una proposta chiara.',
+  },
+  {
+    id: 'registrazione',
+    titolo: 'Per chiedere di registrare',
+    testo:
+      'Le chiedo una cosa: posso registrare la voce mentre parliamo, così non mi perdo niente? L’audio resta solo sul mio dispositivo, lo uso per preparare il preventivo e poi lo cancello. Se preferisce, spengo quando vuole.',
+  },
+  {
+    id: 'prezzo',
+    titolo: 'Per parlare del prezzo',
+    testo:
+      'Prima di darle una cifra preferisco capire bene cosa serve davvero, così non le propongo né troppo né troppo poco. Mi può comunque indicare una fascia di investimento che vorrebbe rispettare?',
+  },
+  {
+    id: 'seo',
+    titolo: 'Per parlare di Google',
+    testo:
+      'Il sito verrà costruito con una buona base tecnica per Google e per la ricerca locale, ma il posizionamento dipende da diversi fattori e non è corretto promettere una posizione specifica. Quello che possiamo fare è impostare tutto correttamente e misurare i risultati.',
+  },
+  {
+    id: 'fiscale',
+    titolo: 'Per spiegare IVA e ritenuta',
+    testo:
+      'Io lavoro con prestazione occasionale, quindi sul preventivo non c’è l’IVA. Se lei è un’attività, dal compenso trattiene il 20% e lo versa allo Stato per mio conto: è un acconto sulle mie imposte, non un costo in più per lei. A me arriva il resto. Lei spende comunque la cifra del preventivo.',
+  },
+  {
+    id: 'chiusura',
+    titolo: 'Per chiudere',
+    testo:
+      'Le riassumo quello che ho capito: il vostro obiettivo principale è ____. Il sito dovrebbe aiutare soprattutto a ____. Le funzioni più importanti sono ____. Come stile cerchiamo ____. Da parte vostra serviranno ____. La fascia di budget indicativa è ____ e idealmente vorreste essere online entro ____. Mi prendo tutto quello che ci siamo detti e preparo una proposta con struttura, cosa è incluso, tempistiche e prezzo. Mi sono perso qualcosa di importante?',
+  },
+];
+
+export const NON_PROMETTERE = [
+  'La prima posizione su Google, o tempi certi per la SEO.',
+  'Un numero preciso di contatti, vendite o visite.',
+  'Un ritorno sull’investimento garantito.',
+  'Una data di consegna definitiva, prima di sapere materiali, approvazioni e complessità.',
+];

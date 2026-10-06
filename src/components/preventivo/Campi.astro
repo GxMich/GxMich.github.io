@@ -18,10 +18,13 @@ interface Props {
 
 const { incontro = false, da = 1 } = Astro.props;
 const num = (i: number) => String(da + i).padStart(2, '0');
+
+/* Le domande marcate `solo` esistono soltanto in /incontro-cliente-v2. */
+const sezioni = SEZIONI.filter((s) => !s.solo).map((s) => ({ ...s, campi: s.campi.filter((c) => !c.solo) }));
 ---
 
 {
-  SEZIONI.map((s, i) => (
+  sezioni.map((s, i) => (
     <fieldset class="f-sezione" id={`sez-${s.id}`}>
       <legend class="f-legenda">
         <b>{num(i)}</b>

@@ -22,17 +22,23 @@ export interface Campo {
   placeholder?: string;
   autocomplete?: string;
   chiedi?: string;
+  /** Esiste solo nell'incontro: il cliente non la vede nel suo modulo. */
+  solo?: boolean;
+  /** Compare solo se uno di questi campi ha quel valore. */
+  se?: [string, string][];
 }
 
-interface Sezione {
+export interface Sezione {
   id: string;
   sigla: string;
+  t3?: string;
   titolo: string;
   intro?: string;
+  solo?: boolean;
   campi: Campo[];
 }
 
-const ELENCO = SEZIONI as Sezione[];
+export const ELENCO = SEZIONI as Sezione[];
 export const CAMPI: Campo[] = ELENCO.flatMap((s) => s.campi);
 const PER_ID = new Map(CAMPI.map((c) => [c.id, c]));
 
@@ -88,6 +94,15 @@ export function leggiRichiesta(radice: ParentNode): Valori {
 
 export function scriviRichiesta(radice: ParentNode, valori: Valori) {
   for (const c of CAMPI) scriviCampo(radice, c.id, valori[c.id]);
+}
+
+/** Una domanda condizionale è visibile se una delle sue condizioni è vera. */
+export function condizioneVera(se: Campo['se'], valori: Valori): boolean {
+  if (!se?.length) return true;
+  return se.some(([campo, valore]) => {
+    const v = valori[campo];
+    return Array.isArray(v) ? v.includes(valore) : v === valore;
+  });
 }
 
 const pieno = (v: Valore | undefined) => (Array.isArray(v) ? v.length > 0 : Boolean(v));

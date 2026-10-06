@@ -80,6 +80,99 @@ export function totali(
   };
 }
 
+/* ------------------------------ la suddivisione dei soldi ------------------------------ */
+
+export interface Pagamento {
+  nome: string;
+  /** quanto vale il pagamento nel preventivo */
+  lordo: number;
+  /** ritenuta d'acconto che il cliente versa allo Stato */
+  ritenuta: number;
+  /** la mia quota di INPS, che il cliente mi trattiene */
+  inps: number;
+  /** quello che arriva a me, bollo escluso */
+  netto: number;
+  /** marca da bollo da rimborsare, 0 se non dovuta */
+  bollo: number;
+}
+
+export interface Divisione {
+  pagamenti: Pagamento[];
+  ritenuta: number;
+  /** contributo INPS totale, sulla parte oltre la franchigia */
+  inps: number;
+  inpsCliente: number;
+  inpsMia: number;
+  bolli: number;
+  bollo: number;
+  /** quello che incasso: netto più il bollo rimborsato */
+  aMe: number;
+  /** quello che il cliente versa allo Stato e all'INPS con l'F24 */
+  alFisco: number;
+  /** quello che il cliente spende in tutto */
+  spesaCliente: number;
+}
+
+/**
+ * Chi riceve cosa. Ritenuta e INPS si ripartiscono fra acconto e saldo in
+ * proporzione, e l'ultimo pagamento prende il resto: così la somma torna al
+ * centesimo con il totale, qualunque sia l'arrotondamento.
+ *
+ * @param inps contributo INPS totale in centesimi (0 se non dovuto)
+ * @param bollo marca da bollo a carico del cliente, e quale importo/soglia
+ */
+export function divisione(
+  t: Totali,
+  inps: number,
+  bollo: { attivo: boolean; importo: number; sopra: number }
+): Divisione {
+  const inpsMia = Math.round(inps / 3);
+  const inpsCliente = inps - inpsMia;
+  const parti: [string, number][] = [
+    ['Acconto alla conferma', t.acconto],
+    ['Saldo alla consegna', t.saldo],
+  ];
+
+  let ritDate = 0;
+  let inpsDate = 0;
+  const pagamenti: Pagamento[] = parti
+    .filter(([, lordo]) => lordo > 0)
+    .map(([nome, lordo], i, tutte) => {
+      const ultimo = i === tutte.length - 1;
+      const quota = t.totale > 0 ? lordo / t.totale : 0;
+      const ritenuta = ultimo ? t.ritenuta - ritDate : Math.round(t.ritenuta * quota);
+      const miaInps = ultimo ? inpsMia - inpsDate : Math.round(inpsMia * quota);
+      ritDate += ritenuta;
+      inpsDate += miaInps;
+      return {
+        nome,
+        lordo,
+        ritenuta,
+        inps: miaInps,
+        netto: lordo - ritenuta - miaInps,
+        bollo: bollo.attivo && lordo > bollo.sopra ? bollo.importo : 0,
+      };
+    });
+
+  const bolli = pagamenti.filter((p) => p.bollo > 0).length;
+  const bolloTot = pagamenti.reduce((n, p) => n + p.bollo, 0);
+  const aMe = pagamenti.reduce((n, p) => n + p.netto, 0) + bolloTot;
+  const alFisco = t.ritenuta + inps;
+
+  return {
+    pagamenti,
+    ritenuta: t.ritenuta,
+    inps,
+    inpsCliente,
+    inpsMia,
+    bolli,
+    bollo: bolloTot,
+    aMe,
+    alFisco,
+    spesaCliente: t.totale + inpsCliente + bolloTot,
+  };
+}
+
 export const eur = (c: number) =>
   `${(c / 100).toLocaleString('it-IT', { minimumFractionDigits: c % 100 === 0 ? 0 : 2, maximumFractionDigits: 2 })} €`;
 

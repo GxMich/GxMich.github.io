@@ -222,7 +222,7 @@ stessi token e gli stessi caratteri del sito, senza scaricare niente da internet
 
 ## 8. Le pagine riservate dei preventivi
 
-Quattro pagine che non raggiunge nessun collegamento del sito: sono fuori dalla sitemap, hanno
+Cinque pagine che non raggiunge nessun collegamento del sito: sono fuori dalla sitemap, hanno
 `noindex` e non caricano le misure di traffico (Clarity non può registrarle). Non vanno in
 `robots.txt`, perché elencarle lì le renderebbe pubbliche.
 
@@ -230,6 +230,7 @@ Quattro pagine che non raggiunge nessun collegamento del sito: sono fuori dalla 
 |---|---|---|
 | `/preventivo-richiesta` | il cliente | questionario dettagliato; compone il messaggio e apre WhatsApp o la posta |
 | `/incontro-cliente` | solo a me | appunti dell'incontro, richiesta, calcolo del prezzo, stampa. **Con password** |
+| `/incontro-cliente-v2` | solo a me | la versione nuova: questionario di scoperta, microfono con audio su ogni domanda, calcolo del prezzo con la suddivisione dei soldi. **Con password**, stessa del listino |
 | `/preventivo-proposta#…` | il cliente, dopo la demo | il preventivo: versione di prova, pacchetti, extra, totale che si aggiorna, pulsanti per rispondere |
 | `/preventivo-casa-di-nonna` | quel cliente | la versione già fatta per Casa di Nonna |
 
@@ -271,8 +272,64 @@ non si leggono, nemmeno guardando il sorgente. La password non è scritta da nes
 
 Nel `localStorage` del browser, su quel dispositivo, **in chiaro**: non vanno da nessuna parte e
 la password non li protegge, perché protegge la pagina e i prezzi, non un dispositivo già
-sbloccato. «Esporta» scarica una copia (un file JSON con gli appunti in chiaro), «Importa» la
-rimette. Svuotare i dati del sito dal browser cancella gli incontri.
+sbloccato. «Esporta» scarica una copia (un file JSON con gli appunti in chiaro, **senza gli
+audio**), «Importa» la rimette. Svuotare i dati del sito dal browser cancella gli incontri e le
+registrazioni.
+
+### Il questionario di scoperta (solo v2)
+
+Le domande di `/incontro-cliente-v2` sono quelle del modulo del cliente **più** quelle del questionario
+universale (obiettivi, pubblico, offerta, SEO locale, gestione futura, commerciale…). Stanno tutte
+in `src/data/richiesta.js`: quelle con `solo: true` esistono solo nell'incontro, il cliente non le
+vede nel suo modulo e la v1 le ignora. Con `se: [[campo, valore]]` una domanda compare solo quando serve (per
+esempio i dettagli sulle prenotazioni, solo se le ha chieste).
+
+Nel riepilogo ci sono tre aiuti: **«Prepara il preventivo dalle risposte»** sceglie il pacchetto e
+accende gli extra che le risposte richiedono (non spegne mai niente), **«Prima di andare via»**
+elenca cosa non hai ancora chiesto, e la **complessità** interna (semplice, media, complessa,
+avanzata) dà il punteggio del questionario. Le frasi pronte e le cose da non promettere stanno in
+«Frasi pronte» nella sezione 01.
+
+### Il microfono e l'audio (solo v2)
+
+Ogni domanda ha un microfono. Registra l'audio e, dove il browser lo permette, lo trascrive nel
+campo; sulle domande a caselle il testo detto va in «Cosa ha detto». C'è anche la registrazione
+dell'intero incontro, con l'interruttore «Parla il cliente / Parlo io».
+
+- **Si registra solo dopo aver spuntato il consenso** del cliente (sezione 01): senza, il
+  microfono non parte.
+- L'audio sta in **IndexedDB**, su questo dispositivo, in chiaro. Il sito non lo manda da nessuna
+  parte. Fa eccezione la trascrizione in diretta, che la fa il servizio del browser (Google in
+  Chrome ed Edge, Apple in Safari).
+- **L'audio ha la precedenza sulla trascrizione**: se la trascrizione cade, l'audio continua. Su
+  telefono la trascrizione in diretta parte spenta, perché può contendersi il microfono con la
+  registrazione; si accende con «Trascrivi mentre registro».
+- **«Pacchetto per l'AI»** scarica uno ZIP con gli audio (uno per domanda), `incontro.md`,
+  `incontro.json` e un `LEGGIMI.md` con il prompt da dare all'AI. È l'unica strada da cui l'audio
+  esce, e parte solo quando premi.
+- «Elimina gli audio di questo incontro» li cancella; eliminando l'incontro si cancellano anche
+  loro.
+- Non è stato provato su un telefono vero: in Chrome desktop sì, anche con microfono finto. Se
+  l'audio su telefono esce con dei buchi, la pagina lo segna sulla registrazione.
+
+### La prestazione occasionale (solo v2)
+
+Con regime «Prestazione occasionale» il riepilogo mostra **«Come si divide il pagamento»**, per
+acconto e saldo: quanto arriva a me, quanto il cliente versa allo Stato (ritenuta 20%, F24 codice
+1040), il rimborso della marca da bollo (2 € per ricevuta sopra 77,47 €) e, se in
+«Già incassato quest'anno» c'è abbastanza da superare i 5.000 €, i contributi INPS (2/3 al cliente,
+1/3 trattenuto a me). Le stesse cifre vanno nel preventivo stampato e nel testo. Le regole stanno
+nelle costanti `BOLLO` e `INPS` di `richiesta.js`: ricontrollale ogni anno.
+
+**La guida per capire e spiegare tutto questo è in `docs/prestazione-occasionale.md`.**
+
+### Perché due versioni dell'incontro
+
+`/incontro-cliente` è rimasta com'era. La v2 ha file propri (`incontro-cliente-v2.astro`,
+`lib/incontro-v2.ts`, `components/preventivo/CampiV2.astro`) e un **archivio separato**
+(`incontri-v2` nel localStorage): la v1 riscrive solo i campi che conosce e cancellerebbe quelli
+della v2. Per portare un incontro dall'una all'altra c'è «Esporta» / «Importa». Quello che le due
+pagine condividono (`richiesta.js`, `preventivo.ts`, `modulo.css`) è solo additivo.
 
 ### Il listino, in breve
 
@@ -282,6 +339,6 @@ proposta: ogni prezzo si corregge al volo durante l'incontro, e il campo vuoto u
 Il calcolo mostra anche le **ore stimate e la tariffa effettiva**, solo per te: non compaiono
 mai nel preventivo.
 
-Le diciture fiscali (prestazione occasionale, forfettario, IVA) e la ritenuta d'acconto del 20%
-sono proposte da far vedere al commercialista prima di usarle.
+Le diciture fiscali (prestazione occasionale, forfettario, IVA), la ritenuta d'acconto del 20%,
+il bollo e la soglia INPS sono proposte da far vedere al commercialista prima di usarle.
 

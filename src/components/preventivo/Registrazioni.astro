@@ -1,0 +1,34 @@
+---
+/**
+ * Quello che sta sotto una domanda dell'incontro dopo aver usato il microfono:
+ *  - la riga provvisoria, con quello che si sta dicendo adesso;
+ *  - per le domande a scelta, «Cosa ha detto»: dove va il testo, perché una
+ *    domanda a caselle non ha un campo in cui scrivere;
+ *  - l'elenco delle registrazioni di quella domanda, che lib/incontro.ts riempie.
+ *
+ * Il tutto resta nascosto finché non c'è qualcosa da mostrare.
+ */
+interface Props {
+  campo: string;
+  /** domanda a scelta: serve l'area «Cosa ha detto» */
+  nota?: boolean;
+}
+
+const { campo, nota = false } = Astro.props;
+const id = `v-${campo.replace(/\W+/g, '-')}`;
+---
+
+<div class="voce-sotto" data-voce-sotto={campo}>
+  {
+    nota && (
+      <p class="f-campo voce-nota" data-voce-nota={campo} hidden>
+        <label class="f-label" for={id}>
+          Cosa ha detto
+        </label>
+        <textarea id={id} name={`v.${campo}`} rows="2" maxlength="2000" />
+      </p>
+    )
+  }
+  <p class="voce-prov" data-voce-prov={campo} aria-hidden="true"></p>
+  <ul class="prese" data-prese={campo} hidden></ul>
+</div>

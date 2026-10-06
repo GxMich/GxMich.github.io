@@ -14,11 +14,20 @@
  * (localStorage) e non vanno da nessuna parte. Sono in chiaro: chi ha in mano
  * il dispositivo sbloccato li legge. Per una copia di sicurezza c'è "Esporta".
  *
+ * Ogni domanda ha il suo microfono: registra l'audio (che resta in IndexedDB,
+ * sempre su questo dispositivo, e solo dopo il consenso del cliente) e dove il
+ * browser lo permette lo trascrive nel campo. «Pacchetto per l'AI» impacchetta
+ * audio, risposte e istruzioni in uno ZIP, per analizzarli dopo. Le domande
+ * marcate `solo` in data/richiesta.js vengono dal questionario di scoperta e
+ * qui compaiono, mentre nel modulo del cliente no.
+ *
  * Le domande sono le stesse del modulo che compila il cliente
  * (data/richiesta.js), e il messaggio che manda si rilegge qui con "Importa".
  */
 import Guscio from '../layouts/Guscio.astro';
-import Campi from '../components/preventivo/Campi.astro';
+import Campi from '../components/preventivo/CampiV2.astro';
+import Mic from '../components/preventivo/Mic.astro';
+import Registrazioni from '../components/preventivo/Registrazioni.astro';
 import cifrato from '../data/listino.cifrato.json';
 import { SITE } from '../config.js';
 import {
@@ -29,15 +38,21 @@ import {
   EXTRA,
   REGIMI,
   CONDIZIONI,
+  COPIONE,
+  NON_PROMETTERE,
 } from '../data/richiesta.js';
 
 const indice = [
   ['incontro', 'Incontro'],
-  ...SEZIONI.filter((s) => !s.solo).map((s) => [s.id, s.t3 ?? s.sigla]),
+  ...SEZIONI.map((s) => [s.id, s.t3 ?? s.sigla]),
   ['raccolta', 'Da chiedere'],
   ['appunti', 'Appunti'],
   ['prezzo', 'Prezzo'],
 ];
+
+/* Le sezioni fisse stanno prima e dopo quelle delle domande, che sono tante: i numeri si contano. */
+const nSezioni = SEZIONI.length;
+const numero = (n: number) => String(n).padStart(2, '0');
 
 const unitaDi = { pagine: 'a pagina', lingue: 'a lingua', giri: 'a giro' };
 const registri = [
@@ -50,7 +65,7 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
 ---
 
 <Guscio
-  titolo="Incontro con il cliente"
+  titolo="Incontro con il cliente · v2"
   descrizione="Pagina riservata."
   noindex={true}
   senzaMisure={true}
@@ -93,7 +108,7 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
       <div class="strumento" data-strumento hidden>
         <div class="barra">
           <div class="barra-titolo">
-            <p class="etichetta">Incontro con il cliente</p>
+            <p class="etichetta">Incontro con il cliente · versione 2</p>
             <h2 class="h2" data-titolo>Nuovo incontro</h2>
           </div>
 
@@ -102,9 +117,6 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
               <label class="solo-lettori" for="elenco">Incontri salvati</label>
               <select id="elenco" data-elenco></select>
             </p>
-            <button class="f-bottone secondario piccolo attiva" type="button" data-azione="trascrivi" data-trascr-barra hidden>
-              <span class="punto" aria-hidden="true"></span> Ferma la trascrizione
-            </button>
             <button class="f-bottone secondario piccolo" type="button" data-azione="nuovo">Nuovo</button>
             <button class="f-bottone secondario piccolo" type="button" data-azione="elimina">Elimina</button>
             <button class="f-bottone secondario piccolo" type="button" data-azione="esporta">Esporta</button>
@@ -148,18 +160,50 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
                 </div>
               </details>
 
+              <details class="importa-richiesta copione">
+                <summary>Frasi pronte e cose da non promettere</summary>
+                <div class="importa-dentro">
+                  {
+                    COPIONE.map((c) => (
+                      <div class="copione-voce">
+                        <p class="etichetta">{c.titolo}</p>
+                        <p class="testo-sm">«{c.testo}»</p>
+                      </div>
+                    ))
+                  }
+                  <div class="copione-voce">
+                    <p class="etichetta">Non promettere mai</p>
+                    <ul class="testo-sm">
+                      {NON_PROMETTERE.map((v) => <li>{v}</li>)}
+                    </ul>
+                  </div>
+                </div>
+              </details>
+
               <p class="f-campo">
                 <label class="f-label" for="i-data">Data dell’incontro</label>
                 <input id="i-data" type="date" name="i.data" />
               </p>
-              <p class="f-campo">
-                <label class="f-label" for="i-luogo">Dove ci vediamo</label>
-                <input id="i-luogo" type="text" name="i.luogo" maxlength="160" />
-              </p>
-              <p class="f-campo">
-                <label class="f-label" for="i-presenti">Chi c’è</label>
-                <input id="i-presenti" type="text" name="i.presenti" maxlength="160" />
-              </p>
+              <div class="f-dom">
+                <p class="f-campo">
+                  <span class="f-riga">
+                    <label class="f-label" for="i-luogo">Dove ci vediamo</label>
+                    <Mic campo="i.luogo" etichetta="Dove ci vediamo" />
+                  </span>
+                  <input id="i-luogo" type="text" name="i.luogo" maxlength="160" />
+                </p>
+                <Registrazioni campo="i.luogo" />
+              </div>
+              <div class="f-dom">
+                <p class="f-campo">
+                  <span class="f-riga">
+                    <label class="f-label" for="i-presenti">Chi c’è</label>
+                    <Mic campo="i.presenti" etichetta="Chi c’è" />
+                  </span>
+                  <input id="i-presenti" type="text" name="i.presenti" maxlength="160" />
+                </p>
+                <Registrazioni campo="i.presenti" />
+              </div>
               <p class="f-campo">
                 <label class="f-label" for="i-prova">Link alla versione di prova <span class="f-fac">· compare nel preventivo</span></label>
                 <input id="i-prova" type="text" name="i.prova" maxlength="200" placeholder="Es. https://…" inputmode="url" />
@@ -179,14 +223,65 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
                   ))
                 }
               </div>
+
+              {/* La registrazione dell'intero incontro: è la rete di sicurezza, tutto quello che si dice. */}
+              <div class="registratore" data-registratore>
+                <p class="f-domanda" id="q-registratore">Registra tutto l’incontro</p>
+                <p class="testo-sm">
+                  Accendi all’inizio e lascia andare: l’audio dell’intero incontro resta su questo
+                  dispositivo, pronto da dare a un’AI. Per riempire una domanda alla volta usa il
+                  microfono accanto a ogni domanda.
+                </p>
+
+                <label class="f-scelta">
+                  <input type="checkbox" name="i.consenso" value="1" data-consenso />
+                  <span>Ho chiesto al cliente e ha acconsentito alla registrazione della voce</span>
+                </label>
+                <label class="f-scelta">
+                  <input type="checkbox" name="i.trascrivi" value="1" />
+                  <span>
+                    Trascrivi mentre registro
+                    <small class="testo-sm">Su telefono può rubare il microfono alla registrazione: se l’audio esce con dei buchi, spegni.</small>
+                  </span>
+                </label>
+
+                <div class="trascr-comandi">
+                  <button class="f-bottone" type="button" data-azione="mic" data-campo="_incontro" aria-pressed="false">
+                    <span class="punto" aria-hidden="true"></span>
+                    <span data-trascr-etichetta>Accendi la registrazione</span>
+                  </button>
+                  <div class="seg" role="radiogroup" aria-label="Chi sta parlando">
+                    <label class="seg-voce">
+                      <input class="solo-lettori" type="radio" name="i.parla" value="Cliente" />
+                      <span>Parla il cliente</span>
+                    </label>
+                    <label class="seg-voce">
+                      <input class="solo-lettori" type="radio" name="i.parla" value="Io" />
+                      <span>Parlo io</span>
+                    </label>
+                  </div>
+                </div>
+                <p class="testo-sm" data-voce-stato role="status"></p>
+                <Registrazioni campo="_incontro" />
+
+                <label class="solo-lettori" for="i-trascrizione">Testo trascritto</label>
+                <textarea id="i-trascrizione" name="i.trascrizione" rows="8" placeholder="Qui compare il testo, e lo puoi correggere a mano."></textarea>
+                <p class="testo-sm f-nota">
+                  <strong>Prima di accendere, dillo al cliente.</strong> L’audio non lascia questo
+                  dispositivo: lo salva il browser, non il sito. Fa eccezione la trascrizione in diretta,
+                  che la fa il servizio del browser (Google in Chrome ed Edge, Apple in Safari) e quindi
+                  manda l’audio da loro. Se poi dai l’audio a un’AI, passa anche da lì. Cancellalo quando
+                  hai finito: c’è il pulsante «Elimina gli audio».
+                </p>
+              </div>
             </fieldset>
 
-            {/* 02–09 · le domande del cliente */}
+            {/* 02… · le domande, del cliente e del questionario */}
             <Campi incontro={true} da={2} />
 
             {/* 10 · cosa serve dal cliente */}
             <fieldset class="f-sezione" id="sez-raccolta">
-              <legend class="f-legenda"><b>10</b><span>Cosa mi serve da lui</span></legend>
+              <legend class="f-legenda"><b>{numero(2 + nSezioni)}</b><span>Cosa mi serve da lui</span></legend>
               <p class="f-intro testo-sm">
                 Segna lo stato di ogni cosa. Quello che resta «Da chiedere» o «In parte» finisce nel
                 preventivo, nella riga «Per partire mi servono».
@@ -212,49 +307,29 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
 
             {/* 11 · appunti */}
             <fieldset class="f-sezione" id="sez-appunti">
-              <legend class="f-legenda"><b>11</b><span>Appunti e cose da fare</span></legend>
+              <legend class="f-legenda"><b>{numero(3 + nSezioni)}</b><span>Appunti e cose da fare</span></legend>
 
-              <div class="trascrizione" data-trascrizione>
-                <p class="f-domanda" id="q-trascrizione">Trascrizione dell’incontro</p>
-                <p class="testo-sm">
-                  Accendila e quello che si dice diventa testo qui sotto, riga per riga. Si salva solo il
-                  testo: l’audio non viene conservato.
+              <div class="f-dom">
+                <p class="f-campo">
+                  <span class="f-riga">
+                    <label class="f-label" for="i-appunti">Appunti dell’incontro</label>
+                    <Mic campo="i.appunti" etichetta="Appunti dell’incontro" />
+                  </span>
+                  <textarea id="i-appunti" name="i.appunti" rows="9"></textarea>
+                  <span class="f-chiedi">Parole esatte del cliente, obiezioni, paure, concorrenti nominati, promesse da evitare, cose da verificare dopo.</span>
                 </p>
-                <div class="trascr-comandi">
-                  <button class="f-bottone" type="button" data-azione="trascrivi" data-trascr-principale aria-pressed="false">
-                    <span class="punto" aria-hidden="true"></span>
-                    <span data-trascr-etichetta>Accendi la trascrizione</span>
-                  </button>
-                  <div class="seg" role="radiogroup" aria-label="Chi sta parlando">
-                    <label class="seg-voce">
-                      <input class="solo-lettori" type="radio" name="i.parla" value="Cliente" />
-                      <span>Parla il cliente</span>
-                    </label>
-                    <label class="seg-voce">
-                      <input class="solo-lettori" type="radio" name="i.parla" value="Io" />
-                      <span>Parlo io</span>
-                    </label>
-                  </div>
-                </div>
-                <p class="testo-sm" data-trascr-stato role="status"></p>
-                <p class="testo-sm trascr-provvisorio" data-trascr-provvisorio aria-hidden="true"></p>
-                <label class="solo-lettori" for="i-trascrizione">Testo trascritto</label>
-                <textarea id="i-trascrizione" name="i.trascrizione" rows="9" placeholder="Qui compare il testo, e lo puoi correggere a mano."></textarea>
-                <p class="testo-sm f-nota">
-                  <strong>Avvisa il cliente prima di accenderla.</strong> Il riconoscimento della voce lo
-                  fa il servizio del browser (Google in Chrome ed Edge, Apple in Safari): l’audio passa da
-                  lì per diventare testo. Non distingue chi parla, per questo c’è l’interruttore sopra.
-                </p>
+                <Registrazioni campo="i.appunti" />
               </div>
-
-              <p class="f-campo">
-                <label class="f-label" for="i-appunti">Appunti dell’incontro</label>
-                <textarea id="i-appunti" name="i.appunti" rows="9"></textarea>
-              </p>
-              <p class="f-campo">
-                <label class="f-label" for="i-dubbi">Dubbi o obiezioni emersi</label>
-                <textarea id="i-dubbi" name="i.dubbi" rows="3"></textarea>
-              </p>
+              <div class="f-dom">
+                <p class="f-campo">
+                  <span class="f-riga">
+                    <label class="f-label" for="i-dubbi">Dubbi o obiezioni emersi</label>
+                    <Mic campo="i.dubbi" etichetta="Dubbi o obiezioni emersi" />
+                  </span>
+                  <textarea id="i-dubbi" name="i.dubbi" rows="3"></textarea>
+                </p>
+                <Registrazioni campo="i.dubbi" />
+              </div>
 
               <div class="f-gruppo" role="radiogroup" aria-labelledby="q-decide">
                 <p class="f-domanda" id="q-decide">Chi decide</p>
@@ -278,10 +353,16 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
                   ))
                 }
               </div>
-              <p class="f-campo">
-                <label class="f-label" for="i-risposta">Quando mi dà una risposta</label>
-                <input id="i-risposta" type="text" name="i.risposta" maxlength="160" />
-              </p>
+              <div class="f-dom">
+                <p class="f-campo">
+                  <span class="f-riga">
+                    <label class="f-label" for="i-risposta">Quando mi dà una risposta</label>
+                    <Mic campo="i.risposta" etichetta="Quando mi dà una risposta" />
+                  </span>
+                  <input id="i-risposta" type="text" name="i.risposta" maxlength="160" />
+                </p>
+                <Registrazioni campo="i.risposta" />
+              </div>
 
               <div class="azioni-elenco">
                 <p class="f-domanda" id="q-azioni">Cose che ho promesso di fare</p>
@@ -296,7 +377,7 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
 
             {/* 12 · prezzo */}
             <fieldset class="f-sezione" id="sez-prezzo">
-              <legend class="f-legenda"><b>12</b><span>Prezzo e condizioni</span></legend>
+              <legend class="f-legenda"><b>{numero(4 + nSezioni)}</b><span>Prezzo e condizioni</span></legend>
 
               <div class="f-gruppo" role="radiogroup" aria-labelledby="q-pacchetto">
                 <p class="f-domanda" id="q-pacchetto">Pacchetto</p>
@@ -406,6 +487,18 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
                 <input type="checkbox" name="p.ritenuta" value="1" />
                 <span>Il cliente è un’attività e trattiene la ritenuta d’acconto del 20%</span>
               </label>
+              <label class="f-scelta" data-bollo>
+                <input type="checkbox" name="p.bollo" value="1" />
+                <span>
+                  Marca da bollo da 2 € su ogni ricevuta, a carico del cliente
+                  <small class="testo-sm">Dovuta quando non c’è IVA e la ricevuta supera 77,47 €. Si rimborsa a parte, fuori dal totale.</small>
+                </span>
+              </label>
+              <p class="f-campo" data-incassato>
+                <label class="f-label" for="p-incassato">Già incassato quest’anno con prestazioni occasionali, in euro <span class="f-fac">· solo per me</span></label>
+                <input id="p-incassato" type="number" name="p.incassato" min="0" step="0.01" inputmode="decimal" placeholder="0" />
+                <span class="testo-sm">Sopra 5.000 € nell’anno scattano i contributi INPS, e contano tutti i clienti insieme.</span>
+              </p>
 
               <div class="coppia">
                 <p class="f-campo">
@@ -441,6 +534,11 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
             <p class="etichetta">Preventivo <span data-v="numero"></span></p>
             <p class="r-cliente h3" data-v="cliente">—</p>
 
+            <div class="proponi">
+              <button class="f-bottone" type="button" data-azione="suggerisci">Prepara il preventivo dalle risposte</button>
+              <p class="testo-sm" data-suggerisci-esito role="status"></p>
+            </div>
+
             <ul class="righe" data-righe></ul>
             <p class="testo-sm vuoto" data-vuoto>Scegli un pacchetto o aggiungi una voce.</p>
 
@@ -456,6 +554,11 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
               <div class="tot" data-riga="saldo"><dt>Saldo alla consegna</dt><dd class="dato" data-v="saldo">0 €</dd></div>
             </dl>
 
+            <div class="blocco" data-divisione hidden>
+              <p class="etichetta">Come si divide il pagamento</p>
+              <div class="dv" data-div-corpo></div>
+            </div>
+
             <div class="blocco" data-annue hidden>
               <p class="etichetta">Ogni anno, facoltativi</p>
               <ul class="righe" data-righe-annue></ul>
@@ -468,8 +571,16 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
               <dl class="totali">
                 <div class="tot"><dt>Ore stimate</dt><dd class="dato" data-v="ore">—</dd></div>
                 <div class="tot"><dt>Tariffa effettiva</dt><dd class="dato" data-v="tariffa">—</dd></div>
+                <div class="tot"><dt>Complessità</dt><dd class="dato" data-v="complessita">—</dd></div>
               </dl>
               <p class="testo-sm" data-v="tariffa-nota"></p>
+              <p class="testo-sm" data-v="complessita-nota"></p>
+            </div>
+
+            <div class="blocco">
+              <p class="etichetta">Prima di andare via</p>
+              <p class="testo-sm" data-chiusura-testo></p>
+              <ul class="avvisi" data-chiusura-lista></ul>
             </div>
 
             <div class="blocco" data-controlli-blocco hidden>
@@ -494,6 +605,9 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
               <button class="f-bottone secondario" type="button" data-azione="stampa">Stampa o salva in PDF</button>
               <p class="etichetta spazio">Per me</p>
               <button class="f-bottone secondario" type="button" data-azione="copia-appunti">Copia gli appunti</button>
+              <button class="f-bottone secondario" type="button" data-azione="pacchetto-ai">Pacchetto per l’AI (ZIP con gli audio)</button>
+              <button class="f-bottone secondario" type="button" data-azione="elimina-audio">Elimina gli audio di questo incontro</button>
+              <p class="testo-sm" data-audio-riepilogo></p>
               <p class="testo-sm" data-esito role="status"></p>
             </div>
           </aside>
@@ -502,6 +616,13 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
 
       {/* Il foglio che esce in stampa: si compone da solo e sullo schermo non si vede. */}
       <article class="foglio" data-foglio aria-hidden="true"></article>
+    </div>
+
+    {/* Finché il microfono è acceso questa riga resta in vista, ovunque si sia scorsa la pagina. */}
+    <div class="pillola" data-pillola hidden role="status">
+      <span class="punto" aria-hidden="true"></span>
+      <span class="pillola-testo" data-pillola-testo></span>
+      <button class="f-bottone secondario piccolo" type="button" data-azione="mic-ferma">Ferma</button>
     </div>
 
     {/* Su telefono il riepilogo sta in fondo alla pagina: questa barra tiene il totale sotto gli occhi. */}
@@ -693,12 +814,63 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
     gap: var(--sp-4);
   }
 
-  /* ------------------------------ trascrizione ------------------------------ */
-  .trascrizione {
+  .copione-voce {
+    display: grid;
+    gap: var(--sp-1);
+  }
+
+  .copione-voce ul {
+    padding-left: var(--sp-5);
+    list-style: disc;
+  }
+
+  /* ------------------------------ registrazione ------------------------------ */
+  .registratore {
     display: grid;
     gap: var(--sp-3);
-    padding-bottom: var(--sp-5);
-    border-bottom: 1px solid var(--rule);
+    padding: var(--sp-5);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-1);
+    background: var(--paper-sunk);
+  }
+
+  .registratore textarea {
+    background: var(--paper);
+  }
+
+  .registratore small {
+    display: block;
+    color: var(--ink-3);
+  }
+
+  .proponi {
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  .pillola {
+    position: fixed;
+    inset: auto var(--gutter) var(--sp-4) auto;
+    z-index: calc(var(--z-sticky) + 1);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    max-width: min(520px, calc(100vw - 2 * var(--gutter)));
+    padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-4);
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    border-radius: var(--radius-1);
+  }
+
+  .pillola .punto {
+    background: var(--signal);
+    animation: pulsa 1.4s var(--ease-inout) infinite;
+  }
+
+  .pillola-testo {
+    min-width: 0;
+    font-size: var(--t-body-sm);
+    overflow-wrap: anywhere;
   }
 
   .trascr-comandi {
@@ -1147,6 +1319,11 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
     .barra-totale:not([hidden]) {
       display: flex;
     }
+
+    /* Sopra la barra del totale, che su telefono occupa il fondo. */
+    .pillola {
+      bottom: calc(var(--sp-4) + 64px);
+    }
   }
 
   @media (max-width: 860px) {
@@ -1280,6 +1457,59 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
     }
   }
 
+  /* La suddivisione dei soldi: si compone da JavaScript, quindi stili globali. */
+  .dv {
+    display: grid;
+    gap: var(--sp-3);
+  }
+
+  .dv-nota {
+    margin: 0;
+    font-size: var(--t-body-sm);
+    color: var(--ink-3);
+  }
+
+  .dv-pag {
+    display: grid;
+    gap: 2px;
+    padding-top: var(--sp-2);
+    border-top: 1px solid var(--rule);
+  }
+
+  .dv-titolo {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .dv-riga {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    font-size: var(--t-body-sm);
+    color: var(--ink-2);
+  }
+
+  .dv-riga b {
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .dv-riga.mia b {
+    color: var(--signal-ink);
+  }
+
+  .dv-somma {
+    display: grid;
+    gap: 2px;
+    padding-top: var(--sp-2);
+    border-top: 1px solid var(--ink);
+  }
+
   .fg-testata {
     display: flex;
     justify-content: space-between;
@@ -1371,8 +1601,8 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
 </style>
 
 <script>
-  import { avviaIncontro } from '../lib/incontro.ts';
+  import { avviaIncontroV2 } from '../lib/incontro-v2.ts';
 
-  avviaIncontro();
-  document.addEventListener('astro:page-load', avviaIncontro);
+  avviaIncontroV2();
+  document.addEventListener('astro:page-load', avviaIncontroV2);
 </script>

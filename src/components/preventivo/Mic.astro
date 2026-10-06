@@ -1,0 +1,30 @@
+---
+/**
+ * Il pulsante del microfono accanto a una domanda dell'incontro.
+ *
+ * Non fa niente da solo: il clic lo raccoglie lib/incontro.ts, che registra
+ * l'audio, trascrive dove può e lo attribuisce a questa domanda (`campo`).
+ */
+interface Props {
+  campo: string;
+  /** il testo della domanda, per chi usa un lettore di schermo */
+  etichetta: string;
+}
+
+const { campo, etichetta } = Astro.props;
+---
+
+<button
+  type="button"
+  class="mic"
+  data-azione="mic"
+  data-campo={campo}
+  aria-pressed="false"
+  aria-label={`Detta a voce: ${etichetta}`}
+  title="Detta a voce e registra"
+>
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="9" y="3" width="6" height="11" rx="3"></rect>
+    <path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path>
+  </svg>
+</button>

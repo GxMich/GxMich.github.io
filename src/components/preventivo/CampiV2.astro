@@ -1,0 +1,122 @@
+---
+/**
+ * Le domande della richiesta, disegnate dalle definizioni in data/richiesta.js.
+ *
+ * Le usano due pagine: il cliente le compila da solo, io le compilo con lui
+ * all'incontro. Con `incontro` compaiono anche:
+ *  - i suggerimenti per me (`chiedi`);
+ *  - le domande del questionario di scoperta (`solo`), che il cliente non vede;
+ *  - il microfono su ogni domanda, con le sue registrazioni;
+ * e si perde l'obbligatorietà, che davanti a un cliente è un ostacolo e non
+ * una garanzia.
+ */
+import '../../styles/modulo.css';
+import { SEZIONI } from '../../data/richiesta.js';
+import Mic from './Mic.astro';
+import Registrazioni from './Registrazioni.astro';
+
+interface Props {
+  incontro?: boolean;
+  /** Numero della prima sezione: nell'incontro ne esistono altre prima. */
+  da?: number;
+}
+
+const { incontro = false, da = 1 } = Astro.props;
+const num = (i: number) => String(da + i).padStart(2, '0');
+
+/* Le sezioni e le domande che questa pagina deve mostrare. */
+const sezioni = SEZIONI.filter((s) => incontro || !s.solo).map((s) => ({
+  ...s,
+  campi: s.campi.filter((c) => incontro || !c.solo),
+}));
+---
+
+{
+  sezioni.map((s, i) => (
+    <fieldset class="f-sezione" id={`sez-${s.id}`}>
+      <legend class="f-legenda">
+        <b>{num(i)}</b>
+        <span>{incontro && s.t3 ? s.t3 : s.titolo}</span>
+      </legend>
+      {s.intro && !incontro && <p class="f-intro testo-sm">{s.intro}</p>}
+
+      {s.campi.map((c) => {
+        const id = `c-${c.id}`;
+        /* All'incontro le domande sono mie, non del cliente: stesse risposte, parole in terza persona. */
+        const etichetta = incontro && c.l3 ? c.l3 : c.label;
+        const mostra = (o: string) => (incontro && c.o3?.[o]) || o;
+        const obbl = c.obbl && !incontro;
+        const scelta = c.tipo === 'scelta' || c.tipo === 'multi';
+        const condizione = incontro && c.se ? JSON.stringify(c.se) : undefined;
+
+        const dentro = scelta ? (
+          (() => {
+            const tipo = c.tipo === 'scelta' ? 'radio' : 'checkbox';
+            return (
+              <div class="f-gruppo" role={tipo === 'radio' ? 'radiogroup' : 'group'} aria-labelledby={`${id}-q`}>
+                <div class="f-riga">
+                  <p class="f-domanda" id={`${id}-q`}>
+                    {etichetta}
+                    {c.tipo === 'multi' && <span class="f-fac"> · puoi sceglierne più d’una</span>}
+                  </p>
+                  {incontro && <Mic campo={c.id} etichetta={etichetta} />}
+                </div>
+                {c.opzioni.map((o: string) => (
+                  <label class="f-scelta">
+                    <input type={tipo} name={c.id} value={o} />
+                    <span>{mostra(o)}</span>
+                  </label>
+                ))}
+                {incontro && c.chiedi && <p class="f-chiedi">{c.chiedi}</p>}
+              </div>
+            );
+          })()
+        ) : (
+          <p class="f-campo">
+            <span class="f-riga">
+              <label class="f-label" for={id}>
+                {etichetta}
+                {c.fac && !incontro && <span class="f-fac"> · facoltativo</span>}
+              </label>
+              {incontro && <Mic campo={c.id} etichetta={etichetta} />}
+            </span>
+            {c.tipo === 'area' ? (
+              <textarea
+                id={id}
+                name={c.id}
+                required={obbl}
+                autocomplete={incontro ? 'off' : c.autocomplete}
+                placeholder={c.placeholder}
+                rows="3"
+                maxlength={incontro ? 2000 : 600}
+              />
+            ) : (
+              <input
+                id={id}
+                name={c.id}
+                required={obbl}
+                autocomplete={incontro ? 'off' : c.autocomplete}
+                placeholder={c.placeholder}
+                type={c.tipo === 'testo' ? 'text' : c.tipo}
+                inputmode={c.tipo === 'tel' ? 'tel' : undefined}
+                maxlength={incontro ? 400 : 160}
+              />
+            )}
+            {incontro && c.chiedi && <span class="f-chiedi">{c.chiedi}</span>}
+          </p>
+        );
+
+        /* All'incontro ogni domanda sta in un involucro: serve a nasconderla
+           quando non vale (condizione) e a ospitare le registrazioni. */
+        return incontro ? (
+          <div class="f-dom" data-dom={c.id} data-se={condizione} hidden={Boolean(c.se)}>
+            {dentro}
+            <Registrazioni campo={c.id} nota={scelta} />
+          </div>
+        ) : (
+          dentro
+        );
+      })}
+    </fieldset>
+  ))
+}

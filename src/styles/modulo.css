@@ -290,6 +290,132 @@
   max-width: 58ch;
 }
 
+/* ------------------------------ la voce (solo nell'incontro) ------------------------------ */
+
+/* La riga dell'etichetta, con il microfono a destra. */
+.f-riga {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.f-riga > .f-label,
+.f-riga > .f-domanda {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-top: var(--sp-2);
+}
+
+.f-dom {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.f-dom[hidden],
+.voce-nota[hidden],
+.prese[hidden] {
+  display: none;
+}
+
+.mic {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    border-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out);
+}
+
+.mic:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.mic:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* Acceso: pieno d'arancio e con un anello che pulsa. L'arancio vale azione, e
+   qui l'azione in corso è l'unica cosa da non dimenticare di spegnere. */
+.mic.attiva {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--signal-on);
+  animation: mic-anello 1.6s var(--ease-inout) infinite;
+}
+
+@keyframes mic-anello {
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--signal) 25%, transparent);
+  }
+}
+
+.voce-sotto {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.voce-prov {
+  min-height: 0;
+  margin: 0;
+  font-size: var(--t-body-sm);
+  font-style: italic;
+  color: var(--ink-3);
+}
+
+.voce-prov:empty {
+  display: none;
+}
+
+.prese {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.presa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--paper-sunk);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-1);
+  font-size: var(--t-body-sm);
+  color: var(--ink-2);
+}
+
+.presa audio {
+  flex: 1 1 220px;
+  min-width: 0;
+  max-width: 100%;
+  height: 36px;
+}
+
+.presa .dato {
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.presa .avviso-presa {
+  flex: 1 1 100%;
+  color: var(--signal-ink);
+}
+
 @media (max-width: 860px) {
   /* 16px: sotto, iOS ingrandisce la pagina a ogni tocco su un campo. */
   .f input,
