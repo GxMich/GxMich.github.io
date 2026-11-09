@@ -1,19 +1,14 @@
 /**
- * La voce nell'incontro: registra l'audio e, dove il browser lo permette, lo
- * trascrive in diretta. Le due cose sono separate di proposito.
+ * La voce nell'incontro: registra l'audio e lo conserva su questo dispositivo.
  *
- *  - L'AUDIO è la cosa che conta: è quello che si dà a un'AI in un secondo
- *    momento, e non dipende da nessun servizio. Lo registra MediaRecorder e
- *    resta in IndexedDB, su questo dispositivo.
- *  - La TRASCRIZIONE LIVE è un di più, e serve a riempire i campi mentre si parla.
- *    Usa il riconoscimento del browser (vedi trascrizione.ts), che manda
- *    l'audio al servizio del produttore del browser. Se non parte, o se su
- *    telefono il microfono non si lascia dividere con la registrazione, l'audio
- *    si registra lo stesso: è per questo che si può spegnere (`trascrivi: false`).
+ * L'AUDIO è la cosa che conta: è quello che si dà a un'AI in un secondo momento.
+ * Lo registra MediaRecorder e resta in IndexedDB. La trascrizione NON si fa qui e
+ * non si fa mentre si parla: il riconoscimento vocale del browser si contende il
+ * microfono con la registrazione (su telefono, soprattutto) e mandava l'audio a
+ * Google o Apple. Si fa dopo, sull'audio già salvato (vedi trascrivi.ts).
  *
  * Una registrazione alla volta: il microfono è uno.
  */
-import { Trascrizione, trascrizioneDisponibile } from './trascrizione.ts';
 
 /* ------------------------------ le registrazioni ------------------------------ */
 
@@ -27,7 +22,9 @@ export interface Presa {
   durata: number;
   mime: string;
   blob: Blob;
+  /** il testo trascritto dall'audio, vuoto se non è ancora stata trascritta (o se era silenzio) */
   testo: string;
+  trascritta: boolean;
   /** il microfono si è interrotto mentre registrava: l'audio può avere buchi */
   incompleta: boolean;
 }
@@ -41,8 +38,6 @@ export const registrazioneDisponibile = () =>
   typeof indexedDB !== 'undefined' &&
   typeof MediaRecorder !== 'undefined' &&
   Boolean(navigator.mediaDevices?.getUserMedia);
-
-export { trascrizioneDisponibile };
 
 const apriDb = () =>
   new Promise<IDBDatabase>((ok, no) => {
@@ -74,7 +69,8 @@ export const salvaPresa = (p: Presa) => transazione('readwrite', (n) => n.put(p)
 
 export const preseDi = async (incontro: string): Promise<Presa[]> => {
   const tutte = await transazione('readonly', (n) => n.index('incontro').getAll(incontro) as IDBRequest<Presa[]>);
-  return tutte.sort((a, b) => a.creato - b.creato);
+  /* Le registrazioni fatte prima che esistesse la trascrizione dall'audio non hanno `trascritta`. */
+  return tutte.map((p) => ({ ...p, trascritta: p.trascritta === true })).sort((a, b) => a.creato - b.creato);
 };
 
 export const eliminaPresa = (id: string) => transazione('readwrite', (n) => n.delete(id));
@@ -97,16 +93,10 @@ const scegliMime = () =>
   ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'].find((m) => MediaRecorder.isTypeSupported(m)) ??
   '';
 
-const pausa = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 /* ------------------------------ la sessione ------------------------------ */
 
 interface Callback {
-  /** Una frase conclusa dal riconoscitore. */
-  finale: (testo: string) => void;
-  /** Quello che sta dicendo adesso, ancora provvisorio. */
-  provvisorio: (testo: string) => void;
-  /** `attiva` = sto registrando. Il messaggio dice cosa succede, anche a trascrizione ferma. */
+  /** `attiva` = sto registrando. Il messaggio dice cosa succede. */
   stato: (attiva: boolean, messaggio: string) => void;
 }
 
@@ -114,7 +104,6 @@ export interface Risultato {
   blob: Blob;
   mime: string;
   durata: number;
-  testo: string;
   incompleta: boolean;
 }
 
@@ -125,13 +114,8 @@ export class Sessione {
   private pezzi: Blob[] = [];
   private inizio = 0;
   private incompleta = false;
-  private frasi: string[] = [];
-  private trascr: Trascrizione | null = null;
 
-  constructor(
-    private readonly cb: Callback,
-    private readonly trascrivi: boolean
-  ) {}
+  constructor(private readonly cb: Callback) {}
 
   async avvia(): Promise<boolean> {
     if (!registrazioneDisponibile()) {
@@ -164,20 +148,18 @@ export class Sessione {
     }
 
     this.pezzi = [];
-    this.frasi = [];
     this.incompleta = false;
     this.rec.ondataavailable = (e) => {
       if (e.data.size) this.pezzi.push(e.data);
     };
 
-    /* Se un'altra app (o il riconoscimento vocale, su telefono) si prende il
-       microfono, la traccia si ferma e l'audio avrebbe un buco. Lo segno, così
-       la registrazione dice che è incompleta invece di sembrare buona. */
+    /* Se un'altra app si prende il microfono la traccia si ferma e l'audio avrebbe un
+       buco. Lo segno, così la registrazione dice che è incompleta invece di sembrare buona. */
     for (const traccia of this.stream.getAudioTracks()) {
       const segna = () => {
         if (!this.attiva) return;
         this.incompleta = true;
-        this.cb.stato(true, 'Il microfono si è interrotto: l’audio può avere dei buchi. Se succede sempre, spegni «Trascrivi mentre registro».');
+        this.cb.stato(true, 'Il microfono si è interrotto: l’audio può avere dei buchi.');
       };
       traccia.onmute = segna;
       traccia.onended = segna;
@@ -186,38 +168,13 @@ export class Sessione {
     this.inizio = Date.now();
     this.rec.start(1000);
     this.attiva = true;
-
-    if (this.trascrivi && trascrizioneDisponibile()) {
-      this.trascr = new Trascrizione({
-        finale: (t) => {
-          this.frasi.push(t);
-          this.cb.finale(t);
-        },
-        provvisorio: this.cb.provvisorio,
-        stato: (attiva, messaggio) => {
-          if (!this.attiva) return;
-          /* La trascrizione può cadere senza che cada l'audio: lo si dice, e si continua. */
-          this.cb.stato(
-            true,
-            attiva ? 'Registro e trascrivo…' : `Registro l’audio, ma la trascrizione in diretta si è fermata: ${messaggio}`
-          );
-        },
-      });
-      this.trascr.avvia();
-      this.cb.stato(true, 'Registro e trascrivo…');
-    } else {
-      this.cb.stato(
-        true,
-        this.trascrivi ? 'Registro l’audio. Questo browser non trascrive in diretta.' : 'Registro l’audio, senza trascrizione in diretta.'
-      );
-    }
+    this.cb.stato(true, 'Sto registrando.');
     return true;
   }
 
   async ferma(): Promise<Risultato | null> {
     if (!this.attiva || !this.rec) return null;
     this.attiva = false;
-    this.trascr?.ferma();
 
     const rec = this.rec;
     const finito = new Promise<void>((ok) => {
@@ -231,10 +188,6 @@ export class Sessione {
     }
     await finito;
     this.chiudiMicrofono();
-
-    /* Il riconoscitore può consegnare l'ultima frase dopo lo stop. */
-    if (this.trascr) await pausa(400);
-    this.cb.provvisorio('');
     this.cb.stato(false, 'Registrazione salvata.');
 
     const tipo = rec.mimeType || 'audio/webm';
@@ -242,7 +195,6 @@ export class Sessione {
       blob: new Blob(this.pezzi, { type: tipo }),
       mime: tipo,
       durata: Date.now() - this.inizio,
-      testo: this.frasi.join(' '),
       incompleta: this.incompleta,
     };
   }

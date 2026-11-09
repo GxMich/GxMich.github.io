@@ -9,7 +9,8 @@
  *
  * Ora è quello che deve essere: una fila di lavori che si sfoglia di lato con
  * lo scorrimento nativo. Funziona col dito, col trackpad, con le frecce e con i
- * due bottoni, non ha niente da calcolare e quindi non può lasciare buchi.
+ * due bottoni. Su desktop, la rotellina sopra la fila scorre i lavori e
+ * restituisce lo scorrimento alla pagina quando raggiunge un estremo.
  */
 import { Image } from 'astro:assets';
 import { originale } from '../../lib/immagini.ts';
@@ -166,6 +167,12 @@ const sfogliabile = lavori.length > 1;
     scrollbar-color: var(--edge) transparent;
   }
 
+  /* La rotellina deve poter avanzare anche di pochi pixel senza essere
+     riportata all'inizio della scheda dall'aggancio obbligatorio. */
+  .pista[data-rotella] {
+    scroll-snap-type: none;
+  }
+
   .lavoro {
     flex: 0 0 auto;
     width: min(46vw, 620px);
@@ -262,6 +269,8 @@ const sfogliabile = lavori.length > 1;
 
     const lavori = Array.from(pista.querySelectorAll<HTMLElement>('[data-lavoro]'));
     const bottoni = Array.from(comandi.querySelectorAll<HTMLButtonElement>('[data-vai]'));
+    const desktop = window.matchMedia('(min-width: 768px) and (hover: hover) and (pointer: fine)');
+    const ripristinaAggancio = () => pista.removeAttribute('data-rotella');
 
     const aggiornaBottoni = () => {
       const fine = pista.scrollWidth - pista.clientWidth;
@@ -271,6 +280,7 @@ const sfogliabile = lavori.length > 1;
 
     bottoni.forEach((b) =>
       b.addEventListener('click', () => {
+        ripristinaAggancio();
         const verso = Number(b.dataset.vai);
         // Il passo è il lavoro più il divario: così si arriva sempre allineati
         // all'aggancio invece che a metà di una scheda.
@@ -278,6 +288,31 @@ const sfogliabile = lavori.length > 1;
         pista.scrollBy({ left: passo * verso, behavior: 'smooth' });
       })
     );
+
+    pista.addEventListener('wheel', (evento: WheelEvent) => {
+      if (!desktop.matches || !pista.matches(':hover') || evento.defaultPrevented
+        || evento.ctrlKey || evento.shiftKey) return;
+
+      // Le gesture orizzontali del trackpad rimangono native, con aggancio.
+      if (Math.abs(evento.deltaX) >= Math.abs(evento.deltaY)) {
+        ripristinaAggancio();
+        return;
+      }
+
+      const unita = evento.deltaMode === 1 ? 16 : evento.deltaMode === 2 ? pista.clientWidth : 1;
+      const spostamento = evento.deltaY * unita;
+      const fine = pista.scrollWidth - pista.clientWidth;
+      if (fine <= 0 || (spostamento < 0 && pista.scrollLeft <= 1)
+        || (spostamento > 0 && pista.scrollLeft >= fine - 1)) return;
+
+      evento.preventDefault();
+      pista.dataset.rotella = 'si';
+      pista.scrollBy({ left: spostamento, behavior: 'instant' });
+    }, { passive: false });
+
+    pista.addEventListener('pointerdown', ripristinaAggancio, { passive: true });
+    pista.addEventListener('keydown', ripristinaAggancio);
+    desktop.addEventListener('change', ripristinaAggancio);
 
     pista.addEventListener('scroll', aggiornaBottoni, { passive: true });
     window.addEventListener('resize', aggiornaBottoni, { passive: true });

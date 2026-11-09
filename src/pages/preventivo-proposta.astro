@@ -52,7 +52,7 @@ const passi = [
     class="pagina f"
     data-proposta
     data-whatsapp={SITE.whatsapp}
-    data-email={SITE.email}
+    data-email={SITE.emailDiretta}
     data-telefono={SITE.whatsappLabel}
     data-sede={`${SITE.city} (${SITE.provincia})`}
   >
@@ -67,7 +67,7 @@ const passi = [
         </p>
         <p class="azioni-semplici">
           <a class="f-bottone" href={`https://wa.me/${SITE.whatsapp}`}>WhatsApp {SITE.whatsappLabel}</a>
-          <a class="f-bottone secondario" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+          <a class="f-bottone secondario" href={`mailto:${SITE.emailDiretta}`}>{SITE.emailDiretta}</a>
         </p>
         <noscript><p class="testo-sm">Per leggere il preventivo serve JavaScript.</p></noscript>
       </div>
@@ -319,7 +319,7 @@ const passi = [
               <p class="testo-sm">
                 Non si è aperto? Copia il testo e scrivimi al
                 <a class="f-link" href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>
-                o a <a class="f-link" href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+                o a <a class="f-link" href={`mailto:${SITE.emailDiretta}`}>{SITE.emailDiretta}</a>.
               </p>
               <button class="f-bottone secondario" type="button" data-azione="copia-uscita">Copia il messaggio</button>
             </div>

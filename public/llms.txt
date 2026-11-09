@@ -38,7 +38,7 @@ riga: se una parte non la so verificare, quella parte non la uso.
 ## Pagine
 
 - [Home](https://www.modicamichele.it/): cosa faccio, per chi, e quanto costa
-- [Lavori](https://www.modicamichele.it/progetti): sei progetti raccontati per
+- [Lavori](https://www.modicamichele.it/progetti): progetti raccontati per
   intero — problema, strada scelta, risultato, e cosa non ha funzionato
 - [Servizi](https://www.modicamichele.it/servizi): cosa comprende un sito su
   misura, cosa no, per chi è pensato, e otto domande con risposta per esteso
@@ -48,6 +48,14 @@ riga: se una parte non la so verificare, quella parte non la uso.
 
 ## Progetti
 
+- [La Corte delle 4 Stagioni](https://www.modicamichele.it/progetti/la-corte-delle-4-stagioni) —
+  sito per un cliente, online. B&B reale a Ozzano Monferrato, con tre camere,
+  pagine in italiano e inglese, richieste via email o WhatsApp e un editor
+  di testi, fotografie e prezzi. React 19, Vite, PHP, contenuti JSON su file.
+- [Ronin Karate Vigevano](https://www.modicamichele.it/progetti/ronin-karate-vigevano) —
+  sito per un cliente, online. Associazione di karate a Vigevano: corso
+  suggerito in base all'età, messaggio WhatsApp composto dal sito senza
+  backend, 98 articoli recuperati dal vecchio WordPress. Astro 5, GSAP.
 - [Banco olografico](https://www.modicamichele.it/progetti/banco-olografico) —
   ricerca, in corso. Visualizzatore CAD nel browser: un motore bicilindrico da
   115 componenti veri si smonta muovendo le mani davanti alla webcam. Three.js,
@@ -79,7 +87,7 @@ ancora state raccolte di vere.
 
 ## Contatti
 
-- Email: modicamichelework@gmail.com
-- WhatsApp: +39 349 059 5725
+- Email: info@modicamichele.it
+- WhatsApp: +39 375 995 2066
 - Zona: Trino (VC), e di persona fra Vercelli, Casale Monferrato, Novara e
   Chivasso. Da remoto in tutta Italia per i lavori su processi.

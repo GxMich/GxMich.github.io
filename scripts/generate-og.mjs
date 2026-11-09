@@ -23,6 +23,9 @@ const qui = path.dirname(fileURLToPath(import.meta.url));
 const cartellaFont = path.join(qui, 'fonts');
 const cartellaWoff = path.join(qui, '..', 'public', 'fonts');
 const cartellaOut = path.join(qui, '..', 'public', 'og');
+const marchio = (await readFile(path.join(qui, '..', 'src', 'assets', 'brand', 'navbar.svg'), 'utf8'))
+  .replace('<svg ', '<svg x="80" y="508" width="310" height="47" ')
+  .replace(/currentColor/g, '#0A0A0B');
 
 /** Gli stessi valori di src/styles/token.css. */
 const COLORI = {
@@ -61,7 +64,7 @@ const PAGINE = [
   {
     file: 'progetti',
     etichetta: 'Lavori — siti e sistemi su misura',
-    righe: ['Sei progetti,', 'raccontati per intero.'],
+    righe: ['I lavori,', 'raccontati per intero.'],
   },
   {
     file: 'servizi',
@@ -120,7 +123,8 @@ function scheda(pagina) {
   ${titolo}
 
   <rect x="80" y="486" width="1040" height="1" fill="${COLORI.inchiostro}"/>
-  <text x="80" y="540" font-family="GeistMono" font-size="17" letter-spacing="2" fill="${COLORI.spento}">MICHELE MODICA — TRINO (VC)</text>
+  ${marchio}
+  <text x="80" y="582" font-family="GeistMono" font-size="14" letter-spacing="2" fill="${COLORI.spento}">TRINO (VC)</text>
   <text x="1120" y="540" text-anchor="end" font-family="GeistMono" font-size="17" letter-spacing="2" fill="${COLORI.spento}">SITI · SISTEMI · AUTOMAZIONI</text>
 </svg>`;
 }

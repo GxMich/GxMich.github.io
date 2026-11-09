@@ -5,6 +5,10 @@
    ============================================================================ */
 
 :root {
+  /* Allinea i controlli nativi al tema chiaro esplicito, anche se il sistema
+     operativo è impostato sul tema scuro. */
+  color-scheme: light;
+
   /* --------------------------------------------------------------------------
      COLORE — carta
 

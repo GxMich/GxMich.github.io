@@ -1,0 +1,32 @@
+---
+import navbar from '../../assets/brand/navbar.svg?raw';
+import nome from '../../assets/brand/nome.svg?raw';
+import simbolo from '../../assets/brand/simbolo.svg?raw';
+
+interface Props {
+  tipo?: 'navbar' | 'nome' | 'simbolo';
+  class?: string;
+}
+
+const { tipo = 'navbar', class: classe } = Astro.props;
+const grafiche = { navbar, nome, simbolo };
+---
+
+{/* Il nome accessibile appartiene al link o al contenitore del marchio. */}
+<span class:list={['marchio-vettoriale', classe]} aria-hidden="true" set:html={grafiche[tipo]} />
+
+<style>
+  .marchio-vettoriale {
+    display: block;
+    width: 100%;
+    color: inherit;
+    flex: 0 0 auto;
+  }
+
+  .marchio-vettoriale :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+  }
+</style>

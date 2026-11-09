@@ -7,10 +7,16 @@ export const SITE = {
   name: 'Michele Modica',
   /** Usato nel titolo delle pagine: "Titolo — Michele Modica, sviluppatore web" */
   tagline: 'Sviluppatore web e software',
-  email: 'modicamichelework@gmail.com',
+  /** L'indirizzo pubblico: contatti, piede, privacy e dati strutturati. */
+  email: 'info@modicamichele.it',
+  /**
+   * L'indirizzo diretto, per chi ha già un preventivo in mano: lì il rapporto
+   * è con la persona, non con la casella generica.
+   */
+  emailDiretta: 'michele@modicamichele.it',
   /** Solo cifre, con prefisso internazionale: serve per il link wa.me */
-  whatsapp: '393490595725',
-  whatsappLabel: '+39 349 059 5725',
+  whatsapp: '393759952066',
+  whatsappLabel: '+39 375 995 2066',
 
   /**
    * Niente partita IVA: il lavoro va come prestazione occasionale, quindi in
@@ -115,24 +121,9 @@ export const SITE = {
   google: 'https://share.google/5jKMRITc1zvJk9pa7',
   googleRecensioni: null,
 
-  /**
-   * Le misure di traffico.
-   *
-   * Google Tag Manager e Microsoft Clarity: il primo conta le visite, il
-   * secondo registra come ci si muove nella pagina. Tutti e due salvano
-   * cookie e tutti e due mandano dati fuori di qui, quindi in Europa non
-   * possono partire prima che qualcuno abbia detto di sì — non «mentre»
-   * glielo si chiede, proprio prima. Per questo gli indirizzi stanno qui e
-   * non nel layout: la fascia del consenso li legge e li inietta solo dopo la
-   * risposta, e finché la risposta non c'è nella pagina non entra una riga di
-   * codice di nessuno dei due.
-   *
-   * Mettere `null` a uno dei due lo spegne del tutto. Se li spegni entrambi
-   * sparisce anche la fascia, perché non ci sarebbe più niente da chiedere.
-   */
+  /** ID di misurazione GA4. Il tag viene caricato solo dopo il consenso. */
   misure: {
-    gtm: 'GTM-TSLP22NJ',
-    clarity: 'y2xyt4h0zn',
+    ga4: 'G-DWTF8YGDKG',
   },
 
   /**
@@ -164,15 +155,6 @@ export const SITE = {
    */
   testimonianze: [],
 
-  /**
-   * Endpoint del form contatti.
-   * Il progetto è statico: serve un servizio che riceva il POST e giri la mail.
-   * Consigliato Web3Forms (gratuito, nessun account server): metti qui la tua access key
-   * e il form funziona senza altro codice. In alternativa un endpoint Formspree o
-   * una function serverless tua: basta che accetti un POST JSON.
-   */
-  formEndpoint: 'https://api.web3forms.com/submit',
-  formAccessKey: '44b34c94-a8bc-4d2a-b530-97364608672c',
 };
 
 export const NAV = [

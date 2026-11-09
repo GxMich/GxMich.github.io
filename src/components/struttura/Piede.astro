@@ -2,45 +2,34 @@
 /**
  * Piede.
  *
- * Nero, con il nome in grande sul fondo: è la firma, e sta dietro al contenuto
- * invece che accanto, così non ruba spazio a quello che serve davvero — i
- * recapiti. Il nome è decorativo, quindi sparisce ai lettori di schermo: il
- * nome vero, leggibile, sta nella riga in fondo.
+ * La firma del brand kit introduce i recapiti sul fondo scuro.
+ * Il sottotitolo resta testo HTML per essere leggibile anche su telefono.
  *
  * Zero effetti sul contenuto: è l'ultima cosa che vede chi non ha ancora
  * deciso, e deve dare i contatti senza far aspettare niente.
  */
 import { SITE, NAVIGAZIONE } from '../../config.js';
+import Marchio from '../comuni/Marchio.astro';
 
 const anno = new Date().getFullYear();
 ---
 
 <footer class="piede su-palco">
-  {/*
-    Il nome come SVG e non come testo.
-    Con `font-size` legata alla larghezza della finestra il nome usciva dai
-    bordi e si vedeva a metà: bastava una finestra un po' stretta. Qui
-    `textLength` lo costringe alla larghezza esatta del riquadro e il riquadro
-    si adatta al contenitore, quindi è sempre intero, a qualsiasi misura.
-  */}
-  <svg
-    class="firma"
-    viewBox="0 0 1000 128"
-    preserveAspectRatio="xMidYMid meet"
-    aria-hidden="true"
-    focusable="false"
-  >
-    <text x="0" y="100" textLength="1000" lengthAdjust="spacingAndGlyphs">Modica Michele</text>
-  </svg>
+  <div class="contenitore identita">
+    <a class="firma" href="/" aria-label={`${SITE.name} — torna alla home`}>
+      <Marchio />
+    </a>
+    <p class="etichetta ruolo">Web Designer &amp; Developer</p>
+  </div>
 
   <div class="contenitore dentro">
     <div class="colonna primaria">
       <p class="etichetta">Parliamone</p>
       <p class="contatto">
-        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+        <a href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>
       </p>
       <p class="contatto">
-        <a href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
       </p>
 
       {/*
@@ -137,20 +126,21 @@ const anno = new Date().getFullYear();
   }
 
   .firma {
-    position: absolute;
-    inset: auto var(--gutter) var(--sp-5);
-    z-index: -1;
-    width: calc(100% - var(--gutter) * 2);
-    height: auto;
-    opacity: 0.08;
-    user-select: none;
+    display: block;
+    width: min(360px, 100%);
+    color: var(--light);
   }
 
-  .firma text {
-    font-family: var(--font-ui);
-    font-weight: 700;
-    font-size: 120px;
-    fill: var(--light);
+  .identita {
+    display: grid;
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-7);
+    padding-bottom: var(--sp-7);
+    border-bottom: 1px solid var(--edge);
+  }
+
+  .ruolo {
+    color: var(--light-2);
   }
 
   .dentro {
@@ -186,6 +176,10 @@ const anno = new Date().getFullYear();
 
   .contatto a:hover {
     border-bottom-color: var(--signal);
+  }
+
+  .contatto + .contatto {
+    margin-top: var(--sp-2);
   }
 
   .dove {
@@ -263,8 +257,5 @@ const anno = new Date().getFullYear();
       gap: var(--sp-7);
     }
 
-    .firma {
-      opacity: 0.11;
-    }
   }
 </style>

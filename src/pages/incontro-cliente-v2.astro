@@ -5,7 +5,7 @@
  * Riservata in tre modi, e nessuno basta da solo:
  *  - non la raggiunge nessun collegamento, è fuori dalla sitemap e porta noindex;
  *  - non carica le misure di traffico, quindi niente di quello che scrivo qui
- *    può finire in una registrazione di Clarity;
+ *    non deve finire nelle misure di traffico;
  *  - i prezzi non sono nel sorgente: sono cifrati (scripts/cifra-listino.mjs) e
  *    si aprono solo con la password. Il sorgente della pagina contiene
  *    soltanto il testo cifrato e i nomi dei servizi, che sono già pubblici.
@@ -74,7 +74,7 @@ const esiti = ['Da decidere', 'Vuole procedere', 'Ci pensa', 'Chiede altri preve
     class="pagina f"
     data-incontro
     data-whatsapp={SITE.whatsapp}
-    data-email={SITE.email}
+    data-email={SITE.emailDiretta}
     data-telefono={SITE.whatsappLabel}
     data-mittente={SITE.name}
     data-sede={`${SITE.city} (${SITE.provincia})`}

@@ -21,6 +21,7 @@
 import { SITE, NAVIGAZIONE } from '../../config.js';
 import Icona from '../comuni/Icona.astro';
 import Tema from '../comuni/Tema.astro';
+import Marchio from '../comuni/Marchio.astro';
 
 const percorso = Astro.url.pathname.replace(/\/$/, '') || '/';
 const attiva = (href: string) => percorso === href || percorso.startsWith(href + '/');
@@ -35,14 +36,13 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     <div class="barra">
       <a class="marchio" href="/" aria-label={`${SITE.name} — torna alla home`}>
         <span class="segno" aria-hidden="true">
-          <span class="bollo"></span>
+          <Marchio tipo="simbolo" />
           {/* L'anello si riempie con lo scorrimento: dice quanto manca senza
               aggiungere una barra che ruba una riga alla pagina. */}
           <span class="anello" data-anello></span>
         </span>
         <span class="nome" aria-hidden="true">
-          <span class="nome-lungo">Michele Modica</span>
-          <span class="nome-corto">MM</span>
+          <Marchio tipo="nome" />
         </span>
       </a>
 
@@ -90,6 +90,9 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
 </header>
 
 <div class="menu" id="menu-principale" data-menu inert>
+  <a class="menu-marchio" href="/" aria-label={`${SITE.name} — torna alla home`}>
+    <Marchio />
+  </a>
   <button class="chiudi" type="button" data-chiudi>
     <span class="solo-lettori">Chiudi il menu</span>
     <Icona nome="chiudi" dimensione={22} />
@@ -117,8 +120,8 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     </nav>
 
     <div class="menu-piede" style={`--i:${NAVIGAZIONE.length + 1}`}>
-      <p class="riga"><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
       <p class="riga"><a href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a></p>
+      <p class="riga"><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
       <p class="riga etichetta">{SITE.city} · {SITE.provincia} — e da remoto</p>
     </div>
   </div>
@@ -191,7 +194,7 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     text-decoration: none;
     color: inherit;
     margin-right: auto;
-    padding: 4px;
+    padding: var(--sp-1);
     border-radius: 999px;
   }
 
@@ -199,24 +202,13 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     position: relative;
     display: grid;
     place-items: center;
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     flex: 0 0 auto;
   }
 
-  .bollo {
-    width: 26px;
-    height: 26px;
-    border-radius: 999px;
-    background: linear-gradient(140deg, #ff9a70, var(--signal));
-    transition:
-      transform var(--dur-2) var(--ease-out),
-      width var(--dur-3) var(--ease-out),
-      height var(--dur-3) var(--ease-out);
-  }
-
-  .marchio:hover .bollo {
-    transform: scale(1.1) rotate(14deg);
+  .segno :global(.marchio-vettoriale) {
+    width: var(--sp-6);
   }
 
   /* La maschera lascia vedere solo la corona: dentro resta il segno. */
@@ -238,38 +230,24 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     opacity: 1;
   }
 
-  .intestazione[data-scorsa] .bollo {
-    width: 20px;
-    height: 20px;
-  }
-
   /* Il nome si richiude sul segno: `max-width` invece di `display:none`, così
      la chiusura si vede invece di essere uno scatto. */
   .nome {
     display: flex;
     overflow: hidden;
     white-space: nowrap;
-    font-family: var(--font-ui);
-    font-weight: 600;
-    font-size: 15px;
-    letter-spacing: -0.02em;
-    max-width: 200px;
+    max-width: 180px;
     transition:
       max-width var(--dur-3) var(--ease-out),
       opacity var(--dur-2) var(--ease-out);
   }
 
-  .nome-corto {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    opacity: 0;
-    width: 0;
-    transition: opacity var(--dur-2) var(--ease-out);
+  .nome :global(.marchio-vettoriale) {
+    width: 180px;
   }
 
-  /* Solo su schermo largo: sotto i 1024px il nome è già ridotto alla sigla, e
-     richiuderlo lascerebbe il marchio senza nessuna etichetta. */
+  /* Su schermo largo il nome si richiude al passaggio alla barra compatta.
+     Su telefono il monogramma è già la firma della navigazione. */
   @media (min-width: 1024px) {
     .intestazione[data-scorsa] .nome {
       max-width: 0;
@@ -444,6 +422,14 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
   }
 
   /* ------------------------------- menu ---------------------------------- */
+  .menu-marchio {
+    position: absolute;
+    top: var(--sp-5);
+    left: var(--gutter);
+    width: min(220px, calc(100vw - 120px));
+    color: inherit;
+  }
+
   .menu {
     position: fixed;
     inset: 0;
@@ -592,14 +578,14 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
       height: 64px;
     }
 
-    /* Su telefono il nome per esteso mangia la barra: resta la sigla. */
-    .nome-lungo {
-      display: none;
+    /* Il monogramma e il nome sono gli stessi tracciati del brand kit. */
+    .nome {
+      max-width: 0;
+      opacity: 0;
     }
 
-    .nome-corto {
-      opacity: 1;
-      width: auto;
+    .marchio {
+      gap: 0;
     }
   }
 
@@ -614,7 +600,6 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .marchio:hover .bollo,
     .chiudi:hover,
     .menu-voci a:hover {
       transform: none;

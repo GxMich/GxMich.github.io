@@ -31,10 +31,9 @@ modulo contatti, zone servite, orari, profili. Poi due file fuori da lì: **`pub
 (il dominio vero nella riga della sitemap) e **`src/pages/privacy.astro`**, che è ancora una
 traccia marcata come da completare.
 
-Il modulo dei contatti è predisposto per [Web3Forms](https://web3forms.com): access key
-gratuita in `formAccessKey` e funziona. Funziona anche senza JavaScript — fa un POST normale
-— e con JavaScript mostra la conferma sul posto, rimandando a email e WhatsApp se qualcosa
-va storto. C'è una trappola anti-robot nascosta.
+Il modulo contatti prepara un messaggio con le scelte del visitatore e apre WhatsApp.
+Le scelte restano nel browser finché il visitatore non invia il messaggio da WhatsApp;
+non è configurato alcun servizio di invio email dal sito.
 
 ---
 

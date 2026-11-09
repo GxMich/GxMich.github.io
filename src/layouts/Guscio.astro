@@ -11,6 +11,7 @@ import { ClientRouter } from 'astro:transitions';
 import Intestazione from '../components/struttura/Intestazione.astro';
 import Piede from '../components/struttura/Piede.astro';
 import Consenso from '../components/comuni/Consenso.astro';
+import Marchio from '../components/comuni/Marchio.astro';
 import { SITE } from '../config.js';
 
 interface Props {
@@ -18,8 +19,7 @@ interface Props {
   descrizione: string;
   ogImage?: string;
   noindex?: boolean;
-  /** Le pagine riservate non caricano nemmeno la fascia delle misure di traffico:
-   *  chi scrive lì dentro non deve finire in una registrazione di Clarity. */
+  /** Le pagine riservate non caricano la fascia delle misure di traffico. */
   senzaMisure?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
@@ -53,14 +53,11 @@ const passaggio = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     {/*
-      Google Tag Manager e Clarity non stanno qui.
+      Google Analytics non sta qui.
 
-      Erano due script in chiaro in testa al documento, quindi partivano al
-      primo byte, prima che chiunque potesse dire la sua — e con loro
-      partivano i cookie. Adesso li inietta la fascia del consenso, dopo un
-      sì: vedi src/components/comuni/Consenso.astro. Se li rimetti qui il
-      consenso torna a essere una formalità, e la pagina privacy torna a
-      dire una cosa falsa.
+      Il tag viene caricato dalla fascia del consenso solo dopo un sì:
+      vedi src/components/comuni/Consenso.astro. Se lo rimetti qui, parte
+      prima che chi visita possa scegliere.
     */}
 
     <title>{titolo}</title>
@@ -68,7 +65,10 @@ const passaggio = {
     <link rel="canonical" href={canonico.href} />
     {noindex && <meta name="robots" content="noindex, follow" />}
 
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FAFAFA" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0B0B0D" />
     <meta name="color-scheme" content="light dark" />
@@ -154,6 +154,13 @@ const passaggio = {
 
     <Intestazione transition:persist />
 
+    {senzaMisure && (
+      <div class="marchio-stampa contenitore" role="img" aria-label={`${SITE.name} — Web Designer & Developer`}>
+        <Marchio />
+        <p class="etichetta">Web Designer &amp; Developer</p>
+      </div>
+    )}
+
     <main id="contenuto" transition:animate={{ forwards: passaggio, backwards: passaggio }}>
       <slot />
     </main>
@@ -172,3 +179,26 @@ const passaggio = {
     </script>
   </body>
 </html>
+
+<style>
+  .marchio-stampa {
+    display: none;
+  }
+
+  @media print {
+    .marchio-stampa {
+      display: grid;
+      gap: var(--sp-2);
+      width: 260px;
+      max-width: 100%;
+      margin: 0 0 var(--sp-6);
+      padding: 0;
+      color: #101010;
+      break-inside: avoid;
+    }
+
+    .marchio-stampa .etichetta {
+      color: inherit;
+    }
+  }
+</style>

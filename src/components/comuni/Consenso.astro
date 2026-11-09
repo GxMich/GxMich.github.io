@@ -2,13 +2,8 @@
 /**
  * La fascia del consenso alle misure di traffico.
  *
- * Non è un banner cookie di quelli che si accettano per farli sparire: è
- * l'interruttore vero. Google Tag Manager e Clarity non stanno nel sorgente
- * della pagina — non c'è nessun tag da bloccare, nessuna «modalità consenso»
- * che li lascia partire a metà. Gli indirizzi arrivano qui come attributi e
- * lo script li inietta solo dopo un sì. Finché non arriva, verso quei due
- * domini non parte niente, che è quello che chiede la legge quando dice
- * «consenso preventivo».
+ * Google Analytics non sta nel documento iniziale: lo script viene caricato
+ * solo dopo un sì. Prima del consenso il browser non contatta Google.
  *
  * Due bottoni identici per forma e per numero di clic. Il rifiuto è il primo
  * che si incontra leggendo. Fare il no più piccolo, più chiaro o più lontano
@@ -21,8 +16,8 @@
  */
 import { SITE } from '../../config.js';
 
-const { gtm, clarity } = SITE.misure;
-const attiva = Boolean(gtm || clarity);
+const { ga4 } = SITE.misure;
+const attiva = Boolean(ga4);
 ---
 
 {
@@ -30,8 +25,7 @@ const attiva = Boolean(gtm || clarity);
     <aside
       class="fascia su-palco"
       data-consenso
-      data-gtm={gtm ?? ''}
-      data-clarity={clarity ?? ''}
+      data-ga4={ga4 ?? ''}
       hidden
       role="region"
       aria-labelledby="consenso-titolo"
@@ -42,9 +36,8 @@ const attiva = Boolean(gtm || clarity);
           <p class="etichetta" id="consenso-titolo">Misure di traffico</p>
           <p class="testo-sm">
             Mi piacerebbe sapere quante persone passano di qui e quali pagine leggono
-            davvero. Per farlo servono due strumenti esterni, di Google e di Microsoft, che
-            salvano cookie sul tuo browser e registrano come ti muovi nella pagina. Partono
-            solo se dici di sì, e se dici di no il sito funziona esattamente uguale.{' '}
+            davvero. Per farlo uso Google Analytics, che misura le visite e le pagine lette.
+            Si attiva solo se dici di sì; se rifiuti, il sito funziona allo stesso modo.{' '}
             <a href="/privacy">Cosa raccolgono, per esteso</a>
           </p>
         </div>
@@ -162,22 +155,8 @@ const attiva = Boolean(gtm || clarity);
    */
   const CHIAVE = 'misure-consenso';
 
-  /* I cookie che i due strumenti lasciano sul nostro dominio. Quelli che
-     scrivono sui loro (clarity.ms, google.com) da qui non si toccano: sono
-     di un'altra origine e il browser non ce lo permette. Per quelli c'è la
-     richiesta di cancellazione, che è scritta nella pagina privacy. */
-  const COOKIE_MISURE = [
-    '_ga',
-    '_gid',
-    '_gat',
-    '_gcl_au',
-    '_clck',
-    '_clsk',
-    'CLID',
-    'ANONCHK',
-    'MUID',
-    'SM',
-  ];
+  /* Cookie GA4 sul dominio del sito. */
+  const COOKIE_MISURE = ['_ga', '_ga_DWTF8YGDKG', '_gid'];
 
   function leggiScelta() {
     try {
@@ -197,31 +176,34 @@ const attiva = Boolean(gtm || clarity);
     }
   }
 
-  function caricaMisure(gtm: string, clarity: string) {
+  function caricaMisure(ga4: string) {
     const w = window as any;
-    if (w.__misureAvviate) return;
+    if (!ga4 || w.__misureAvviate) return;
     w.__misureAvviate = true;
 
-    if (gtm) {
-      w.dataLayer = w.dataLayer || [];
-      w.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
-      const s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtm.js?id=' + encodeURIComponent(gtm);
-      document.head.appendChild(s);
-    }
+    w.dataLayer = w.dataLayer || [];
+    w.gtag = w.gtag || function () { w.dataLayer.push(arguments); };
+    w.gtag('consent', 'default', {
+      analytics_storage: 'denied',
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+    });
+    w.gtag('consent', 'update', {
+      analytics_storage: 'granted',
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+    });
+    w.gtag('js', new Date());
+    w.gtag('config', ga4, {
+      allow_google_signals: false,
+    });
 
-    if (clarity) {
-      w.clarity =
-        w.clarity ||
-        function () {
-          (w.clarity.q = w.clarity.q || []).push(arguments);
-        };
-      const c = document.createElement('script');
-      c.async = true;
-      c.src = 'https://www.clarity.ms/tag/' + encodeURIComponent(clarity);
-      document.head.appendChild(c);
-    }
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ga4);
+    document.head.appendChild(s);
   }
 
   /**
@@ -249,12 +231,11 @@ const attiva = Boolean(gtm || clarity);
     const fascia = document.querySelector<HTMLElement>('[data-consenso]');
     if (!fascia) return;
 
-    const gtm = fascia.dataset.gtm ?? '';
-    const clarity = fascia.dataset.clarity ?? '';
+    const ga4 = fascia.dataset.ga4 ?? '';
 
     /* Prima di ogni altra cosa: se il sì c'è già, gli strumenti partono
        subito, anche su una pagina raggiunta navigando. */
-    if (leggiScelta() === 'si') caricaMisure(gtm, clarity);
+    if (leggiScelta() === 'si') caricaMisure(ga4);
 
     if (fascia.dataset.montato !== undefined) return;
     fascia.dataset.montato = 'si';
@@ -271,7 +252,7 @@ const attiva = Boolean(gtm || clarity);
     fascia.querySelector('[data-consenso-si]')?.addEventListener('click', () => {
       salvaScelta('si');
       nascondi();
-      caricaMisure(gtm, clarity);
+      caricaMisure(ga4);
     });
 
     fascia.querySelector('[data-consenso-no]')?.addEventListener('click', () => {

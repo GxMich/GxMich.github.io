@@ -1,0 +1,4 @@
+# La home PHP serve la pagina statica generata da Astro; le altre cartelle
+# continuano a usare il proprio index.html.
+DirectoryIndex index.php index.html
+ErrorDocument 404 /404.html

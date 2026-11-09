@@ -179,7 +179,8 @@ const jsonLd = [
   }
 
 
-  @media (max-width: 900px) {
+  /* Quattro colonne finché l'indirizzo email ci sta su una riga sola. */
+  @media (max-width: 1100px) {
     .diretti {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }

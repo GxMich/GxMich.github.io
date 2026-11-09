@@ -148,7 +148,7 @@ for (const f of file) {
     /* Fogli di stile e moduli sono risorse, non pagine: senza questi due nel
        filtro il controllo li cercava fra le pagine costruite e li dichiarava
        tutti rotti — venticinque errori inventati che nascondevano quello vero. */
-    if (/\.(css|m?js|png|jpe?g|webp|avif|svg|xml|txt|ico|woff2?|pdf|mp4|webm)$/i.test(meta)) {
+    if (/\.(css|m?js|png|jpe?g|webp|avif|svg|xml|txt|ico|woff2?|pdf|mp4|webm|webmanifest)$/i.test(meta)) {
       if (!existsSync(join(DIST, meta.slice(1))) && !existsSync(join('public', meta.slice(1)))) {
         err(pagina, `risorsa che non esiste: ${meta}`);
       }

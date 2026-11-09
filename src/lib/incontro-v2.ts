@@ -33,6 +33,7 @@ import {
   DICITURA_OCCASIONALE,
 } from '../data/richiesta.js';
 import { apri, cifraturaDisponibile, type Cifrato } from './cifratura.ts';
+import { Trascrittore, MODELLI, trascrizioneLocaleDisponibile, type ModelloScelto } from './trascrivi.ts';
 import {
   Sessione,
   registrazioneDisponibile,
@@ -131,7 +132,8 @@ interface Calcolo {
   oreManuali: boolean;
   tariffa: number | null;
   regime: (typeof REGIMI)[number];
-  pacchetto: (typeof PACCHETTI)[number] | null;
+  /** il sito di base, che c'è sempre: pagine e funzioni in più sono righe a parte */
+  base: { descrizione: string; prezzo: number } | null;
   /** chi riceve cosa: me, lo Stato, il bollo */
   div: Divisione;
   /** incassato nell'anno con prestazioni occasionali, questo lavoro compreso */
@@ -155,6 +157,8 @@ const ETICHETTE_I: Record<string, string> = {
 /* Archivio separato da /incontro-cliente: quella pagina riscrive i campi che conosce e
    perderebbe quelli della v2. Per passare gli incontri da una all'altra c'è Esporta/Importa. */
 const CHIAVE_ARCHIVIO = 'incontri-v2';
+
+const DESCRIZIONE_BASE = 'Sito web: prima pagina, pensata per il telefono';
 const CHIAVE_SESSIONE = 'listino-aperto';
 
 /** [minimo, massimo] in centesimi. */
@@ -267,7 +271,8 @@ class Pannello {
   private voce: Sessione | null = null;
   private campoVoce = '';
   private incontroVoce = '';
-  private primoDettato = true;
+  private trascrittore: Trascrittore | null = null;
+  private inTrascrizione = new Set<string>();
   private fermando = false;
   private timerVoce: number | undefined;
   private prese: Presa[] = [];
@@ -296,10 +301,8 @@ class Pannello {
       'p.giri': String(CONDIZIONI.giriDiModifica),
       'p.assistenza': String(CONDIZIONI.assistenzaGiorni),
       'p.tempi': CONDIZIONI.tempi,
-      'i.parla': 'Cliente',
-      /* Su telefono la trascrizione in diretta può contendere il microfono alla
-         registrazione: si parte con la sola registrazione, e si accende a mano. */
-      'i.trascrivi': /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? [] : ['1'],
+      'i.autotrascrivi': ['1'],
+      'i.modello': 'veloce',
       'p.bollo': ['1'],
     };
   }
@@ -399,10 +402,7 @@ class Pannello {
   /** I prezzi di listino come suggerimento nei campi: il campo vuoto li usa. */
   private listinoNellaPagina() {
     const L = this.listino!;
-    for (const [id, v] of Object.entries(L.pacchetti)) {
-      const el = this.r.querySelector(`[data-prezzo-pacchetto="${id}"]`);
-      if (el) el.textContent = eur(Math.round(v.prezzo * 100));
-    }
+    this.q<HTMLInputElement>('#p-pk').placeholder = String(L.pacchetti.essenziale?.prezzo ?? '');
     for (const e of EXTRA) {
       const campo = this.r.querySelector<HTMLInputElement>(`[data-prezzo-extra="${e.id}"]`);
       const v = L.extra[e.id];
@@ -540,18 +540,13 @@ class Pannello {
     const righe: Riga[] = [];
     const annue: Riga[] = [];
 
-    const pacchetto = PACCHETTI.find((p) => p.id === testo(s['p.pacchetto'])) ?? null;
-    if (pacchetto && pacchetto.id !== 'misura') {
-      const li = L.pacchetti[pacchetto.id];
-      const u = vuoto(s['p.pk']) ? Math.round((li?.prezzo ?? 0) * 100) : centesimi(s['p.pk']);
-      righe.push({
-        d: `Sito ${pacchetto.nome} (${pacchetto.pagine === 1 ? 'una pagina' : `fino a ${pacchetto.pagine} pagine`})`,
-        q: 1,
-        u,
-        t: u,
-        ore: li?.ore ?? 0,
-      });
-    }
+    /* Il prezzo si compone da quello che serve: il sito di base (una pagina) c'è sempre,
+       e ogni pagina in più, funzione o servizio è una riga con il suo prezzo. Non ci sono
+       pacchetti: il cliente non sceglie niente da un elenco. */
+    const li = L.pacchetti.essenziale;
+    const prezzoBase = vuoto(s['p.pk']) ? Math.round((li?.prezzo ?? 0) * 100) : centesimi(s['p.pk']);
+    const base = prezzoBase > 0 ? { descrizione: DESCRIZIONE_BASE, prezzo: prezzoBase } : null;
+    if (base) righe.push({ d: base.descrizione, q: 1, u: base.prezzo, t: base.prezzo, ore: li?.ore ?? 0 });
 
     for (const e of EXTRA) {
       if (!acceso(s[`x.${e.id}.on`])) continue;
@@ -618,7 +613,7 @@ class Pannello {
       oreManuali,
       tariffa,
       regime,
-      pacchetto,
+      base,
       div,
       anno,
       controlli: [],
@@ -637,16 +632,13 @@ class Pannello {
     const ha = (campo: string, valore: string) => lista(s[campo]).includes(valore);
     const qtaExtra = (id: string) => (acceso(s[`x.${id}.on`]) ? intero(s[`x.${id}.q`]) : 0);
 
-    if (!c.pacchetto && !c.righe.length) out.push('Nessun pacchetto e nessuna voce: il totale è zero.');
+    if (!c.righe.length) out.push('Nessuna voce: il totale è zero.');
 
     const pagine = lista(s.pagine).length;
-    if (c.pacchetto && c.pacchetto.id !== 'misura' && pagine > c.pacchetto.pagine) {
-      const serve = pagine - c.pacchetto.pagine;
-      if (qtaExtra('pagina') < serve) {
-        out.push(
-          `Ha segnato ${pagine} pagine e il pacchetto ${c.pacchetto.nome} ne include ${c.pacchetto.pagine}: servono ${serve} «Pagina aggiuntiva» (ora ${qtaExtra('pagina')}).`
-        );
-      }
+    if (pagine > 1 && qtaExtra('pagina') < pagine - 1) {
+      out.push(
+        `Ha segnato ${pagine} pagine: la prima è nel sito di base, servono ${pagine - 1} «Pagina aggiuntiva» (ora ${qtaExtra('pagina')}).`
+      );
     }
 
     if (ha('funzioni', 'Prenotazioni online con calendario') && !qtaExtra('prenotazioni')) {
@@ -812,11 +804,6 @@ class Pannello {
       out.textContent = attivo ? eur(u * q) : '';
     }
 
-    const campoPk = this.q('[data-campo-pk]');
-    campoPk.hidden = !c.pacchetto || c.pacchetto.id === 'misura';
-    if (c.pacchetto && c.pacchetto.id !== 'misura') {
-      this.q<HTMLInputElement>('#p-pk').placeholder = String(this.listino.pacchetti[c.pacchetto.id]?.prezzo ?? '');
-    }
     this.q('[data-ritenuta]').hidden = c.regime.id !== 'occasionale';
     this.q('[data-incassato]').hidden = c.regime.id !== 'occasionale';
     this.q('[data-bollo]').hidden = c.regime.iva !== 0;
@@ -955,9 +942,10 @@ class Pannello {
   }
 
   /**
-   * Dalle risposte al preventivo, in un tocco: sceglie il pacchetto se non l'ho
-   * ancora scelto e accende gli extra che le risposte richiedono. Non spegne
-   * mai niente e non abbassa mai una quantità: parte da quello che ho già messo.
+   * Dalle risposte al preventivo, in un tocco: accende le righe che le risposte
+   * richiedono (le pagine in più, la prenotazione, le lingue…). Il sito di base c'è
+   * già. Non spegne mai niente e non abbassa mai una quantità: parte da quello che
+   * ho già messo.
    */
   private suggerisci() {
     const s = this.istantanea();
@@ -965,19 +953,6 @@ class Pannello {
     const fatto: string[] = [];
     const ha = (campo: string, valore: string) => lista(s[campo]).includes(valore);
     const pagine = lista(s.pagine).length;
-
-    let pk = PACCHETTI.find((x) => x.id === testo(s['p.pacchetto'])) ?? null;
-    if (!pk) {
-      const completo =
-        pagine > 1 ||
-        ha('pagine', 'Galleria foto') ||
-        ha('funzioni', 'Modulo di contatto') ||
-        (pagine === 0 && testo(s.budget) !== 'Fino a 400 €');
-      pk = PACCHETTI.find((x) => x.id === (completo ? 'completo' : 'essenziale'))!;
-      scriviCampo(this.f, 'p.pacchetto', pk.id);
-      scriviCampo(this.f, 'p.pk', '');
-      fatto.push(`pacchetto ${pk.nome}`);
-    }
 
     const accendi = (id: string, quantita: number | null) => {
       const extra = EXTRA.find((x) => x.id === id)!;
@@ -995,7 +970,7 @@ class Pannello {
       if (!era || cambiata) fatto.push(`${extra.nome[0].toLowerCase()}${extra.nome.slice(1)}${quantita && extra.unita ? ` (${quantita})` : ''}`);
     };
 
-    if (pk.pagine > 0 && pagine > pk.pagine) accendi('pagina', pagine - pk.pagine);
+    if (pagine > 1) accendi('pagina', pagine - 1);
     if (ha('funzioni', 'Prenotazioni online con calendario')) accendi('prenotazioni', null);
     if (testo(s.testi) === 'Preferisco che li scriva tu') accendi('testi', Math.max(pagine, 1));
     const altreLingue = lista(s.lingue).filter((l) => l !== 'Italiano').length || (ha('funzioni', 'Più lingue') ? 1 : 0);
@@ -1008,7 +983,7 @@ class Pannello {
     esito.textContent =
       (fatto.length
         ? `Ho messo: ${fatto.join(', ')}. Controlla prezzi e quantità: sono quelli del listino.`
-        : 'Pacchetto e extra coprono già le risposte: non c’è niente da aggiungere.') +
+        : 'Le righe del preventivo coprono già le risposte: non c’è niente da aggiungere.') +
       (vendita ? ' La vendita online non l’ho preventivata: è fuori dal tuo perimetro, decidi tu.' : '');
     this.cambiato();
   }
@@ -1172,7 +1147,7 @@ class Pannello {
       extra.push(`<tr><td>IVA ${c.regime.iva}%</td><td>${eur(c.iva)}</td></tr>`);
     }
 
-    const incluso = c.pacchetto && c.pacchetto.id !== 'misura' ? c.pacchetto.include : [];
+    const incluso = c.base ? (PACCHETTI.find((x) => x.id === 'essenziale')?.include ?? []) : [];
     const passi = [
       `<b>Conferma e acconto.</b> Si conferma rispondendo a questo preventivo e si versa l’acconto del ${pc}%.`,
       '<b>Materiale.</b> Logo, foto e informazioni.',
@@ -1215,7 +1190,7 @@ class Pannello {
 
       ${this.foglioDivisione(c)}
 
-      ${incluso.length ? `<div class="fg-sez"><div class="fg-et">Cosa comprende il pacchetto ${esc(c.pacchetto!.nome)}</div><ul>${incluso.map((i: string) => `<li>${esc(i)}</li>`).join('')}</ul></div>` : ''}
+      ${incluso.length ? `<div class="fg-sez"><div class="fg-et">Cosa comprende il sito di base</div><ul>${incluso.map((i: string) => `<li>${esc(i)}</li>`).join('')}</ul></div>` : ''}
 
       ${x.mancanti.length ? `<div class="fg-sez"><div class="fg-et">Per partire mi servono</div><ul>${x.mancanti.map((m) => `<li>${esc(m.nome)}</li>`).join('')}</ul><p class="fg-piccolo">Se non c’è tutto si parte con quello che c’è: dove manca qualcosa metto un segnaposto ben visibile, non invento niente.</p></div>` : ''}
 
@@ -1294,7 +1269,6 @@ class Pannello {
   private proposta(s: Istantanea, c: Calcolo): Proposta {
     const L = this.listino!;
     const x = this.contesto(s, c);
-    const scelto = c.pacchetto && c.pacchetto.id !== 'misura' ? c.pacchetto : null;
     const prova = testo(s['i.prova']);
     const tipo = testo(s['p.sconto-tipo']);
 
@@ -1314,21 +1288,17 @@ class Pannello {
       gi: x.giri,
       as: x.assistenza,
       t: x.tempi,
-      pk: PACCHETTI.filter((p) => p.id !== 'misura').map((p) => ({
-        id: p.id,
-        /* Il pacchetto scelto porta il prezzo che ho scritto io; l'altro, quello di listino. */
-        p: scelto?.id === p.id && c.righe[0] ? c.righe[0].u : Math.round((L.pacchetti[p.id]?.prezzo ?? 0) * 100),
+      /* Niente pacchetti da scegliere: il cliente vede le righe che servono a lui e il totale.
+         Tutto sta nelle voci fisse; restano a parte solo i costi annuali, che sono facoltativi. */
+      pk: [],
+      cons: 'misura',
+      ex: EXTRA.filter((e) => e.ricorrente && acceso(s[`x.${e.id}.on`])).map((e) => ({
+        id: e.id,
+        p: vuoto(s[`x.${e.id}.p`]) ? Math.round((L.extra[e.id]?.prezzo ?? 0) * 100) : centesimi(s[`x.${e.id}.p`]),
+        q: 1,
+        on: 1 as const,
       })),
-      cons: c.pacchetto?.id ?? '',
-      ex: EXTRA.map((e) => {
-        const on = acceso(s[`x.${e.id}.on`]);
-        const q = e.unita ? intero(s[`x.${e.id}.q`]) : 1;
-        const p = vuoto(s[`x.${e.id}.p`]) ? Math.round((L.extra[e.id]?.prezzo ?? 0) * 100) : centesimi(s[`x.${e.id}.p`]);
-        return { id: e.id, p, q, on: on ? (1 as const) : (0 as const) };
-      }).filter((e) => e.p > 0 || e.on),
-      vv: this.leggiVoci()
-        .filter((v) => v.d.trim() || v.p.trim())
-        .map((v) => ({ d: v.d.trim() || 'Voce a parte', q: intero(v.q), p: centesimi(v.p) })),
+      vv: c.righe.map((r) => ({ d: r.d, q: r.q, p: r.u })),
       sc: {
         tipo: tipo === 'euro' || tipo === 'perc' ? tipo : '',
         val: numero(s['p.sconto']),
@@ -1344,7 +1314,7 @@ class Pannello {
 
   /* ------------------------------ la voce ------------------------------ */
 
-  /** Dove finisce quello che si dice: il campo stesso, o «Cosa ha detto» per le domande a caselle. */
+  /** Dove finisce il testo trascritto: il campo stesso, o «Cosa ha detto» per le domande a caselle. */
   private bersaglio(campo: string): HTMLInputElement | HTMLTextAreaElement | null {
     if (campo === INCONTRO_INTERO) return this.f.querySelector<HTMLTextAreaElement>('[name="i.trascrizione"]');
     const el = this.f.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${CSS.escape(campo)}"]`);
@@ -1398,24 +1368,12 @@ class Pannello {
       this.dettoVoce('Questo browser non sa registrare l’audio: usa Chrome, Edge o Safari, da https o da localhost.', false);
       return;
     }
+    if (!this.bersaglio(campo)) return;
 
-    const el = this.bersaglio(campo);
-    if (!el) return;
     this.campoVoce = campo;
     this.incontroVoce = this.corrente.id;
-    this.primoDettato = true;
 
-    const sessione = new Sessione(
-      {
-        finale: (t) => this.dettato(campo, el, t),
-        provvisorio: (t) => {
-          const riga = this.r.querySelector<HTMLElement>(`[data-voce-prov="${CSS.escape(campo)}"]`);
-          if (riga) riga.textContent = t;
-        },
-        stato: (attiva, msg) => this.dettoVoce(msg, attiva),
-      },
-      acceso(s['i.trascrivi'])
-    );
+    const sessione = new Sessione({ stato: (attiva, msg) => this.dettoVoce(msg, attiva) });
     this.voce = sessione;
 
     if (await sessione.avvia()) {
@@ -1426,7 +1384,7 @@ class Pannello {
     }
   }
 
-  /** Ferma la registrazione in corso e la salva nell'incontro in cui è cominciata. */
+  /** Ferma la registrazione in corso, la salva nell'incontro in cui è cominciata e avvia la trascrizione. */
   private async fermaVoce() {
     const sessione = this.voce;
     if (!sessione || this.fermando) return;
@@ -1434,12 +1392,13 @@ class Pannello {
 
     const campo = this.campoVoce;
     const incontro = this.incontroVoce;
+    let presa: Presa | null = null;
     try {
       const r = await sessione.ferma();
       this.segnaMic('');
 
       if (r && r.blob.size > 0) {
-        const presa: Presa = {
+        presa = {
           id: nuovoId(),
           incontro,
           campo,
@@ -1447,7 +1406,8 @@ class Pannello {
           durata: r.durata,
           mime: r.mime,
           blob: r.blob,
-          testo: r.testo,
+          testo: '',
+          trascritta: false,
           incompleta: r.incompleta,
         };
         try {
@@ -1458,6 +1418,7 @@ class Pannello {
           }
         } catch {
           this.dettoVoce('Non riesco a salvare l’audio su questo dispositivo: lo spazio del browser potrebbe essere pieno.', false);
+          presa = null;
         }
       }
     } finally {
@@ -1465,31 +1426,72 @@ class Pannello {
       this.campoVoce = '';
       this.fermando = false;
     }
+
+    /* L'audio è al sicuro: da qui in poi, se qualcosa va storto, si perde solo il testo. */
+    if (presa && acceso(leggiCampo(this.f, 'i.autotrascrivi'))) void this.trascrivi(presa);
   }
 
-  /** Scrive nel campo quello che ha capito il riconoscitore. */
+  /**
+   * Il testo di un'audio, ricavato sul dispositivo dopo la registrazione. Finisce nel
+   * campo della domanda e, sotto la registrazione, resta consultabile e corregibile.
+   */
+  private async trascrivi(p: Presa) {
+    if (this.inTrascrizione.has(p.id)) return;
+
+    const riga = this.r.querySelector<HTMLElement>(`[data-voce-prov="${CSS.escape(p.campo)}"]`);
+    const dire = (t: string) => {
+      if (riga) riga.textContent = t;
+    };
+
+    if (!trascrizioneLocaleDisponibile()) {
+      dire('Questo browser non sa trascrivere: l’audio è salvato, la trascrizione la farà l’AI.');
+      return;
+    }
+
+    this.inTrascrizione.add(p.id);
+    this.disegnaPrese();
+    try {
+      dire('In coda per la trascrizione…');
+      this.trascrittore ??= new Trascrittore();
+      const modello: ModelloScelto = leggiCampo(this.f, 'i.modello') === 'migliore' ? 'migliore' : 'veloce';
+      const t = await this.trascrittore.trascrivi(p.blob, modello, (msg, pct) => dire(pct === null ? msg : `${msg} · ${pct}%`));
+
+      p.testo = t;
+      p.trascritta = true;
+      try {
+        await salvaPresa(p);
+      } catch {
+        /* il testo resta nella pagina; l'audio è già salvato */
+      }
+
+      const el = this.bersaglio(p.campo);
+      if (t && el && this.corrente?.id === p.incontro) this.dettato(p.campo, el, t);
+      dire(t ? '' : 'Non ho sentito parole in questa registrazione.');
+    } catch (e) {
+      const motivo = e instanceof Error && e.message ? e.message : 'errore sconosciuto';
+      dire(`Non sono riuscito a trascrivere (${motivo}). L’audio è salvato: riprova con «Trascrivi».`);
+    } finally {
+      this.inTrascrizione.delete(p.id);
+      this.disegnaPrese();
+    }
+  }
+
+  /** Scrive nel campo il testo trascritto. */
   private dettato(campo: string, el: HTMLInputElement | HTMLTextAreaElement, t: string) {
-    const maiuscola = `${t[0].toUpperCase()}${t.slice(1)}`;
+    const frase = t.trim();
+    if (!frase) return;
 
     if (campo === INCONTRO_INTERO) {
-      const chi = leggiCampo(this.f, 'i.parla') === 'Io' ? 'Io' : 'Cliente';
-      /* Il riconoscitore italiano non mette punti. */
-      const frase = /[.!?…]$/.test(maiuscola) ? maiuscola : `${maiuscola}.`;
-      el.value += `${el.value && !el.value.endsWith('\n') ? '\n' : ''}${chi}: ${frase}`;
+      el.value += `${el.value ? '\n\n' : ''}${frase}`;
     } else if (el.type === 'email') {
-      /* «mario chiocciola gmail punto com» → mario@gmail.com. La prima volta sostituisce, poi accoda. */
-      const mail = t.toLowerCase().replace(/\s*chiocciola\s*/g, '@').replace(/\s*punto\s*/g, '.').replace(/\s+/g, '');
-      el.value = this.primoDettato ? mail : el.value + mail;
+      /* «mario chiocciola gmail punto com» → mario@gmail.com */
+      el.value = frase.toLowerCase().replace(/\s*chiocciola\s*/g, '@').replace(/\s*punto\s*/g, '.').replace(/\s+/g, '');
     } else if (el.type === 'tel') {
-      const numero = t.replace(/[^\d+]/g, '');
-      el.value = this.primoDettato ? numero : el.value + numero;
+      el.value = frase.replace(/[^\d+]/g, '');
     } else {
-      const frase = el instanceof HTMLTextAreaElement && !/[.!?…]$/.test(maiuscola) ? `${maiuscola}.` : maiuscola;
       el.value = `${el.value ? `${el.value.trimEnd()} ` : ''}${frase}`;
     }
 
-    this.primoDettato = false;
-    el.scrollTop = el.scrollHeight;
     el.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
@@ -1518,11 +1520,13 @@ class Pannello {
 
     const durata = this.prese.reduce((n, p) => n + p.durata, 0);
     const mega = this.prese.reduce((n, p) => n + p.blob.size, 0) / 1048576;
+    const daFare = this.prese.filter((p) => !p.trascritta).length;
     this.q('[data-audio-riepilogo]').textContent = this.prese.length
-      ? `${this.prese.length} registrazion${this.prese.length === 1 ? 'e' : 'i'} · ${durataLeggibile(durata)} · ${mega.toFixed(1).replace('.', ',')} MB, su questo dispositivo.`
+      ? `${this.prese.length} registrazion${this.prese.length === 1 ? 'e' : 'i'} · ${durataLeggibile(durata)} · ${mega.toFixed(1).replace('.', ',')} MB, su questo dispositivo${daFare ? ` · ${daFare} da trascrivere` : ''}.`
       : 'Nessuna registrazione per questo incontro.';
-    this.q<HTMLButtonElement>('[data-azione="pacchetto-ai"]').disabled = this.prese.length === 0;
+    this.q<HTMLButtonElement>('[data-azione="esporta-ai"]').disabled = this.prese.length === 0;
     this.q<HTMLButtonElement>('[data-azione="elimina-audio"]').disabled = this.prese.length === 0;
+    this.q<HTMLButtonElement>('[data-azione="trascrivi-tutte"]').disabled = daFare === 0;
   }
 
   private rigaPresa(p: Presa): HTMLElement {
@@ -1540,19 +1544,39 @@ class Pannello {
     info.className = 'dato';
     info.textContent = `${durataLeggibile(p.durata)} · ${new Date(p.creato).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}`;
 
-    const togli = document.createElement('button');
-    togli.type = 'button';
-    togli.className = 'f-bottone secondario piccolo';
-    togli.dataset.azione = 'togli-presa';
-    togli.dataset.id = p.id;
-    togli.textContent = 'Elimina';
+    const azione = (etichetta: string, nome: string) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'f-bottone secondario piccolo';
+      b.dataset.azione = nome;
+      b.dataset.id = p.id;
+      b.textContent = etichetta;
+      return b;
+    };
 
-    li.append(audio, info, togli);
+    li.append(audio, info);
+    if (!p.trascritta) {
+      const trascrivi = azione(this.inTrascrizione.has(p.id) ? 'Trascrivo…' : 'Trascrivi', 'trascrivi-presa');
+      trascrivi.disabled = this.inTrascrizione.has(p.id);
+      li.append(trascrivi);
+    }
+    li.append(azione('Elimina', 'togli-presa'));
+
     if (p.incompleta) {
       const avviso = document.createElement('span');
       avviso.className = 'avviso-presa';
       avviso.textContent = 'Il microfono si è interrotto mentre registrava: l’audio può avere dei buchi.';
       li.append(avviso);
+    }
+    if (p.trascritta && p.testo) {
+      const dettagli = document.createElement('details');
+      dettagli.className = 'presa-testo';
+      const titolo = document.createElement('summary');
+      titolo.textContent = 'Testo trascritto';
+      const corpo = document.createElement('p');
+      corpo.textContent = p.testo;
+      dettagli.append(titolo, corpo);
+      li.append(dettagli);
     }
     return li;
   }
@@ -1575,11 +1599,11 @@ class Pannello {
   }
 
   /**
-   * Il pacchetto da dare a un'AI: gli audio, le risposte, le trascrizioni e le
+   * Quello che si dà a un'AI: gli audio, le risposte, le trascrizioni e le
    * istruzioni, in un file solo. È l'unica strada da cui l'audio esce da qui, e
    * parte solo quando premo io.
    */
-  private async pacchettoAi() {
+  private async esportaPerAi() {
     this.salva();
     const s = this.istantanea();
     const c = this.calcola(s);
@@ -1599,14 +1623,14 @@ class Pannello {
         campo: p.campo,
         registrata: new Date(p.creato).toISOString(),
         durataSecondi: Math.round(p.durata / 1000),
-        trascrizioneInDiretta: p.testo,
+        trascrizioneAutomatica: p.testo,
         audioIncompleto: p.incompleta,
       });
     }
 
     const registrazioni = elenco.length
       ? elenco
-          .map((e) => `- ${e.file} · ${e.domanda} · ${durataLeggibile(e.durataSecondi * 1000)}${e.trascrizioneInDiretta ? `\n  Trascrizione in diretta: ${e.trascrizioneInDiretta}` : ''}${e.audioIncompleto ? '\n  ATTENZIONE: audio incompleto.' : ''}`)
+          .map((e) => `- ${e.file} · ${e.domanda} · ${durataLeggibile(e.durataSecondi * 1000)}${e.trascrizioneAutomatica ? `\n  Trascrizione automatica (può contenere errori): ${e.trascrizioneAutomatica}` : ''}${e.audioIncompleto ? '\n  ATTENZIONE: audio incompleto.' : ''}`)
           .join('\n')
       : 'Nessuna registrazione.';
 
@@ -1620,20 +1644,20 @@ Questa cartella contiene un incontro con un cliente per un sito web, raccolto co
 
 ## Cosa chiedere all'AI
 
-> Ti passo un incontro con un cliente (un'attività locale che vuole un sito). Sono un web developer freelance. Leggi \`incontro.md\` e \`incontro.json\`, e se ci sono gli audio ascoltali o trascrivili.
+> Ti passo un incontro con un cliente (un'attività locale che vuole un sito). Sono un web developer freelance. Leggi \`incontro.md\` e \`incontro.json\`, e se ci sono gli audio ascoltali o trascrivili: le trascrizioni automatiche qui dentro possono avere errori.
 >
 > 1. Confronta quello che il cliente ha detto a voce con quello che ho segnato per iscritto, e dimmi dove c'è una differenza o qualcosa in più.
 > 2. Riassumi in poche righe: obiettivo, problema di oggi, pubblico, cosa vende, stile desiderato.
 > 3. Elenca i requisiti: pagine, funzioni, contenuti, e cosa manca per partire.
 > 4. Segnala obiezioni, paure, dubbi e le promesse che devo evitare.
-> 5. Dimmi se il pacchetto e gli extra del preventivo in \`incontro.md\` vanno corretti, e perché. Non inventare prezzi: usa solo quelli che trovi.
+> 5. Dimmi se le righe del preventivo in \`incontro.md\` vanno corrette, e perché. Non inventare prezzi: usa solo quelli che trovi.
 > 6. Scrivimi le domande da fare al cliente nel messaggio di follow-up.
 >
 > Non inventare niente: se un'informazione non c'è, scrivi «non detto».
 
 ## Attenzione
 
-Contiene dati e voce di una persona. Il cliente ha acconsentito alla registrazione, ma non necessariamente a farla ascoltare a un servizio esterno: se usi un'AI online, dillo al cliente. Cancella il pacchetto e gli audio quando hai finito.
+Contiene dati e voce di una persona. Il cliente ha acconsentito alla registrazione, ma non necessariamente a farla ascoltare a un servizio esterno: se usi un'AI online, dillo al cliente. Cancella questo file e gli audio quando hai finito.
 `;
 
     const md = `${this.testoAppunti(s, c)}\n\nREGISTRAZIONI\n${registrazioni}\n`;
@@ -1673,7 +1697,7 @@ Contiene dati e voce di una persona. Il cliente ha acconsentito alla registrazio
     window.setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 
     const mega = audio.reduce((n, f) => n + f.dati.length, 0) / 1048576;
-    this.q('[data-esito]').textContent = `Pacchetto scaricato: ${audio.length} audio, ${mega.toFixed(1).replace('.', ',')} MB. Contiene dati e voce del cliente: tienilo al sicuro e cancellalo dopo l’analisi.`;
+    this.q('[data-esito]').textContent = `File scaricato: ${audio.length} audio, ${mega.toFixed(1).replace('.', ',')} MB. Contiene dati e voce del cliente: tienilo al sicuro e cancellalo dopo l’analisi.`;
   }
 
   /* ------------------------------ gli eventi ------------------------------ */
@@ -1692,8 +1716,6 @@ Contiene dati e voce di una persona. Il cliente ha acconsentito alla registrazio
     this.f.addEventListener('input', () => this.cambiato());
     this.f.addEventListener('change', (e) => {
       const el = e.target as HTMLInputElement;
-      /* Cambiando pacchetto, il prezzo scritto a mano per il precedente non vale più. */
-      if (el.name === 'p.pacchetto') scriviCampo(this.f, 'p.pk', '');
       this.cambiato();
     });
 
@@ -1819,8 +1841,8 @@ Contiene dati e voce di una persona. Il cliente ha acconsentito alla registrazio
         this.suggerisci();
         break;
 
-      case 'pacchetto-ai':
-        await this.pacchettoAi();
+      case 'esporta-ai':
+        await this.esportaPerAi();
         break;
 
       case 'elimina-audio': {
@@ -1832,6 +1854,16 @@ Contiene dati e voce di una persona. Il cliente ha acconsentito alla registrazio
         dirne('Audio eliminati da questo dispositivo.');
         break;
       }
+
+      case 'trascrivi-presa': {
+        const presa = this.prese.find((x) => x.id === el.dataset.id);
+        if (presa) await this.trascrivi(presa);
+        break;
+      }
+
+      case 'trascrivi-tutte':
+        for (const presa of this.prese.filter((x) => !x.trascritta)) void this.trascrivi(presa);
+        break;
 
       case 'togli-presa': {
         if (!this.doppioTocco(el, 'Elimina')) break;
@@ -1888,7 +1920,7 @@ Contiene dati e voce di una persona. Il cliente ha acconsentito alla registrazio
         const link = await this.linkProposta(s, c);
         const messaggio = [
           `${x.reg.saluto}${x.referente ? ` ${x.referente}` : ''}, ecco il preventivo${x.nome ? ` per ${x.nome}` : ''}.`,
-          'Dentro ci sono la versione di prova, i pacchetti e i costi, e da lì si può rispondere.',
+          'Dentro ci sono la versione di prova e il dettaglio dei costi, e da lì si può rispondere.',
           '',
           link,
         ].join('\n');
