@@ -1,0 +1,277 @@
+---
+/**
+ * Frame 05 — cosa cambia quando hai un sito.
+ *
+ * Ha preso il posto di «Ci sono tre modi di farsi un sito» (novembre 2026).
+ * Chi arriva qui spesso non ha ancora deciso se un sito gli serve: prima di
+ * scegliere fra me, un'agenzia o un generatore deve vedere cosa ci guadagna.
+ * Le righe sono situazioni di tutti i giorni in cui qualcuno lo cerca, le
+ * colonne sono «senza» e «con». Stessa griglia della vecchia sezione, a due
+ * colonne invece che a tre.
+ *
+ * Nessuna promessa di risultati («più clienti», «primo su Google»): solo cosa
+ * trova chi ti cerca, che è verificabile da chiunque.
+ */
+const modi = [
+  {
+    indice: '01',
+    nome: 'Senza un sito',
+    sotto: 'Scheda Google, social e passaparola.',
+  },
+  {
+    indice: '02',
+    nome: 'Con il tuo sito',
+    sotto: "Una pagina tua, che racconta l'attività come la racconteresti tu.",
+  },
+];
+
+/** Le risposte stanno nello stesso ordine di `modi`: la seconda è «con il sito». */
+const righe = [
+  {
+    domanda: 'Quando qualcuno ti cerca su Google',
+    risposte: [
+      "Trova la scheda Google, se c'è, e qualche recensione. Il resto lo raccontano gli altri, o i concorrenti che un sito ce l'hanno.",
+      'Trova una pagina tua che dice cosa fai, dove sei e perché sceglierti. E Google ha qualcosa da mostrare a chi cerca il tuo mestiere in zona.',
+    ],
+  },
+  {
+    domanda: 'Quando vogliono sapere orari, prezzi o menu',
+    risposte: [
+      'Ti telefonano o ti scrivono, spesso mentre stai lavorando. Chi non ha voglia di chiedere passa oltre.',
+      'Le risposte sono già lì, aggiornate da te. Ti contatta chi ha già deciso, con una domanda precisa.',
+    ],
+  },
+  {
+    domanda: 'Quando ti confrontano con un concorrente',
+    risposte: [
+      'Si decide su due foto e un numero di stelle. Quello che rende il tuo lavoro diverso non arriva.',
+      'Puoi mostrare lavori, foto vere e la tua storia: quello che il cliente vedrebbe solo entrando.',
+    ],
+  },
+  {
+    domanda: 'Quando ti vogliono contattare',
+    risposte: [
+      'Cercano il numero su qualche elenco, a volte vecchio o sbagliato.',
+      'Un tasto per chiamare, uno per WhatsApp, la mappa per arrivare. Dal telefono, in pochi secondi.',
+    ],
+  },
+  {
+    domanda: "Quando chiedono un consiglio a un'intelligenza artificiale",
+    risposte: [
+      "Sempre più persone chiedono a ChatGPT o all'assistente di Google dove andare. Se di te non c'è niente da leggere, consigliano qualcun altro.",
+      "L'assistente trova una pagina chiara con nome, servizi e zona, e può citarti nella risposta.",
+    ],
+  },
+  {
+    domanda: 'Di chi sono foto e testi',
+    risposte: [
+      'Stanno sui social, che decidono chi li vede e possono cambiare le regole da un giorno all\'altro.',
+      'Stanno su un indirizzo intestato a te, che resta tuo anche se un giorno cambi sviluppatore.',
+    ],
+  },
+];
+
+const MIA = 1;
+---
+
+<section class="differenza" aria-labelledby="differenza-titolo">
+  <div class="contenitore">
+    <div class="intestazione">
+      <h2 id="differenza-titolo" class="h2 sfoca-entra" data-anima>Cosa cambia quando hai un sito.</h2>
+      <p class="lede sfoca-entra" data-anima>
+        Molte attività della zona lavorano bene anche senza, grazie al passaparola. Ma prima di
+        venire da te quasi tutti ti cercano: ecco cosa trovano, nei due casi.
+      </p>
+    </div>
+
+    <div class="tavola">
+      <div class="testa">
+        {
+          modi.map((m, i) => (
+            <div class:list={['colonna', { mia: i === MIA }]}>
+              <p class="dato indice">{m.indice}</p>
+              <p class="h4 nome">{m.nome}</p>
+              <p class="testo-sm sotto">{m.sotto}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      {
+        righe.map((r) => (
+          <div class="fascia sfoca-entra" data-anima>
+            <h3 class="etichetta domanda">{r.domanda}</h3>
+            <div class="celle">
+              {r.risposte.map((t, i) => (
+                <p class:list={['cella', 'testo-sm', { mia: i === MIA }]}>
+                  {/*
+                    Una griglia CSS non dichiara la relazione fra una cella e la
+                    sua colonna: sopra gli 860px l'etichetta resta solo per chi
+                    usa un lettore di schermo, sotto diventa visibile perché la
+                    testa sparisce.
+                  */}
+                  <span class="chi etichetta solo-lettori">{modi[i].nome}</span>
+                  {t}
+                </p>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="testo-sm coda sfoca-entra" data-anima>
+      Il passaparola e la scheda Google restano importanti, e il sito li rafforza: chi ha sentito
+      parlare di te trova una conferma, chi ti trova su Google trova le risposte. Se oggi ti basta
+      sistemare la scheda, te lo dico prima, e ti aiuto a farlo.
+    </p>
+  </div>
+</section>
+
+<style>
+  .differenza {
+    padding-block: var(--section);
+    background: var(--paper-sunk);
+  }
+
+  /* Stessa proporzione di Metodo e Domande. */
+  .intestazione {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(24px, 4vw, 64px);
+    align-items: start;
+    padding-bottom: clamp(32px, 5vw, 72px);
+  }
+
+  .intestazione h2 {
+    max-width: 14ch;
+  }
+
+  .tavola {
+    border-top: 1px solid var(--ink);
+  }
+
+  .testa,
+  .celle {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* La testa si aggancia sotto l'intestazione del sito: le sei fasce sono più
+     lunghe di una schermata e senza si perde quale colonna è quale. */
+  .testa {
+    position: sticky;
+    top: var(--header-h);
+    z-index: var(--z-sticky);
+    background: var(--paper-sunk);
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .colonna,
+  .cella {
+    padding-inline: clamp(16px, 2vw, 28px);
+    border-left: 1px solid var(--rule);
+  }
+
+  .colonna:first-child,
+  .cella:first-child {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .colonna:last-child,
+  .cella:last-child {
+    padding-right: 0;
+  }
+
+  .colonna {
+    position: relative;
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+    padding-block: var(--sp-5);
+  }
+
+  .indice {
+    color: var(--ink-3);
+  }
+
+  .sotto {
+    max-width: 30ch;
+    color: var(--ink-2);
+  }
+
+  /* «Con il sito» si distingue per peso ottico: filetto d'accento sopra e
+     testo in `--ink` pieno. */
+  .colonna.mia::before {
+    content: '';
+    position: absolute;
+    inset: -1px 0 auto 0;
+    height: 2px;
+    background: var(--signal);
+  }
+
+  .fascia {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .domanda {
+    padding: var(--sp-5) 0 var(--sp-3);
+    color: var(--ink);
+  }
+
+  .cella {
+    padding-bottom: var(--sp-5);
+    max-width: 42ch;
+    color: var(--ink-2);
+  }
+
+  .cella.mia {
+    color: var(--ink);
+  }
+
+  .coda {
+    margin-top: clamp(28px, 3.5vw, 44px);
+    max-width: 62ch;
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 860px) {
+    .intestazione {
+      grid-template-columns: 1fr;
+    }
+
+    .testa {
+      display: none;
+    }
+
+    .celle {
+      grid-template-columns: 1fr;
+    }
+
+    .cella {
+      border-left: 0;
+      padding-inline: 0;
+      max-width: none;
+    }
+
+    .cella + .cella {
+      padding-top: var(--sp-4);
+      border-top: 1px solid var(--rule);
+    }
+
+    .chi {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip-path: none;
+      display: block;
+      margin-bottom: var(--sp-2);
+    }
+
+    .cella.mia .chi {
+      color: var(--signal-ink);
+    }
+  }
+</style>

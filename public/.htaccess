@@ -2,3 +2,42 @@
 # continuano a usare il proprio index.html.
 DirectoryIndex index.php index.html
 ErrorDocument 404 /404.html
+Options -Indexes
+
+# --- URL senza barra finale -------------------------------------------------
+# Canonical, link interni e breadcrumb del sito sono tutti senza "/" finale
+# (es. /chi-sono). Prima Apache rispondeva a /chi-sono con un 301 verso
+# http://www.modicamichele.it/chi-sono/ (in http, perché l'HTTPS lo termina il
+# proxy Aruba), e da lì un secondo 301 verso https. Ogni canonical puntava
+# quindi a un redirect a catena: segnale contraddittorio per Google.
+# Ora /chi-sono risponde 200 direttamente, e /chi-sono/ fa un solo 301 verso
+# la versione senza barra, già in https.
+DirectorySlash Off
+RewriteEngine On
+
+# --- Pagine tolte per sempre --------------------------------------------------
+# Due progetti rimossi dal portfolio (novembre 2026). 410 "Gone" dice a Google
+# che non torneranno: le toglie dall'indice prima di un normale 404.
+# Il visitatore vede comunque la pagina 404 del sito.
+ErrorDocument 410 /404.html
+RewriteRule ^progetti/(gestione-pallet|monitoraggio-sla)(/.*)?$ - [G,L]
+
+# Le varianti con la barra finale (solo cartelle vere) -> versione senza barra.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^(.+)/$ https://www.modicamichele.it/$1 [R=301,L]
+
+# /chi-sono -> serve chi-sono/index.html senza redirect.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.+)$ $1/index.html [L]
+
+# /index.php e /index.html sono doppioni della home.
+RewriteCond %{THE_REQUEST} \s/index\.(php|html)[\s?]
+RewriteRule ^index\.(php|html)$ https://www.modicamichele.it/ [R=301,L]
+
+# ver.php stampa phpinfo(): versione PHP, percorsi e configurazione del
+# server visibili a chiunque. Gli archivi .zip/.sql/.bak sono copie intere del
+# sito (pagine riservate comprese). Bloccati anche se restassero sul server.
+<FilesMatch "(^ver\.php|\.(zip|rar|7z|tar|gz|sql|bak|log|env|md)$)">
+  Require all denied
+</FilesMatch>

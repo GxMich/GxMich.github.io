@@ -2,7 +2,7 @@
 /**
  * Home — direzione nuova.
  *
- * Dieci frame: apertura, vetrina, due strade, metodo, scelta, prezzo, chi te lo
+ * Dieci frame: apertura, vetrina, due strade, metodo, differenza, prezzo, chi te lo
  * fa, prova tecnica, domande, invito. La versione precedente resta nella storia
  * di git e in archive/pre-redesign-v2-2026-08-03/.
  *
@@ -17,7 +17,7 @@ import Apertura from '../components/sezioni/Apertura.astro';
 import Vetrina from '../components/sezioni/Vetrina.astro';
 import DueStrade from '../components/sezioni/DueStrade.astro';
 import Metodo from '../components/sezioni/Metodo.astro';
-import Scelta from '../components/sezioni/Scelta.astro';
+import Differenza from '../components/sezioni/Differenza.astro';
 import Prezzo from '../components/sezioni/Prezzo.astro';
 import Chi from '../components/sezioni/Chi.astro';
 import Sistemi from '../components/sezioni/Sistemi.astro';
@@ -69,7 +69,7 @@ const jsonLd = [persona, attivita, sitoWeb];
 ---
 
 <Guscio
-  titolo="Sviluppatore web a Vercelli e Casale — Michele Modica"
+  titolo="Siti web a Vercelli, Novara e Casale — Michele Modica"
   descrizione="Siti su misura per attività fra Vercelli, Casale Monferrato e Novara. Prezzo detto prima, dominio intestato a te, nessun abbonamento obbligatorio."
   ogImage="/og/home.png"
   jsonLd={jsonLd}
@@ -90,7 +90,7 @@ const jsonLd = [persona, attivita, sitoWeb];
 
   <Metodo />
 
-  <Scelta />
+  <Differenza />
 
   <Prezzo />
 

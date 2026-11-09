@@ -5,7 +5,7 @@ import { SITE } from './src/config.js';
 
 export default defineConfig({
   site: SITE.url,
-  trailingSlash: 'ignore',
+  trailingSlash: 'never',
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   integrations: [sitemap({
     i18n: { defaultLocale: 'it', locales: { it: 'it-IT' } },

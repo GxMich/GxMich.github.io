@@ -110,16 +110,29 @@ export const SITE = {
    * pubblica. Per questo in pagina ha un'etichetta sua invece di finire
    * nell'elenco «Altrove» insieme a LinkedIn e GitHub.
    *
-   * L'indirizzo è quello corto ufficiale di Google (share.google): non scade e
-   * non si porta dietro i parametri di tracciamento della condivisione.
+   * L'indirizzo usa il CID della scheda (maps.google.com/?cid=…): è stabile e
+   * identifica la scheda senza ambiguità. Il vecchio share.google rimandava a
+   * una ricerca, non alla scheda.
    *
-   * Quando ti serve il link diretto per chiedere una recensione — quello che
-   * apre subito le stelline — lo trovi nella dashboard del profilo, alla voce
-   * «Chiedi recensioni»: è un indirizzo g.page/r/… e va messo qui sotto in
-   * `googleRecensioni`, non al posto di questo.
+   * `googleRecensioni` è il link diretto che apre subito le stelline (dalla
+   * dashboard del profilo, «Chiedi recensioni»). Attenzione: è una O
+   * maiuscola, non uno zero.
    */
-  google: 'https://share.google/5jKMRITc1zvJk9pa7',
-  googleRecensioni: null,
+  google: 'https://maps.google.com/?cid=11384881009517492426',
+  googleRecensioni: 'https://g.page/r/Ccp4YV71OP-dEBM/review',
+
+  /** Nome dell'attività com'è scritto sulla scheda Google (alternateName). */
+  nomeScheda: 'Modica Michele Web Service',
+
+  /**
+   * Profili social dell'attività. Finiscono solo nei dati strutturati
+   * (sameAs), non nell'elenco «Altrove» del piede, che resta LinkedIn e GitHub.
+   */
+  social: [
+    'https://www.instagram.com/modicamichele.web/',
+    'https://www.facebook.com/people/modicamicheleweb/61596225210352/',
+    'https://www.linkedin.com/company/modica-michele-web-service',
+  ],
 
   /** ID di misurazione GA4. Il tag viene caricato solo dopo il consenso. */
   misure: {

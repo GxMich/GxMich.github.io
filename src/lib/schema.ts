@@ -52,7 +52,7 @@ const areaServita = [
  * Senza la scheda dentro, Google ha due schede da collegare a mano e spesso
  * non le collega: il sito resta senza recensioni e la scheda senza sito.
  */
-const profiliCollegati = [SITE.google, ...SITE.profili].filter(Boolean);
+const profiliCollegati = [SITE.google, ...SITE.profili, ...(SITE.social ?? [])].filter(Boolean);
 
 const orari = SITE.orari.map((o) => ({
   '@type': 'OpeningHoursSpecification',
@@ -96,6 +96,7 @@ export const attivita = {
   '@type': 'ProfessionalService',
   '@id': ID.attivita,
   name: `${SITE.name} — ${SITE.tagline}`,
+  ...(SITE.nomeScheda && { alternateName: SITE.nomeScheda }),
   description:
     'Siti su misura per attività locali e strumenti software su misura per aziende e professionisti, fra Trino, Vercelli, Casale Monferrato e Novara.',
   url: SITE.url,
