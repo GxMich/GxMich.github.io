@@ -72,6 +72,12 @@ riga: se una parte non la so verificare, quella parte non la uso.
   costi e comuni coperti
 - [Siti web a Casale Monferrato](https://www.modicamichele.it/siti-web-casale-monferrato):
   siti per cantine, agriturismi, ristoranti e negozi del Monferrato
+- [Siti web a Novara](https://www.modicamichele.it/siti-web-novara): siti
+  per negozi, ristoranti, studi e imprese di Novara e provincia (Galliate,
+  Trecate, Cameri); primo incontro di persona, poi a distanza
+- [Siti web a Chivasso](https://www.modicamichele.it/siti-web-chivasso):
+  siti per negozi, pasticcerie, artigiani e associazioni di Chivasso e dei
+  comuni vicini (Verolengo, Torrazza Piemonte, Brandizzo)
 
 ## Progetti
 

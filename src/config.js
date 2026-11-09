@@ -54,13 +54,14 @@ export const SITE = {
    * Solo dove c'è davvero qualcosa di diverso da dire: una pagina per ogni
    * comune del raggio, con lo stesso testo e il nome sostituito, è contenuto
    * duplicato — Google la riconosce e indebolisce anche le pagine buone.
-   * Trino non ce l'ha perché è la sede e ne parlano già home e contatti;
-   * Novara e Chivasso non ancora, e finché non ce l'hanno restano testo
-   * semplice nel piede senza che si rompa niente.
+   * Trino non ce l'ha perché è la sede e ne parlano già home e contatti.
+   * Novara e Chivasso aggiunte a novembre 2026, ciascuna con testi suoi.
    */
   pagineZona: {
     Vercelli: '/siti-web-vercelli',
     'Casale Monferrato': '/siti-web-casale-monferrato',
+    Novara: '/siti-web-novara',
+    Chivasso: '/siti-web-chivasso',
   },
 
   /**

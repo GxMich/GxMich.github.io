@@ -1,0 +1,150 @@
+---
+/**
+ * Chivasso.
+ *
+ * Quello che è vero di Chivasso e non delle altre città: è in provincia di
+ * Torino, a mezz'ora di treno dal capoluogo, ed è il nodo dove si incrociano
+ * le linee per Milano, Aosta e Casale. Chi ci vive lavora spesso a Torino, e
+ * le proposte per un sito arrivano da lì. Da Trino si arriva lungo il Po,
+ * passando per Crescentino e Saluggia.
+ *
+ * Nessun cliente a Chivasso. I due lavori mostrati sono progetti miei, e la
+ * scheda lo dichiara: un'impresa tecnica e un evento di paese, i due tipi di
+ * attività più comuni lungo questa strada.
+ */
+import { getCollection } from 'astro:content';
+import Guscio from '../layouts/Guscio.astro';
+import Zona from '../components/sezioni/Zona.astro';
+import { SITE } from '../config.js';
+import { ID, domande, briciole } from '../lib/schema.ts';
+
+const citta = 'Chivasso';
+const percorso = '/siti-web-chivasso';
+
+const slugVicini = ['voltaria-impianti', 'carnevale-trino'];
+
+const progetti = await getCollection('progetti');
+const nature = {
+  cliente: 'Per un cliente',
+  iniziativa: 'Su iniziativa',
+  interno: 'Lavoro interno',
+} as const;
+
+const lavori = slugVicini
+  .map((s) => progetti.find((p) => p.id === s))
+  .filter((p): p is NonNullable<typeof p> => Boolean(p))
+  .map((p) => ({
+    href: `/progetti/${p.id}`,
+    titolo: p.data.titolo,
+    cliente: nature[p.data.natura],
+    riassunto: p.data.riassunto,
+    anno: p.data.anno,
+    immagine: p.data.schermate[0]?.src ?? p.data.anteprima,
+  }));
+
+const perche = [
+  "Da Trino a Chivasso è una mezz'ora abbondante lungo il Po, passando per Crescentino e Saluggia. È la strada che faccio quando vado verso Torino, e i paesi in mezzo sono gli stessi in cui lavoro già.",
+  "Chivasso sta in provincia di Torino, e si sente: molti lavorano in città, e chi ha un'attività qui riceve proposte da agenzie torinesi abituate a clienti più grandi. Per un negozio o un artigiano di Chivasso spesso è troppo, e il sito finisce per non farlo nessuno.",
+  "Chi vive a Chivasso e lavora fuori fa le sue ricerche la sera o in treno, dal telefono: cerca chi è aperto il sabato, chi fa un certo lavoro, dove ordinare una torta. Vince chi ha una pagina chiara che risponde subito, non chi ha il sito più grande.",
+];
+
+const attivita = [
+  {
+    titolo: 'Pasticcerie, bar e ristoranti',
+    testo:
+      "Chivasso ha i nocciolini e una tradizione di pasticceria che chi passa di qui conosce. Un sito con le foto vere del banco, gli orari e la possibilità di ordinare porta in negozio anche chi la città la attraversa soltanto.",
+  },
+  {
+    titolo: 'Negozi del centro',
+    testo:
+      "Contro i centri commerciali della cintura torinese il negozio di città vince sul consiglio e sulla fiducia. Il sito serve a farlo sapere prima che il cliente esca di casa: cosa tratti, cosa sai fare, quando sei aperto.",
+  },
+  {
+    titolo: 'Artigiani e imprese',
+    testo:
+      "Fra Chivasso, Verolengo e Brandizzo lavorano tante imprese tecniche: impianti, edilizia, officine, serramenti. Chi le cerca ha un problema e vuole sapere in fretta se fate quel lavoro, dove arrivate e come chiamarvi.",
+  },
+  {
+    titolo: 'Associazioni ed eventi',
+    testo:
+      "Feste, sagre, società sportive, gruppi che cambiano volontari ogni anno. Serve un sito che chiunque possa aggiornare senza chiamare me, ed è esattamente il lavoro che ho fatto per il Carnevale di Trino.",
+  },
+];
+
+const presenza = [
+  {
+    titolo: "Mezz'ora abbondante lungo il Po",
+    testo:
+      "Per il primo incontro vengo a Chivasso, da te, quando ti è comodo. Mi serve vedere il posto e capire chi entra dalla porta: le scelte più importanti del sito nascono lì, non al telefono.",
+  },
+  {
+    titolo: 'Niente riunioni in videochiamata',
+    testo:
+      "Dopo il primo incontro ci sentiamo al telefono o su WhatsApp, quando ti fa comodo. Ti mando le pagine man mano che sono pronte e le guardi dal tuo telefono, come le guarderanno i tuoi clienti.",
+  },
+  {
+    titolo: 'Rispondo la sera',
+    testo:
+      "Di giorno ho un altro lavoro, quindi rispondo la sera e nel fine settimana. Te lo dico prima: i tempi di consegna non cambiano, la risposta a mezzogiorno sì.",
+  },
+];
+
+const faq = [
+  {
+    d: 'Quanto costa un sito a Chivasso?',
+    r: "Te lo dico nella prima risposta, con una cifra e non una forbice. Il prezzo dipende dalle pagine, dai testi, dalle foto e dai servizi da collegare. Dominio e hosting restano fuori, circa 50-120 euro l'anno pagati direttamente al fornitore e intestati a te. Nessun canone mensile obbligatorio.",
+  },
+  {
+    d: 'Lavori anche in provincia di Torino?',
+    r: "Sì. Chivasso e i comuni intorno, come Verolengo, Torrazza Piemonte, Rondissone, Brandizzo e Castagneto Po, stanno dentro i sessanta chilometri che copro di persona. Torino città è al limite: lì ci vediamo una volta, poi lavoriamo a distanza.",
+  },
+  {
+    d: 'Hai già lavorato per attività di Chivasso?',
+    r: "Non ancora, e lo scrivo apposta. I lavori qui sotto sono progetti miei, fatti per mostrare come lavoro su un'impresa tecnica e su un evento di paese: la scheda di ciascuno dice chiaramente che non sono clienti.",
+  },
+  {
+    d: 'Mi sistemi anche la scheda Google?',
+    r: "Sì, ed è spesso la prima cosa da fare: per un'attività di Chivasso la scheda Google porta contatti già dalle prime settimane. La sistemiamo insieme, la colleghiamo al sito e ti spiego come aggiornarla da solo.",
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: `Realizzazione siti web a ${citta}`,
+    serviceType: 'Progettazione e sviluppo di siti web per attività locali',
+    provider: { '@id': ID.persona },
+    areaServed: {
+      '@type': 'City',
+      name: citta,
+      containedInPlace: { '@type': 'AdministrativeArea', name: SITE.region },
+    },
+    url: `${SITE.url}${percorso}`,
+  },
+  domande(faq),
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: `Siti web a ${citta}`, percorso },
+  ]),
+];
+---
+
+<Guscio
+  titolo="Siti web a Chivasso — sviluppatore freelance | Michele Modica"
+  descrizione="Siti su misura per negozi, pasticcerie, ristoranti e artigiani di Chivasso e dintorni. Prezzo detto nella prima risposta, dominio intestato a te, nessun canone obbligatorio."
+  ogImage="/og/home.png"
+  jsonLd={jsonLd}
+>
+  <Zona
+    citta={citta}
+    righe={['Siti su misura', 'per chi lavora', 'a Chivasso.']}
+    intro="Sono uno sviluppatore web di Trino, a una mezz'ora abbondante da Chivasso lungo il Po. Faccio siti per negozi, pasticcerie, ristoranti, artigiani e associazioni della città e dei comuni intorno, senza agenzie e senza canoni."
+    perche={perche}
+    attivita={attivita}
+    presenza={presenza}
+    lavori={lavori}
+    lavoriTitolo="Due lavori per i mestieri di questa strada"
+    faq={faq}
+  />
+</Guscio>

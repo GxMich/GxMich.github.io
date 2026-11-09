@@ -1,0 +1,151 @@
+---
+/**
+ * Novara.
+ *
+ * Vale la regola di Vercelli e Casale: qui dentro sta solo quello che è vero
+ * di Novara. Cioè che è una città più grande delle altre due, che guarda a
+ * Milano (e le proposte per un sito arrivano spesso da lì), e che da Trino è
+ * la più lontana delle mie città: tre quarti d'ora, non venti minuti.
+ *
+ * Nessun cliente in città, ed è scritto nelle domande. I due lavori mostrati
+ * sono i due clienti veri, scelti perché sono fuori dai capoluoghi come gran
+ * parte delle attività del Novarese.
+ */
+import { getCollection } from 'astro:content';
+import Guscio from '../layouts/Guscio.astro';
+import Zona from '../components/sezioni/Zona.astro';
+import { SITE } from '../config.js';
+import { ID, domande, briciole } from '../lib/schema.ts';
+
+const citta = 'Novara';
+const percorso = '/siti-web-novara';
+
+/* I due clienti veri. Ronin sta a Vigevano, mezz'ora da Novara; la Corte nel
+   Monferrato. Nessuno dei due è in città, e la pagina non lo fa credere. */
+const slugVicini = ['ronin-karate-vigevano', 'la-corte-delle-4-stagioni'];
+
+const progetti = await getCollection('progetti');
+const nature = {
+  cliente: 'Per un cliente',
+  iniziativa: 'Su iniziativa',
+  interno: 'Lavoro interno',
+} as const;
+
+const lavori = slugVicini
+  .map((s) => progetti.find((p) => p.id === s))
+  .filter((p): p is NonNullable<typeof p> => Boolean(p))
+  .map((p) => ({
+    href: `/progetti/${p.id}`,
+    titolo: p.data.titolo,
+    cliente: nature[p.data.natura],
+    riassunto: p.data.riassunto,
+    anno: p.data.anno,
+    immagine: p.data.schermate[0]?.src ?? p.data.anteprima,
+  }));
+
+const perche = [
+  "Novara è la seconda città del Piemonte e guarda a Milano più che a Torino. Per chi ha un'attività qui vuol dire una cosa precisa: le proposte per un sito arrivano spesso da agenzie milanesi, con riunioni in videochiamata e preventivi pensati per aziende più grandi della tua.",
+  "Io sto a Trino, a circa tre quarti d'ora di strada. Non è dietro l'angolo, e non faccio finta che lo sia: vengo a Novara per il primo incontro e quando serve vedere il posto, il resto lo facciamo al telefono e su WhatsApp. È lo stesso modo in cui lavoro con i clienti che ho già, nessuno dei quali sta nel mio paese.",
+  "Chi cerca un'attività a Novara spesso non è di Novara: arriva da Galliate, da Trecate, dai paesi della pianura, o è di passaggio fra Torino e Milano. Non conosce la città e decide dal telefono, in pochi secondi. Per lui il sito deve dire subito dove sei, quando sei aperto e perché vale la pena venire.",
+];
+
+const attivita = [
+  {
+    titolo: 'Negozi del centro',
+    testo:
+      "Nelle vie del centro i negozi storici convivono con le catene. La catena ha il marchio, tu hai la persona dietro al banco e quello che sai del tuo mestiere: il sito serve a far arrivare questo a chi non è ancora entrato.",
+  },
+  {
+    titolo: 'Ristoranti, bar e pasticcerie',
+    testo:
+      "Gorgonzola, paniscia, biscottini: a Novara si viene anche per mangiare, e chi arriva da fuori sceglie dal telefono. Menu leggibile senza PDF, foto vere, orari giusti e un tasto per prenotare valgono più di qualsiasi slogan.",
+  },
+  {
+    titolo: 'Studi e professionisti',
+    testo:
+      "Con l'ospedale, l'università e gli uffici del capoluogo, Novara ha tanti studi: medici, legali, tecnici, consulenti. Chi vi cerca vuole capire di cosa vi occupate e come si fissa un appuntamento, senza dover telefonare per saperlo.",
+  },
+  {
+    titolo: 'Imprese e artigiani della provincia',
+    testo:
+      "Fra Novara, Galliate e Trecate ci sono tante piccole imprese che lavorano bene e online quasi non esistono. Per loro basta poco: cosa fanno, dove arrivano, qualche lavoro fatto e un numero da chiamare.",
+  },
+];
+
+const presenza = [
+  {
+    titolo: "Tre quarti d'ora di strada",
+    testo:
+      "Per il primo incontro vengo io, da te, quando ti è più comodo. Vedere il negozio o lo studio mi serve per capire cosa raccontare e quali foto fare: è un'ora che fa risparmiare settimane.",
+  },
+  {
+    titolo: 'Il resto a distanza, ma sempre con me',
+    testo:
+      "Dopo il primo incontro ci sentiamo al telefono e su WhatsApp, e ti mando le pagine da guardare man mano che le costruisco. Non c'è un commerciale in mezzo: chi ti risponde è chi scrive il sito.",
+  },
+  {
+    titolo: 'Sera e fine settimana',
+    testo:
+      "Durante il giorno ho un altro lavoro, quindi rispondo la sera e nel fine settimana. I tempi di consegna restano quelli detti all'inizio, di solito tre o quattro settimane.",
+  },
+];
+
+const faq = [
+  {
+    d: 'Quanto costa un sito a Novara?',
+    r: "Te lo dico nella prima risposta, con una cifra sola. Dipende da quante pagine servono, da chi scrive i testi, dalle foto che hai e dai servizi da collegare, non dalla città. Fuori restano dominio e hosting, circa 50-120 euro l'anno, pagati da te al fornitore così restano intestati a te. Nessun canone mensile obbligatorio.",
+  },
+  {
+    d: 'Hai già clienti a Novara?',
+    r: "In città non ancora, e preferisco dirlo. I lavori più vicini sono il sito di Ronin Karate a Vigevano, a mezz'ora da Novara, e quello della Corte delle 4 Stagioni nel Monferrato: due clienti veri, che puoi andare a vedere online.",
+  },
+  {
+    d: 'Perché non un\'agenzia di Novara o di Milano?',
+    r: "A volte è la scelta giusta: se ti serve anche chi segue social, campagne e video, un'agenzia ha più mani di me. Con me hai una persona sola dall'inizio alla fine, il prezzo detto subito e un sito che resta intestato a te. Se capisco che ti serve altro, te lo dico prima.",
+  },
+  {
+    d: 'Vieni anche nei comuni intorno a Novara?',
+    r: "Sì: Galliate, Trecate, Cameri, Borgo Vercelli e i paesi fra Novara e Vercelli stanno dentro i sessanta chilometri che copro di persona. Più a nord, verso il lago, ci sentiamo a distanza dopo un primo incontro.",
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: `Realizzazione siti web a ${citta}`,
+    serviceType: 'Progettazione e sviluppo di siti web per attività locali',
+    provider: { '@id': ID.persona },
+    areaServed: {
+      '@type': 'City',
+      name: citta,
+      containedInPlace: { '@type': 'AdministrativeArea', name: SITE.region },
+    },
+    url: `${SITE.url}${percorso}`,
+  },
+  domande(faq),
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: `Siti web a ${citta}`, percorso },
+  ]),
+];
+---
+
+<Guscio
+  titolo="Siti web a Novara — sviluppatore freelance | Michele Modica"
+  descrizione="Siti su misura per negozi, ristoranti, studi e imprese di Novara e provincia. Prezzo detto nella prima risposta, dominio intestato a te, nessun canone obbligatorio."
+  ogImage="/og/home.png"
+  jsonLd={jsonLd}
+>
+  <Zona
+    citta={citta}
+    righe={['Siti su misura', 'per chi lavora', 'a Novara.']}
+    intro="Sono uno sviluppatore web di Trino, a tre quarti d'ora da Novara. Faccio siti per negozi, ristoranti, studi e imprese della città e della provincia: una persona sola dall'inizio alla fine, prezzo detto subito e sito intestato a te."
+    perche={perche}
+    attivita={attivita}
+    presenza={presenza}
+    lavori={lavori}
+    lavoriTitolo="Due clienti veri, fuori dai capoluoghi"
+    faq={faq}
+  />
+</Guscio>
