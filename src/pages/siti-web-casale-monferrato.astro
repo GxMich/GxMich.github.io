@@ -17,10 +17,10 @@ import { ID, domande, briciole } from '../lib/schema.ts';
 const citta = 'Casale Monferrato';
 const percorso = '/siti-web-casale-monferrato';
 
-/* I due lavori che parlano la lingua di questa zona: l'agriturismo e
-   l'osteria. Sono progetti nati da me e la scheda lo dichiara — mostrarli
-   qui è mostrare come lavoro, non far credere di avere clienti a Casale. */
-const slugVicini = ['podere-vallescura', 'osteria-nodo'];
+/* Due clienti veri a pochi chilometri da Casale: l'officina di Frassineto Po
+   e il B&B di Ozzano Monferrato. Prima qui c'erano due concept (agriturismo e
+   osteria): con due lavori reali della zona la pagina dice di più. */
+const slugVicini = ['lm-autoservizi', 'la-corte-delle-4-stagioni'];
 
 const progetti = await getCollection('progetti');
 const nature = {
@@ -130,20 +130,20 @@ const jsonLd = [
 ---
 
 <Guscio
-  titolo="Siti web a Casale Monferrato — freelance | Michele Modica"
+  titolo="Siti web a Casale Monferrato su misura, senza canone | Michele Modica"
   descrizione="Siti su misura per cantine, agriturismi, ristoranti e negozi di Casale Monferrato. Prezzo detto prima, dominio intestato a te, nessun canone obbligatorio."
   ogImage="/og/home.png"
   jsonLd={jsonLd}
 >
   <Zona
     citta={citta}
-    righe={['Siti su misura', 'per chi lavora', 'a Casale.']}
-    intro="Sono uno sviluppatore web di Trino, a un quarto d'ora da Casale Monferrato. Costruisco siti per cantine, agriturismi, ristoranti, negozi e imprese del Monferrato: fatti sul posto e su chi ci lavora, non su un modello comprato."
+    righe={['Siti web', 'a Casale Monferrato,', 'senza canone.']}
+    intro="Michele Modica è uno sviluppatore web freelance di Trino (VC), a un quarto d'ora da Casale Monferrato, che realizza siti su misura per cantine, agriturismi, ristoranti, negozi e imprese del Monferrato. Il prezzo lo sai alla prima risposta, dominio e hosting restano intestati a te, non c'è nessun canone obbligatorio e la prima mezz'ora è gratuita."
     perche={perche}
     attivita={attivita}
     presenza={presenza}
     lavori={lavori}
-    lavoriTitolo="Due lavori che parlano questa lingua"
+    lavoriTitolo="Due clienti veri, a due passi da Casale"
     faq={faq}
   />
 </Guscio>
