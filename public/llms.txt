@@ -1,9 +1,8 @@
-# Michele Modica — sviluppatore web e software
+# Michele Modica — sviluppatore web
 
-> Sviluppo siti su misura per attività locali fra Vercelli, Casale Monferrato,
-> Novara e Chivasso, e strumenti su misura per processi aziendali che si
-> inceppano. Sto a Trino (VC). Lavoro di persona in zona e da remoto in tutta
-> Italia. Prendo pochi progetti l'anno.
+> Faccio siti web su misura per attività locali fra Vercelli, Casale
+> Monferrato, Novara e Chivasso, e rifaccio o miglioro siti esistenti. Sto a
+> Trino (VC) e lavoro di persona in zona. Prendo pochi progetti l'anno.
 
 ## In breve
 
@@ -12,13 +11,13 @@
   alla fine.
 - **Dove**: sede a Trino (VC), 13039, Piemonte. Di persona in un raggio di
   circa 60 km: Vercelli, Casale Monferrato, Novara, Chivasso, Crescentino,
-  Santhià, Livorno Ferraris, Saluggia. Da remoto in tutta Italia.
+  Santhià, Livorno Ferraris, Saluggia. Più lontano a distanza, su richiesta.
 - **Per chi**: ristoranti e locali, negozi e botteghe, studi professionali,
   artigiani e imprese tecniche, B&B e agriturismi, associazioni.
 - **Cosa**: siti web su misura per attività locali (sito vetrina, cataloghi
   con pochi prodotti, siti bilingue, pannello per aggiornare testi, foto e
-  prezzi), sistemazione e collegamento della scheda Google, strumenti e
-  automazioni su misura per aziende.
+  prezzi), rifacimento e miglioramento di siti esistenti, sistemazione e
+  collegamento della scheda Google.
 - **Condizioni**: preventivo con una cifra unica alla prima risposta; dominio
   e hosting intestati al cliente; nessun canone obbligatorio; prima mezz'ora
   di consulenza gratuita; tempi tipici 3–4 settimane.
@@ -48,6 +47,7 @@
 
 E-commerce complessi con magazzino, taglie, spedizioni e resi. Assistenza
 mensile a canone obbligatorio. Consegne sotto la settimana. Gestione dei social.
+Software gestionali, automazioni e strumenti aziendali: non sono più un servizio.
 
 ## Sull'intelligenza artificiale
 
@@ -89,6 +89,10 @@ riga: se una parte non la so verificare, quella parte non la uso.
   sito per un cliente, online. Associazione di karate a Vigevano: corso
   suggerito in base all'età, messaggio WhatsApp composto dal sito senza
   backend, 98 articoli recuperati dal vecchio WordPress. Astro 5, GSAP.
+- [L.M. Autoservizi](https://www.modicamichele.it/progetti/lm-autoservizi) —
+  sito per un cliente, online. Officina multimarca a Frassineto Po: tutto in
+  una pagina, servizi da toccare con il messaggio WhatsApp già scritto,
+  nessun cookie, scheda Google riordinata. Generatore statico in Python, GSAP.
 - [Banco olografico](https://www.modicamichele.it/progetti/banco-olografico) —
   ricerca, in corso. Visualizzatore CAD nel browser: un motore bicilindrico da
   115 componenti veri si smonta muovendo le mani davanti alla webcam. Three.js,
@@ -113,9 +117,9 @@ perché non ne sono ancora state raccolte di vere.
 ## Contatti
 
 - Email: info@modicamichele.it
-- WhatsApp: +39 375 995 2066
+- WhatsApp: +39 353 421 4628
 - Zona: Trino (VC), e di persona fra Vercelli, Casale Monferrato, Novara e
-  Chivasso. Da remoto in tutta Italia per i lavori su processi.
+  Chivasso.
 - Scheda Google: https://maps.google.com/?cid=11384881009517492426
   (nome sulla scheda: "Modica Michele Web Service")
 - Instagram: https://www.instagram.com/modicamichele.web/

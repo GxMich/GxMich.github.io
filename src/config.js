@@ -6,7 +6,7 @@ export const SITE = {
   url: 'https://www.modicamichele.it',
   name: 'Michele Modica',
   /** Usato nel titolo delle pagine: "Titolo — Michele Modica, sviluppatore web" */
-  tagline: 'Sviluppatore web e software',
+  tagline: 'Sviluppatore web',
   /** L'indirizzo pubblico: contatti, piede, privacy e dati strutturati. */
   email: 'info@modicamichele.it',
   /**
@@ -15,8 +15,8 @@ export const SITE = {
    */
   emailDiretta: 'michele@modicamichele.it',
   /** Solo cifre, con prefisso internazionale: serve per il link wa.me */
-  whatsapp: '393759952066',
-  whatsappLabel: '+39 375 995 2066',
+  whatsapp: '393534214628',
+  whatsappLabel: '+39 353 421 4628',
 
   /**
    * Niente partita IVA: il lavoro va come prestazione occasionale, quindi in

@@ -2,9 +2,9 @@
 /**
  * Servizi.
  *
- * Sito su misura per primo e sviluppato, tool e automazioni come secondo
- * blocco più corto: l'ordine segue chi arriva su questa pagina, non la
- * quantità di lavoro che c'è dietro le due cose.
+ * Sito nuovo per primo e sviluppato, rifacimento di un sito esistente come
+ * secondo blocco più corto. Da novembre 2026 il sito parla solo di siti web:
+ * tool e automazioni non sono più un servizio.
  *
  * Le domande stanno in pagina e nei dati strutturati con la stessa risposta,
  * parola per parola. Metterne due versioni diverse è il modo più veloce per
@@ -62,10 +62,10 @@ const prezzoDipende = [
   { titolo: 'Cosa deve collegarsi', testo: 'Menù digitale, prenotazioni, newsletter, gestionale: ogni pezzo aggiunge lavoro.' },
 ];
 
-const sistemi = [
-  { titolo: 'Automazioni', testo: 'Quel lavoro manuale che qualcuno rifà uguale ogni lunedì: rapporti, copia-incolla fra sistemi, controlli ripetitivi. Si toglie di mezzo una volta sola.' },
-  { titolo: 'Strumenti interni', testo: 'Piccoli applicativi fatti sul vostro processo, non sul processo medio di un software commerciale che poi vi tocca aggirare.' },
-  { titolo: 'Dashboard e dati', testo: 'Numeri sparsi in fogli diversi riuniti in una schermata sola che si aggiorna da sé, con dentro solo le cose che guardate davvero.' },
+const rifare = [
+  { titolo: 'Rifarlo da capo', testo: "Quando il sito è vecchio, lento sul telefono o non sembra più la tua attività. Si riparte dai contenuti che funzionano e si butta il resto, senza perdere l'indirizzo che la gente conosce." },
+  { titolo: "Sistemarlo dov'è", testo: 'Quando la base regge ma qualcosa non va: orari sbagliati, foto vecchie, un modulo che non arriva a nessuno, pagine che non si aprono. Ti dico prima cosa conviene toccare e cosa no.' },
+  { titolo: 'Fartelo trovare', testo: 'Titoli e descrizioni riscritti, dati strutturati, scheda Google sistemata e collegata al sito: per comparire quando in zona cercano quello che fai.' },
 ];
 
 const faq = [
@@ -73,7 +73,7 @@ const faq = [
   { d: 'Quanti clienti segui alla volta?', r: "Pochi, e li conto: voglio seguire personalmente ogni progetto dall'idea alla pubblicazione. Quando ti rispondo vuol dire che ho davvero il tempo per il tuo, e se in quel momento sono pieno te lo dico subito invece di metterti in coda senza dirtelo." },
   { d: 'Quanto tempo ci vuole?', r: 'Di solito tre o quattro settimane dalla prima conversazione alla messa online. Non faccio consegne sotto la settimana: un lavoro su misura ha bisogno di tempo per essere capito, e comprimerlo si vede nel risultato.' },
   { d: 'Devo pagare un canone mensile?', r: 'No. Il prezzo è una tantum e non ti lego a nessun abbonamento. Se in seguito vuoi un accordo di manutenzione lo facciamo, ma è una scelta tua e non una condizione per lavorare insieme.' },
-  { d: 'Lavori solo in zona o anche a distanza?', r: "Sto a Trino, in provincia di Vercelli. Di persona lavoro fra Vercelli, Casale Monferrato, Novara e Chivasso, e per i siti di attività locali preferisco così: bisogna vedere il posto. Per i tool e le automazioni lavoro da remoto in tutta Italia senza problemi, perché lì l'oggetto del lavoro è un processo e non un locale." },
+  { d: 'Lavori solo in zona o anche a distanza?', r: "Sto a Trino, in provincia di Vercelli. Di persona lavoro fra Vercelli, Casale Monferrato, Novara e Chivasso, e per i siti di attività locali preferisco così: bisogna vedere il posto. Se sei più lontano si può fare lo stesso, con telefonate e videochiamate: in quel caso mi aiuti tu a vedere l'attività con qualche foto e un video." },
   { d: 'Chi scrive i testi del sito?', r: 'La prima stesura la scrivo io, partendo da quello che mi racconti durante le conversazioni iniziali. Poi la correggiamo insieme finché suona come parli tu. Se hai già i testi pronti li usiamo e il lavoro si accorcia.' },
   { d: 'Posso aggiornare il sito da solo dopo la consegna?', r: 'Sì, e ti spiego come prima di chiudere il lavoro. Costruisco le cose in modo che cambiare un orario, un prezzo o una foto non richieda me. Se invece serve una modifica strutturale, quella la faccio io.' },
   { d: "Usi l'intelligenza artificiale per fare i siti?", r: "La uso come strumento, non come sostituto del mio lavoro: mi permette di esplorare più direzioni e di scrivere il codice ripetitivo in fretta. Strategia, design, contenuti e decisioni restano miei — la macchina propone, e spesso propone la cosa media." },
@@ -210,22 +210,21 @@ const jsonLd = [
     </div>
   </section>
 
-  <section class="sezione sistemi" aria-labelledby="tool">
+  <section class="sezione sistemi" id="rifare" aria-labelledby="rifare-titolo">
     <div class="contenitore">
       <div class="intestazione">
-        <p class="etichetta">02 · L'altra metà</p>
-        <h2 id="tool" class="h2">Tool e automazioni su misura</h2>
+        <p class="etichetta">02 · Hai già un sito</p>
+        <h2 id="rifare-titolo" class="h2">Rifare o migliorare il sito che hai</h2>
       </div>
 
       <p class="lede sfoca-entra" data-anima>
-        Per aziende e professionisti, anche da remoto in tutta Italia. Qui non esiste un
-        listino: il preventivo nasce da mezza giornata passata a guardare come lavorate
-        adesso.
+        Prima lo guardo, poi ti dico cosa farei. A volte basta sistemare tre cose, a volte
+        conviene ripartire: te lo dico con la cifra, prima di iniziare.
       </p>
 
       <ul class="voci tre">
         {
-          sistemi.map((v) => (
+          rifare.map((v) => (
             <li class="sfoca-entra" data-anima>
               <p class="h4">{v.titolo}</p>
               <p class="testo-sm">{v.testo}</p>
@@ -235,7 +234,7 @@ const jsonLd = [
       </ul>
 
       <p class="testo-sm">
-        <a class="freccia" href="/progetti">Guarda i sistemi che ho costruito <span aria-hidden="true">→</span></a>
+        <a class="freccia" href="/progetti">Guarda i siti che ho fatto <span aria-hidden="true">→</span></a>
       </p>
     </div>
   </section>

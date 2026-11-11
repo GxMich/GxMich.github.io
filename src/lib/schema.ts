@@ -67,7 +67,7 @@ export const persona = {
   '@type': 'Person',
   '@id': ID.persona,
   name: SITE.name,
-  jobTitle: 'Sviluppatore web e software',
+  jobTitle: 'Sviluppatore web',
   url: SITE.url,
   image: new URL(SITE.foto, SITE.url).href,
   email: `mailto:${SITE.email}`,
@@ -77,8 +77,7 @@ export const persona = {
   knowsAbout: [
     'Sviluppo web',
     'Siti per attività locali',
-    'Automazioni e script',
-    'Dashboard e analisi dati',
+    'Scheda Google Business Profile',
     'Visualizzazione 3D nel browser',
     'Accessibilità web',
     'Ottimizzazione per i motori di ricerca',
@@ -98,7 +97,7 @@ export const attivita = {
   name: `${SITE.name} — ${SITE.tagline}`,
   ...(SITE.nomeScheda && { alternateName: SITE.nomeScheda }),
   description:
-    'Siti su misura per attività locali e strumenti software su misura per aziende e professionisti, fra Trino, Vercelli, Casale Monferrato e Novara.',
+    'Siti web su misura per attività locali fra Trino, Vercelli, Casale Monferrato, Novara e Chivasso: prezzo detto prima, dominio intestato al cliente, nessun canone obbligatorio.',
   url: SITE.url,
   image: new URL(SITE.foto, SITE.url).href,
   email: `mailto:${SITE.email}`,
@@ -129,8 +128,8 @@ export const attivita = {
         '@type': 'Offer',
         itemOffered: {
           '@type': 'Service',
-          name: 'Tool e automazioni su misura',
-          serviceType: 'Sviluppo software su commessa',
+          name: 'Rifacimento e miglioramento di siti esistenti',
+          serviceType: 'Restyling siti web e posizionamento locale',
           provider: { '@id': ID.persona },
         },
       },

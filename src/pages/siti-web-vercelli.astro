@@ -20,10 +20,11 @@ import { ID, domande, briciole } from '../lib/schema.ts';
 const citta = 'Vercelli';
 const percorso = '/siti-web-vercelli';
 
-/* Un'impresa tecnica e un locale: sono le due facce del commercio di qui.
-   Entrambi nati da me, e la scheda lo dichiara — stanno qui come esempio di
-   come lavoro, non per far credere di avere clienti in centro a Vercelli. */
-const slugVicini = ['voltaria-impianti', 'pizzeria-moderna'];
+/* Due lavori veri della zona al posto dei due concept di prima: il Carnevale
+   di Trino è in provincia di Vercelli ed è il caso più locale che ho; L.M.
+   Autoservizi è un cliente vero con un'officina. Ognuna dichiara da dove nasce,
+   così nessuno pensa che abbia clienti in centro a Vercelli che non ho. */
+const slugVicini = ['carnevale-trino', 'lm-autoservizi'];
 
 const progetti = await getCollection('progetti');
 const nature = {
@@ -97,6 +98,14 @@ const faq = [
     r: "Te lo dico alla prima risposta, con una cifra e non una forbice. Dipende da quante pagine servono, da chi scrive i testi, dalle fotografie che hai già e da quanti servizi vanno collegati. Restano fuori dominio e hosting, circa 50-120 euro l'anno pagati direttamente al fornitore così restano intestati a te. Non c'è nessun canone mensile obbligatorio.",
   },
   {
+    d: 'Quanto tempo ci vuole per fare un sito?',
+    r: 'Di solito tre o quattro settimane dalla prima conversazione alla messa online. Un sito di una pagina sola, come quello di un\'officina, può stare in meno; un sito con più sezioni e testi da scrivere da zero sta in quelle quattro settimane.',
+  },
+  {
+    d: 'Lavori anche con i negozi del centro di Vercelli?',
+    r: "Sì: negozi, botteghe, bar e ristoranti del centro sono il tipo di attività per cui faccio siti. Vengo io in negozio, anche dopo la chiusura, guardo come lavori e cosa ti chiedono i clienti, e da lì decidiamo cosa mettere sul sito.",
+  },
+  {
     d: 'Hai un ufficio a Vercelli?',
     r: "No, e preferisco dirlo: sto a Trino, in provincia di Vercelli, e non ho una sede aperta al pubblico. Ci vediamo da te, che per un'attività locale è comunque il posto giusto in cui vedersi.",
   },
@@ -133,20 +142,20 @@ const jsonLd = [
 ---
 
 <Guscio
-  titolo="Siti web a Vercelli — sviluppatore freelance | Michele Modica"
+  titolo="Siti web a Vercelli su misura, senza canone | Michele Modica"
   descrizione="Siti su misura per ristoranti, negozi, studi e artigiani di Vercelli. Prezzo detto prima, dominio intestato a te, nessun canone obbligatorio. Prima mezz'ora senza impegno."
   ogImage="/og/home.png"
   jsonLd={jsonLd}
 >
   <Zona
     citta={citta}
-    righe={['Siti su misura', 'per chi lavora', 'a Vercelli.']}
-    intro="Sono uno sviluppatore web di Trino, a venti minuti da Vercelli. Costruisco siti per attività che hanno una faccia e vogliono che il sito abbia quella: ristoranti, negozi, studi e imprese artigianali del capoluogo e dei comuni intorno."
+    righe={['Siti web a Vercelli,', 'su misura', 'e senza canone.']}
+    intro="Michele Modica è uno sviluppatore web freelance di Trino (VC) che realizza siti su misura per ristoranti, negozi, studi e artigiani di Vercelli e provincia. Il prezzo lo sai alla prima risposta, dominio e hosting restano intestati a te, non c'è nessun canone obbligatorio e la prima mezz'ora è gratuita."
     perche={perche}
     attivita={attivita}
     presenza={presenza}
     lavori={lavori}
-    lavoriTitolo="Due lavori, due mestieri diversi"
+    lavoriTitolo="Due lavori di qui: una festa e un'officina"
     faq={faq}
   />
 </Guscio>
