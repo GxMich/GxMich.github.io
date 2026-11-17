@@ -36,6 +36,9 @@ const {
 const percorso = Astro.url.pathname.replace(/\/$/, '') || '/';
 const canonico = new URL(percorso, Astro.site ?? SITE.url);
 const urlOg = new URL(ogImage, Astro.site ?? SITE.url);
+// WhatsApp e Facebook tengono in memoria l'anteprima per indirizzo: quando
+// cambiano le immagini in public/og/, alzare questo numero.
+urlOg.searchParams.set('v', '2');
 const blocchi = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 
 /* Corta di proposito: sopra i 300ms una transizione smette di sembrare

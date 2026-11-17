@@ -53,8 +53,8 @@ const ALFABETO = [
 const PAGINE = [
   {
     file: 'home',
-    etichetta: 'Siti su misura — Vercelli · Casale Monferrato · Novara',
-    righe: ['Il tuo locale ha una faccia.', 'Il sito deve avere quella.'],
+    etichetta: 'Siti web — Vercelli · Novara · Casale · Chivasso',
+    righe: ['Siti web per farti trovare', 'da chi cerca quello che fai.'],
   },
   {
     file: 'chi-sono',
@@ -63,13 +63,13 @@ const PAGINE = [
   },
   {
     file: 'progetti',
-    etichetta: 'Lavori — siti e sistemi su misura',
+    etichetta: 'Lavori — siti su misura per attività locali',
     righe: ['I lavori,', 'raccontati per intero.'],
   },
   {
     file: 'servizi',
     etichetta: 'Cosa comprende un sito su misura',
-    righe: ['Cosa comprende.', 'E cosa no.'],
+    righe: ['Un sito su misura,', 'senza sorprese.'],
   },
   {
     file: 'contatti',
@@ -125,7 +125,7 @@ function scheda(pagina) {
   <rect x="80" y="486" width="1040" height="1" fill="${COLORI.inchiostro}"/>
   ${marchio}
   <text x="80" y="582" font-family="GeistMono" font-size="14" letter-spacing="2" fill="${COLORI.spento}">TRINO (VC)</text>
-  <text x="1120" y="540" text-anchor="end" font-family="GeistMono" font-size="17" letter-spacing="2" fill="${COLORI.spento}">SITI · SISTEMI · AUTOMAZIONI</text>
+  <text x="1120" y="540" text-anchor="end" font-family="GeistMono" font-size="17" letter-spacing="2" fill="${COLORI.spento}">SITI WEB SU MISURA</text>
 </svg>`;
 }
 
