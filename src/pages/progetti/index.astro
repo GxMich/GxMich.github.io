@@ -22,7 +22,10 @@ const progetti = await getCollection('progetti');
 const perOrdine = (a: (typeof progetti)[number], b: (typeof progetti)[number]) =>
   a.data.ordine - b.data.ordine;
 
-const siti = progetti.filter((p) => p.data.tipo === 'sito').sort(perOrdine);
+const siti = progetti.filter((p) => p.data.tipo === 'sito' && !p.data.demo).sort(perOrdine);
+const demo = progetti
+  .filter((p) => p.data.demo)
+  .sort((a, b) => perOrdine(a, b) || a.data.titolo.localeCompare(b.data.titolo, 'it'));
 const sistemi = progetti.filter((p) => p.data.tipo === 'tool').sort(perOrdine);
 
 const nature = {
@@ -48,7 +51,7 @@ function etichettaStato(stato?: string) {
 
 const jsonLd = [
   elencoProgetti(
-    [...siti, ...sistemi].map((p) => ({
+    [...siti, ...demo, ...sistemi].map((p) => ({
       titolo: p.data.titolo,
       slug: p.id,
       riassunto: p.data.riassunto,
@@ -120,6 +123,35 @@ const jsonLd = [
                 anno={p.data.anno}
                 immagine={p.data.schermate[0]?.src ?? p.data.anteprima}
                 primo={i === 0}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    demo.length > 0 && (
+      <section class="famiglia" aria-labelledby="demo">
+        <div class="contenitore">
+          <div class="intestazione">
+            <h2 id="demo" class="h2">Demo</h2>
+            <p class="testo-sm">
+              Siti completi per attività che non esistono: nomi, recapiti e prezzi sono
+              inventati. Servono a farti vedere come lavoro su settori diversi.
+            </p>
+          </div>
+
+          <div class="griglia-siti">
+            {demo.map((p) => (
+              <SchedaSito
+                href={`/progetti/${p.id}`}
+                titolo={p.data.titolo}
+                cliente="Demo, attività di fantasia"
+                riassunto={p.data.riassunto}
+                anno={p.data.anno}
+                immagine={p.data.schermate[0]?.src ?? p.data.anteprima}
               />
             ))}
           </div>

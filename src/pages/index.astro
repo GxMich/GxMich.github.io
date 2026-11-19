@@ -55,7 +55,8 @@ const nature = {
    In vetrina il titolo della scheda e' il problema, non il nome del progetto:
    chi guarda i lavori sta cercando qualcuno che risolva il suo, e «Pizzeria
    Moderna · 2026» non gli dice niente. Il nome resta sotto, come nota. */
-const lavori = [...progetti]
+const lavori = progetti
+  .filter((p) => !p.data.demo)
   .sort((a, b) => a.data.ordine - b.data.ordine)
   .map((p) => ({
     href: `/progetti/${p.id}`,

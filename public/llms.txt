@@ -106,6 +106,10 @@ riga: se una parte non la so verificare, quella parte non la uso.
 - [Carnevale di Trino](https://www.modicamichele.it/progetti/carnevale-trino) —
   iniziativa, completo. Dieci pagine statiche per una manifestazione
   tradizionale, aggiornabili da volontari che cambiano ogni anno.
+- [Demo](https://www.modicamichele.it/progetti#demo) — 25 siti completi per
+  attività di fantasia (ristorazione, negozi, artigiani, imprese edili e di
+  trasporto, sport, benessere). Nomi, recapiti, prezzi e recensioni sono
+  inventati e lo dicono: non sono clienti.
 
 ## Onestà sui numeri
 

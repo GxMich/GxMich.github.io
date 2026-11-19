@@ -23,7 +23,7 @@ import Guscio from '../layouts/Guscio.astro';
 import { SITE } from '../config.js';
 
 const progetti = (await getCollection('progetti'))
-  .filter((p) => p.data.tipo === 'sito')
+  .filter((p) => p.data.tipo === 'sito' && !p.data.demo)
   .sort((a, b) => b.data.anno - a.data.anno)
   .slice(0, 3);
 

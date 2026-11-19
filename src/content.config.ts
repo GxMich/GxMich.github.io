@@ -37,6 +37,12 @@ const progetti = defineCollection({
      *  - interno:    fatto dentro un'azienda, coperto da riservatezza
      */
     natura: z.enum(['cliente', 'iniziativa', 'interno']).default('cliente'),
+    /**
+     * Demo per un'attività di fantasia, con nomi e dati inventati.
+     * Sta in una sezione sua su /progetti e non entra nella vetrina della home,
+     * altrimenti i lavori per i clienti veri si perderebbero in mezzo.
+     */
+    demo: z.boolean().default(false),
     /** "In produzione dal 2023", "In corso — 85%", … */
     stato: z.string().optional(),
     /** Quanto è durato, in parole: "tre settimane" */
