@@ -1,0 +1,157 @@
+---
+/**
+ * Monferrato.
+ *
+ * La zona su cui punta il sito dal 19/11/2026: colline piene di cantine,
+ * agriturismi, B&B, dimore e location per eventi, cioè attività che vivono
+ * di clienti che arrivano da fuori e scelgono dallo schermo. Sono anche le
+ * attività per cui un sito fatto bene vale di più, perché ogni prenotazione
+ * diretta è una commissione in meno a un portale.
+ *
+ * Non è un comune, quindi niente «a Monferrato»: la pagina passa a Zona le
+ * preposizioni giuste. E non è un doppione di Casale: quella pagina parla
+ * della città e di chi ci arriva, questa delle colline e di chi ci accoglie.
+ *
+ * Nessun lavoro inventato: un cliente vero (la dimora di Ozzano) e due
+ * progetti su iniziativa, segnati come tali. Una cantina non l'ho ancora
+ * fatta, e la pagina lo dice invece di lasciarlo intendere.
+ */
+import { getCollection } from 'astro:content';
+import Guscio from '../layouts/Guscio.astro';
+import Zona from '../components/sezioni/Zona.astro';
+import { SITE } from '../config.js';
+import { ID, domande, briciole } from '../lib/schema.ts';
+
+const zona = 'Monferrato';
+const percorso = '/siti-web-monferrato';
+
+const slugVicini = ['la-corte-delle-4-stagioni', 'podere-vallescura', 'dimora-ocra'];
+
+const progetti = await getCollection('progetti');
+const nature = {
+  cliente: 'Per un cliente',
+  iniziativa: 'Su iniziativa',
+  interno: 'Lavoro interno',
+} as const;
+
+const lavori = slugVicini
+  .map((s) => progetti.find((p) => p.id === s))
+  .filter((p): p is NonNullable<typeof p> => Boolean(p))
+  .map((p) => ({
+    href: `/progetti/${p.id}`,
+    titolo: p.data.titolo,
+    cliente: nature[p.data.natura],
+    riassunto: p.data.riassunto,
+    anno: p.data.anno,
+    immagine: p.data.schermate[0]?.src ?? p.data.anteprima,
+  }));
+
+const perche = [
+  "Il Monferrato comincia dall'altra parte del Po, a dieci minuti da casa mia. Trino guarda le sue colline da sempre, e Camino, Pontestura, Ozzano e i paesi intorno a Casale sono la strada che faccio più spesso per lavoro.",
+  "Qui le attività che contano di più non vivono di chi passa davanti: cantine, agriturismi, B&B, dimore e location per eventi vivono di persone che arrivano da Torino, da Milano, dalla Svizzera o dal Nord Europa, e che scelgono settimane prima, dal telefono o dal divano. Per loro il sito è il posto dove si decide se partire.",
+  "Da quando i paesaggi vitivinicoli di Langhe-Roero e Monferrato sono patrimonio UNESCO, la concorrenza non è più il vicino di collina: sono le schede tutte uguali sui portali di prenotazione, che trattengono una commissione su ogni ospite. Un sito tuo, chiaro e veloce, è il modo per farti scegliere direttamente.",
+];
+
+const attivita = [
+  {
+    titolo: 'Cantine e produttori',
+    testo:
+      "Chi visita una cantina vuole sapere prima chi la manda avanti, cosa si assaggia, quanto dura la visita e come si prenota. Un catalogo di bottiglie non basta: servono le persone, il posto, le date delle degustazioni e un modo semplice per fissarne una.",
+  },
+  {
+    titolo: 'Agriturismi, B&B e dimore',
+    testo:
+      "Sul portale sei una riga fra trenta, con le stesse foto quadrate degli altri. Sul sito puoi mostrare le camere vere, la colazione, la vista, la strada per arrivare, e ricevere la richiesta senza commissione, via email o WhatsApp.",
+  },
+  {
+    titolo: 'Location per matrimoni ed eventi',
+    testo:
+      "Chi organizza un matrimonio o una festa confronta dieci posti prima di chiamarne due. Contano le foto degli spazi, quante persone ci stanno, cosa è compreso e un modulo che faccia le domande giuste al primo contatto.",
+  },
+  {
+    titolo: 'Ristoranti e trattorie di collina',
+    testo:
+      "La domenica a pranzo si decide il sabato sera, spesso da un'altra provincia. Menù aggiornato, giorni di apertura, indicazioni per arrivare e il numero da toccare: le quattro cose che fanno partire la macchina.",
+  },
+];
+
+const presenza = [
+  {
+    titolo: 'Vengo a vedere il posto',
+    testo:
+      "Per una cantina o una struttura ricettiva il posto è metà del prodotto. Vengo da te, giro le sale, le camere e le vigne, e capiamo insieme cosa va raccontato e quali foto mancano davvero.",
+  },
+  {
+    titolo: 'Leggero anche in collina',
+    testo:
+      "In collina il segnale va e viene, e chi ti cerca spesso è già in macchina. Faccio siti leggeri, che si aprono in fretta anche con una tacca, con l'indirizzo e la mappa a un tocco.",
+  },
+  {
+    titolo: 'In italiano e in inglese',
+    testo:
+      "Se una parte dei tuoi ospiti viene dall'estero, il sito nasce in due lingue, con testi pensati per chi non conosce la zona, non tradotti all'ultimo con un programma automatico.",
+  },
+];
+
+const faq = [
+  {
+    d: 'Quanto costa un sito per una cantina o un agriturismo nel Monferrato?',
+    r: "Te lo dico alla prima risposta, con una cifra e non una forbice. Dipende da quante pagine servono, dalle lingue, dalle foto che hai e da cosa va collegato, per esempio le richieste di prenotazione o il calendario delle visite. Restano fuori dominio e hosting, circa 50-120 euro l'anno pagati direttamente al fornitore così restano intestati a te. Nessun canone mensile obbligatorio.",
+  },
+  {
+    d: 'Sono già su Booking e sugli altri portali: mi serve anche un sito?',
+    r: "Il portale ti porta chi cercava una struttura qualsiasi, e trattiene una commissione su ogni prenotazione. Il sito ti porta chi cercava te, o chi ti ha visto sul portale e vuole controllare com'è davvero, e lì la richiesta arriva diretta. Non sono alternativi: il sito serve a far crescere la parte delle prenotazioni che non paghi a nessuno.",
+  },
+  {
+    d: 'Hai già fatto siti per cantine?',
+    r: "Una cantina non ancora. Ho fatto il sito di una dimora con tre camere a Ozzano Monferrato, in italiano e in inglese, e ho progettato su iniziativa quelli di un agriturismo e di un B&B. Il lavoro per una cantina è lo stesso: far vedere il posto, dire chi c'è dietro e rendere facile prenotare una visita.",
+  },
+  {
+    d: 'In quali paesi del Monferrato lavori?',
+    r: "Di persona in tutto il Monferrato casalese e nei paesi delle colline fino ad Asti: Casale, Camino, Pontestura, Ozzano, Moncalvo, Vignale, Rosignano, Cella Monte, Sala, Treville, Murisengo e gli altri. Più lontano lavoriamo lo stesso, a distanza, e ci vediamo quando serve.",
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: 'Realizzazione siti web nel Monferrato',
+    serviceType:
+      'Progettazione e sviluppo di siti web per cantine, agriturismi, B&B, location per eventi e ristoranti',
+    provider: { '@id': ID.persona },
+    areaServed: {
+      '@type': 'Place',
+      name: zona,
+      containedInPlace: { '@type': 'AdministrativeArea', name: SITE.region },
+    },
+    url: `${SITE.url}${percorso}`,
+  },
+  domande(faq),
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: 'Siti web nel Monferrato', percorso },
+  ]),
+];
+---
+
+<Guscio
+  titolo="Siti web nel Monferrato per cantine, agriturismi e B&B"
+  descrizione="Siti su misura per cantine, agriturismi, B&B, location ed eventi del Monferrato: veloci, in due lingue, con le richieste dirette. Nessun canone obbligatorio."
+  ogImage="/og/home.png"
+  jsonLd={jsonLd}
+>
+  <Zona
+    citta={zona}
+    nelLuogo="nel Monferrato"
+    dalLuogo="dal Monferrato"
+    righe={['Siti web', 'nel Monferrato,', 'per chi accoglie.']}
+    intro="Michele Modica è uno sviluppatore web freelance di Trino (VC), a dieci minuti dalle colline del Monferrato, che realizza siti su misura per cantine, agriturismi, B&B, dimore, location per eventi e ristoranti. Siti veloci anche in collina, in italiano e in inglese se servono, con le richieste che arrivano a te senza commissioni. Il prezzo lo sai alla prima risposta, dominio e hosting restano intestati a te e non c'è nessun canone obbligatorio."
+    perche={perche}
+    attivita={attivita}
+    presenza={presenza}
+    lavori={lavori}
+    lavoriTitolo="Un cliente nel Monferrato, due progetti per strutture come la tua"
+    faq={faq}
+  />
+</Guscio>

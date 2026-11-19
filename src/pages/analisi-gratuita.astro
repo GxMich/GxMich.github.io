@@ -1,0 +1,487 @@
+---
+/**
+ * Analisi gratuita — il motivo per scrivermi oggi.
+ *
+ * Chi sta valutando un sito spesso non è pronto per chiedere un preventivo,
+ * ma un parere sul suo sito o sulla sua scheda Google lo accetta volentieri.
+ * È il mini-audit delle guide 04 e 09, offerto anche online: una promessa
+ * precisa (tre cose, entro tre giorni), gratis e senza impegno.
+ *
+ * Il modulo funziona come quello dei contatti: il sito non invia e non salva
+ * niente, prepara un messaggio che il visitatore legge e invia da WhatsApp o
+ * dalla sua email. Per questo l'informativa resta quella che c'è già.
+ */
+import Guscio from '../layouts/Guscio.astro';
+import { SITE } from '../config.js';
+import { ID, briciole, domande } from '../lib/schema.ts';
+
+const guardo = [
+  {
+    titolo: 'Dal telefono',
+    testo: 'Quanto ci mette ad aprirsi, se si legge senza zoomare, se i bottoni si toccano col pollice.',
+  },
+  {
+    titolo: 'Su Google',
+    testo: 'Come compari cercando il tuo nome e il tuo lavoro, e com’è tenuta la scheda: foto, orari, recensioni.',
+  },
+  {
+    titolo: 'Il contatto',
+    testo: 'Se chi ti trova riesce a chiamarti o scriverti con un tocco, o se si perde prima.',
+  },
+  {
+    titolo: 'I testi',
+    testo: 'Se in tre secondi si capisce chi sei, cosa fai e dove. È la cosa che si sbaglia più spesso.',
+  },
+  {
+    titolo: 'Le regole',
+    testo: 'Privacy, cookie e dati che per legge devono esserci: quelli che mancano e quelli di troppo.',
+  },
+];
+
+const faq = [
+  {
+    d: 'È davvero gratis?',
+    r: "Sì. Ricevi le tre cose da sistemare per prime, con il perché e come si fa. Se vuoi sistemarle da solo o con chi ti segue già, va benissimo così.",
+  },
+  {
+    d: 'Non ho un sito: ha senso lo stesso?',
+    r: "Sì. Guardo la tua scheda Google e i profili social, cioè quello che vede oggi chi ti cerca, e ti dico cosa cambierei per primo.",
+  },
+  {
+    d: 'Cosa mi serve per chiederla?',
+    r: "Il nome dell'attività e un link: il sito, la scheda Google o la pagina Instagram o Facebook. Niente accessi e niente password.",
+  },
+  {
+    d: 'Poi mi chiami per vendermi qualcosa?',
+    r: "No. Ti mando l'analisi e basta. Se vuoi parlarne, o farti fare un preventivo, scrivi tu quando vuoi.",
+  },
+  {
+    d: 'In quanto tempo arriva?',
+    r: "Entro tre giorni. Ho un lavoro a turni, quindi le analisi le preparo la sera e nel fine settimana: se ne arrivano tante insieme te lo dico subito.",
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: 'Analisi gratuita del sito o della scheda Google',
+    serviceType: 'Analisi di siti web',
+    provider: { '@id': ID.persona },
+    areaServed: SITE.areas,
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'EUR',
+      description: 'Le tre cose da sistemare per prime nel sito o nella scheda Google, entro tre giorni.',
+    },
+  },
+  domande(faq),
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: 'Analisi gratuita', percorso: '/analisi-gratuita' },
+  ]),
+];
+---
+
+<Guscio
+  titolo="Analisi gratuita del tuo sito o della scheda Google"
+  descrizione="Mandami il link del tuo sito o della tua scheda Google: entro tre giorni ricevi le tre cose da sistemare per prime. Gratis e senza impegno."
+  ogImage="/og/analisi-gratuita.png"
+  jsonLd={jsonLd}
+>
+  <header class="testata">
+    <div class="contenitore">
+      <p class="etichetta">Analisi gratuita</p>
+      <h1 class="display">
+        <span class="riga">Le tre cose da sistemare</span>
+        <span class="riga">nel tuo sito, gratis.</span>
+      </h1>
+      <p class="lede">
+        Mandami il link del tuo sito o della tua scheda Google. Entro tre giorni ricevi le tre
+        cose che cambierei per prime, con il perché e come si fanno. Senza impegno.
+      </p>
+    </div>
+  </header>
+
+  <section class="sezione breve" aria-labelledby="in-breve">
+    <div class="contenitore">
+      <h2 id="in-breve" class="etichetta">In breve</h2>
+      <ul class="fatti">
+        <li><span class="dato">3</span><span class="testo-sm">cose da sistemare, in ordine di importanza</span></li>
+        <li><span class="dato">3 giorni</span><span class="testo-sm">al massimo per ricevere l'analisi</span></li>
+        <li><span class="dato">0 €</span><span class="testo-sm">e nessun obbligo di farle fare a me</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sezione richiesta" aria-labelledby="richiedi">
+    <div class="contenitore dentro">
+      <div class="testo">
+        <p class="etichetta">Richiedila</p>
+        <h2 id="richiedi" class="h2">Bastano il nome e un link.</h2>
+        <p class="testo-sm">
+          Il modulo prepara il messaggio: lo leggi e lo invii tu, da WhatsApp o dalla tua email.
+          Il sito non salva niente.
+        </p>
+      </div>
+
+      <form class="modulo" data-analisi data-whatsapp={SITE.whatsapp} data-email={SITE.email}>
+        <p class="campo">
+          <label for="analisi-attivita">Nome dell'attività</label>
+          <input id="analisi-attivita" name="attivita" type="text" required maxlength="120" autocomplete="organization" />
+        </p>
+
+        <p class="campo">
+          <label for="analisi-link">Link al sito, alla scheda Google o alla pagina social</label>
+          <input id="analisi-link" name="link" type="text" required maxlength="300" inputmode="url" placeholder="es. www.miaattivita.it" />
+        </p>
+
+        <p class="campo">
+          <label for="analisi-cosa">Cosa vorresti migliorare? (facoltativo)</label>
+          <textarea id="analisi-cosa" name="cosa" rows="3" maxlength="800" placeholder="Più chiamate, farti trovare su Google, un sito più moderno…"></textarea>
+        </p>
+
+        <div class="invii">
+          <button class="manda" type="submit" value="whatsapp">Chiedi l'analisi su WhatsApp</button>
+          <button class="manda fantasma" type="submit" value="email">Preferisco l'email</button>
+        </div>
+        <p class="informativa testo-sm">
+          Le risposte non vengono inviate né salvate dal sito. <a href="/privacy">Informativa privacy</a>.
+        </p>
+        <p class="esito testo-sm" data-esito role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <section class="sezione" aria-labelledby="cosa-guardo">
+    <div class="contenitore">
+      <div class="intestazione">
+        <p class="etichetta">Cosa guardo</p>
+        <h2 id="cosa-guardo" class="h2">Quello che vede un cliente prima di chiamarti.</h2>
+      </div>
+      <ul class="voci">
+        {
+          guardo.map((v) => (
+            <li>
+              <p class="h4">{v.titolo}</p>
+              <p class="testo-sm">{v.testo}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="testo-sm nota">
+        Sono gli stessi controlli che faccio sui siti che costruisco.
+        <a href="/progetti">Guarda i lavori</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="sezione domande" aria-labelledby="domande-analisi">
+    <div class="contenitore">
+      <h2 id="domande-analisi" class="h2 largo">Le domande di chi la chiede.</h2>
+      <dl class="faq">
+        {
+          faq.map((q) => (
+            <div class="qa">
+              <dt class="h4">{q.d}</dt>
+              <dd class="testo-sm">{q.r}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+</Guscio>
+
+<style>
+  .testata {
+    padding-block: clamp(40px, 6vw, 88px) clamp(24px, 3vw, 40px);
+  }
+
+  .testata .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(24px, 3vw, 40px);
+  }
+
+  .riga {
+    display: block;
+  }
+
+  .testata .lede {
+    margin-top: clamp(18px, 2.4vw, 28px);
+    max-width: 52ch;
+  }
+
+  .sezione {
+    padding-block: var(--section-sm);
+  }
+
+  .breve {
+    padding-block: 0 var(--section-sm);
+  }
+
+  .breve .etichetta {
+    margin: 0 0 var(--sp-4);
+  }
+
+  .fatti {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--sp-5) var(--col-gap);
+    border-top: 1px solid var(--ink);
+    padding-top: var(--sp-5);
+  }
+
+  .fatti li {
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+  }
+
+  .fatti .dato {
+    font-family: var(--font-ui);
+    font-size: var(--t-h2);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .richiesta {
+    background: var(--paper-sunk);
+  }
+
+  .dentro {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: start;
+  }
+
+  .testo {
+    display: grid;
+    gap: var(--sp-4);
+  }
+
+  .testo p {
+    max-width: 46ch;
+  }
+
+  .modulo {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  .campo {
+    display: grid;
+    gap: var(--sp-2);
+    margin: 0;
+  }
+
+  label {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  input,
+  textarea {
+    font: inherit;
+    font-size: var(--t-body);
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-1);
+    padding: 12px 14px;
+    width: 100%;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 96px;
+    line-height: 1.55;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible,
+  .manda:focus-visible {
+    outline: 2px solid var(--signal-ink);
+    outline-offset: 3px;
+  }
+
+  .invii {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+  }
+
+  .manda {
+    font-family: var(--font-ui);
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    background: var(--signal);
+    color: var(--signal-on);
+    border: 1px solid var(--signal);
+    border-radius: var(--radius-1);
+    padding: 13px 22px;
+    min-height: 48px;
+    transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+  }
+
+  .manda:hover {
+    background: var(--signal-ink);
+    color: var(--paper);
+  }
+
+  .manda.fantasma {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--ink-3);
+  }
+
+  .manda.fantasma:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .informativa,
+  .esito {
+    max-width: 52ch;
+    margin: calc(-1 * var(--sp-3)) 0 0;
+    color: var(--ink-2);
+  }
+
+  .informativa a,
+  .nota a {
+    color: var(--signal-ink);
+    text-underline-offset: 3px;
+  }
+
+  .intestazione {
+    display: grid;
+    gap: var(--sp-3);
+    padding-bottom: clamp(28px, 3.5vw, 48px);
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: clamp(28px, 3.5vw, 48px);
+  }
+
+  .intestazione .h2 {
+    max-width: 22ch;
+  }
+
+  .voci {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(24px, 3vw, 44px) var(--col-gap);
+  }
+
+  .voci li {
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule);
+  }
+
+  .nota {
+    margin-top: clamp(24px, 3vw, 40px);
+    color: var(--ink-2);
+  }
+
+  .largo {
+    max-width: 18ch;
+    padding-bottom: clamp(28px, 3.5vw, 48px);
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: clamp(28px, 3.5vw, 48px);
+  }
+
+  .faq {
+    display: grid;
+    border-top: 1px solid var(--ink);
+  }
+
+  .qa {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--sp-3) clamp(16px, 3vw, 48px);
+    padding: var(--sp-5) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .qa dd {
+    margin: 0;
+    max-width: 66ch;
+  }
+
+  @media (max-width: 1023px) {
+    .voci {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .dentro,
+    .voci,
+    .qa {
+      grid-template-columns: 1fr;
+    }
+
+    .fatti {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { segnaContatto } from '../lib/misure-contatti.ts';
+
+  function montaAnalisi() {
+    document.querySelectorAll<HTMLFormElement>('form[data-analisi]').forEach((form) => {
+      if (form.dataset.montato) return;
+      form.dataset.montato = 'si';
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
+
+        const canale = (event.submitter as HTMLButtonElement | null)?.value === 'email' ? 'email' : 'whatsapp';
+        const dati = new FormData(form);
+        const attivita = String(dati.get('attivita') || '').trim();
+        const link = String(dati.get('link') || '').trim();
+        const cosa = String(dati.get('cosa') || '').trim();
+
+        const righe = [
+          'Ciao Michele, vorrei l’analisi gratuita.',
+          '',
+          `Attività: ${attivita}`,
+          `Link: ${link}`,
+        ];
+        if (cosa) righe.push('', `Cosa vorrei migliorare: ${cosa}`);
+        const testo = righe.join('\n');
+
+        segnaContatto(canale === 'email' ? 'contatto_email' : 'contatto_whatsapp', { modulo: 'analisi' });
+
+        if (canale === 'email') {
+          const oggetto = `Analisi gratuita — ${attivita}`;
+          location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(testo)}`;
+        } else {
+          window.open(`https://wa.me/${form.dataset.whatsapp}?text=${encodeURIComponent(testo)}`, '_blank', 'noopener,noreferrer');
+        }
+
+        const esito = form.querySelector<HTMLElement>('[data-esito]');
+        if (esito) {
+          esito.textContent =
+            canale === 'email'
+              ? 'Messaggio pronto nella tua email: controllalo e invialo quando vuoi.'
+              : 'Messaggio pronto su WhatsApp: controllalo e premi Invia quando vuoi.';
+        }
+      });
+    });
+  }
+
+  montaAnalisi();
+  document.addEventListener('astro:page-load', montaAnalisi);
+</script>

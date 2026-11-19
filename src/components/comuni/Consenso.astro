@@ -5,7 +5,7 @@
  * Google Analytics non sta nel documento iniziale: lo script viene caricato
  * solo dopo un sì. Prima del consenso il browser non contatta Google.
  *
- * Due bottoni identici per forma e per numero di clic. Il rifiuto è il primo
+ * Due bottoni identici per forma, colore e numero di clic. Il rifiuto è il primo
  * che si incontra leggendo. Fare il no più piccolo, più chiaro o più lontano
  * è la definizione tecnica di consenso non valido: non è una questione di
  * galateo, è che il consenso raccolto così non vale e i dati raccolti con
@@ -35,10 +35,9 @@ const attiva = Boolean(ga4);
         <div class="testo">
           <p class="etichetta" id="consenso-titolo">Misure di traffico</p>
           <p class="testo-sm">
-            Mi piacerebbe sapere quante persone passano di qui e quali pagine leggono
-            davvero. Per farlo uso Google Analytics, che misura le visite e le pagine lette.
-            Si attiva solo se dici di sì; se rifiuti, il sito funziona allo stesso modo.{' '}
-            <a href="/privacy">Cosa raccolgono, per esteso</a>
+            Posso contare visite e pagine lette con Google Analytics? Si attiva solo se dici
+            di sì; se rifiuti, il sito funziona uguale.{' '}
+            <a href="/privacy">Dettagli</a>
           </p>
         </div>
 
@@ -99,8 +98,10 @@ const attiva = Boolean(ga4);
     gap: var(--sp-3);
   }
 
-  /* Stessa geometria per tutti e due: cambia il riempimento, non la
-     dimensione né lo sforzo per arrivarci. */
+  /* Stessa geometria e stesso colore per tutti e due. Prima il sì era pieno
+     arancio e il no solo bordato su fondo scuro: stessa misura ma non lo
+     stesso peso visivo, e la guida 27 (pari evidenza) chiede proprio quello.
+     L'arancio resta per le azioni del sito, non per il consenso. */
   .scelta {
     font-family: var(--font-ui);
     font-size: var(--t-body-sm);
@@ -108,7 +109,8 @@ const attiva = Boolean(ga4);
     letter-spacing: -0.01em;
     padding: 12px 22px;
     border-radius: var(--radius-1);
-    border: 1px solid var(--edge);
+    border: 1px solid var(--light-2);
+    background: transparent;
     color: var(--light);
     white-space: nowrap;
     transition:
@@ -118,16 +120,6 @@ const attiva = Boolean(ga4);
   }
 
   .scelta:hover {
-    border-color: var(--light-2);
-  }
-
-  .scelta.si {
-    background: var(--signal);
-    border-color: var(--signal);
-    color: var(--signal-on);
-  }
-
-  .scelta.si:hover {
     background: var(--light);
     border-color: var(--light);
     color: var(--stage);
@@ -140,7 +132,15 @@ const attiva = Boolean(ga4);
     }
 
     .scelta {
-      flex: 1 1 auto;
+      flex: 1 1 0;
+    }
+
+    .fascia {
+      padding-block: var(--sp-4) calc(var(--sp-4) + env(safe-area-inset-bottom));
+    }
+
+    .dentro {
+      gap: var(--sp-3);
     }
   }
 </style>

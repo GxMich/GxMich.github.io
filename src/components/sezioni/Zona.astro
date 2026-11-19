@@ -15,6 +15,7 @@
  * le domande della zona.
  */
 import SchedaSito from '../comuni/SchedaSito.astro';
+import Bottone from '../comuni/Bottone.astro';
 import Invito from './Invito.astro';
 import { SITE } from '../../config.js';
 
@@ -42,6 +43,10 @@ interface Props {
   /** Titolo della fascia dei lavori: dice perché quei lavori stanno qui. */
   lavoriTitolo?: string;
   faq: { d: string; r: string }[];
+  /** «a Vercelli», ma «nel Monferrato»: per le zone che non sono un comune. */
+  nelLuogo?: string;
+  /** «da Vercelli», ma «dal Monferrato». */
+  dalLuogo?: string;
 }
 
 const {
@@ -54,29 +59,38 @@ const {
   lavori = [],
   lavoriTitolo = 'Lavori della zona',
   faq,
+  nelLuogo = `a ${citta}`,
+  dalLuogo = `da ${citta}`,
 } = Astro.props;
 ---
 
 <header class="testata">
   <div class="contenitore">
     <p class="etichetta">Dove lavoro · {citta}</p>
-    <h1 class="display otturatore" data-anima>
+    <h1 class="display">
       {righe.map((r) => (
         <span class="riga"><span>{r}</span></span>
       ))}
     </h1>
-    <p class="lede sfoca-entra" data-anima>{intro}</p>
+    <p class="lede">{intro}</p>
 
     <p class="testo-sm da-dove">
-      Sto a {SITE.city} ({SITE.provincia}). Di persona lavoro fra Vercelli, Casale
-      Monferrato, Novara e Chivasso: il primo incontro lo facciamo nella tua attività.
+      Sto a {SITE.city} ({SITE.provincia}). Di persona lavoro nel Monferrato e fra
+      Casale, Vercelli, Novara e Chivasso: il primo incontro lo facciamo nella tua attività.
+    </p>
+
+    {/* Il bottone nella prima schermata: chi arriva da una ricerca su
+        «siti web {città}» deve poter scrivere senza scorrere tutta la pagina. */}
+    <p class="inviti-testata">
+      <Bottone href="/contatti">Parliamo del tuo progetto</Bottone>
+      <Bottone href="/analisi-gratuita" variante="fantasma">Analisi gratuita del tuo sito</Bottone>
     </p>
   </div>
 </header>
 
 <section class="sezione" aria-labelledby="perche">
   <div class="contenitore">
-    <h2 id="perche" class="h2 largo">Perché lavoro a {citta}.</h2>
+    <h2 id="perche" class="h2 largo">Perché lavoro {nelLuogo}.</h2>
     <div class="prosa">
       {perche.map((p) => (
         <p class="sfoca-entra" data-anima>{p}</p>
@@ -150,7 +164,7 @@ const {
 
 <section class="sezione incassata" aria-labelledby="domande">
   <div class="contenitore">
-    <h2 id="domande" class="h2 largo">Le domande di chi mi scrive da {citta}.</h2>
+    <h2 id="domande" class="h2 largo">Le domande di chi mi scrive {dalLuogo}.</h2>
 
     <dl class="faq">
       {faq.map((q) => (
@@ -166,6 +180,13 @@ const {
 <Invito />
 
 <style>
+  .inviti-testata {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    margin-top: clamp(20px, 2.6vw, 32px);
+  }
+
   .testata {
     padding-block: clamp(40px, 6vw, 88px) clamp(32px, 4vw, 56px);
   }

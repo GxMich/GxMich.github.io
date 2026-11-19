@@ -1,0 +1,294 @@
+---
+/**
+ * L'impaginazione di una pagina di servizio secondario.
+ *
+ * Il servizio principale (sito su misura) sta in /servizi. Gli altri due —
+ * rifare il sito che hai, sistemare la scheda Google — prima erano solo
+ * sezioni lì dentro: chi cercava proprio quello non trovava una pagina che
+ * rispondesse. Ora ognuno ha la sua, con la stessa struttura: cosa è, in
+ * breve, quando serve, cosa faccio, un caso vero, le domande, i contatti.
+ *
+ * Come per le città, qui c'è solo la forma: i testi arrivano dalle proprietà.
+ */
+import Invito from './Invito.astro';
+import Bottone from '../comuni/Bottone.astro';
+
+interface Voce {
+  titolo: string;
+  testo: string;
+}
+
+interface Sezione {
+  occhiello: string;
+  titolo: string;
+  intro?: string;
+  voci: Voce[];
+  scura?: boolean;
+}
+
+interface Props {
+  occhiello: string;
+  righe: string[];
+  lede: string;
+  breve: { dato: string; testo: string }[];
+  sezioni: Sezione[];
+  caso?: { etichetta: string; titolo: string; testo: string; href: string };
+  faq: { d: string; r: string }[];
+}
+
+const { occhiello, righe, lede, breve, sezioni, caso, faq } = Astro.props;
+---
+
+<header class="testata">
+  <div class="contenitore">
+    <p class="etichetta">{occhiello}</p>
+    <h1 class="display">
+      {righe.map((r) => <span class="riga">{r}</span>)}
+    </h1>
+    <p class="lede">{lede}</p>
+    <p class="inviti">
+      <Bottone href="/analisi-gratuita">Richiedi l'analisi gratuita</Bottone>
+      <Bottone href="/contatti" variante="fantasma">Parliamone</Bottone>
+    </p>
+  </div>
+</header>
+
+<section class="sezione breve" aria-labelledby="in-breve">
+  <div class="contenitore">
+    <h2 id="in-breve" class="etichetta">In breve</h2>
+    <ul class="fatti">
+      {
+        breve.map((b) => (
+          <li>
+            <span class="dato">{b.dato}</span>
+            <span class="testo-sm">{b.testo}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+{
+  sezioni.map((s, i) => (
+    <section class:list={['sezione', { scura: s.scura }]} aria-labelledby={`sezione-${i}`}>
+      <div class="contenitore">
+        <div class="intestazione">
+          <p class="etichetta">{s.occhiello}</p>
+          <h2 id={`sezione-${i}`} class="h2">{s.titolo}</h2>
+          {s.intro && <p class="lede">{s.intro}</p>}
+        </div>
+        <ul class:list={['voci', s.voci.length % 3 === 0 ? 'tre' : 'due']}>
+          {s.voci.map((v) => (
+            <li class="sfoca-entra" data-anima>
+              <p class="h4">{v.titolo}</p>
+              <p class="testo-sm">{v.testo}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  ))
+}
+
+{
+  caso && (
+    <section class="sezione caso su-palco" aria-labelledby="caso-titolo">
+      <div class="contenitore">
+        <p class="etichetta">{caso.etichetta}</p>
+        <h2 id="caso-titolo" class="h2">{caso.titolo}</h2>
+        <p class="lede">{caso.testo}</p>
+        <p>
+          <a class="freccia" href={caso.href}>
+            Leggi il caso per intero <span aria-hidden="true">→</span>
+          </a>
+        </p>
+      </div>
+    </section>
+  )
+}
+
+<section class="sezione" aria-labelledby="domande-servizio">
+  <div class="contenitore">
+    <h2 id="domande-servizio" class="h2 largo">Le domande che mi fanno.</h2>
+    <dl class="faq">
+      {
+        faq.map((q) => (
+          <div class="qa">
+            <dt class="h4">{q.d}</dt>
+            <dd class="testo-sm">{q.r}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<Invito />
+
+<style>
+  .testata {
+    padding-block: clamp(40px, 6vw, 88px) clamp(24px, 3vw, 40px);
+  }
+
+  .testata .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(24px, 3vw, 40px);
+  }
+
+  .riga {
+    display: block;
+  }
+
+  .testata .lede {
+    margin-top: clamp(18px, 2.4vw, 28px);
+    max-width: 56ch;
+  }
+
+  .inviti {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    margin-top: clamp(20px, 2.6vw, 32px);
+  }
+
+  .sezione {
+    padding-block: var(--section-sm);
+  }
+
+  .breve {
+    padding-block: 0 var(--section-sm);
+  }
+
+  .breve .etichetta {
+    margin: 0 0 var(--sp-4);
+  }
+
+  .fatti {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--sp-5) var(--col-gap);
+    border-top: 1px solid var(--ink);
+    padding-top: var(--sp-5);
+  }
+
+  .fatti li {
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+  }
+
+  .fatti .dato {
+    font-family: var(--font-ui);
+    font-size: var(--t-h3);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .scura {
+    background: var(--paper-sunk);
+  }
+
+  .intestazione {
+    display: grid;
+    gap: var(--sp-3);
+    padding-bottom: clamp(28px, 3.5vw, 48px);
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: clamp(28px, 3.5vw, 48px);
+  }
+
+  .intestazione .h2 {
+    max-width: 24ch;
+  }
+
+  .intestazione .lede {
+    max-width: 60ch;
+  }
+
+  .voci {
+    display: grid;
+    gap: clamp(24px, 3vw, 44px) var(--col-gap);
+  }
+
+  .voci.tre {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .voci.due {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .voci li {
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--rule);
+  }
+
+  .caso {
+    display: block;
+  }
+
+  .caso .contenitore {
+    display: grid;
+    gap: var(--sp-4);
+  }
+
+  .caso .h2,
+  .caso .lede {
+    max-width: 30ch;
+  }
+
+  .caso .lede {
+    max-width: 62ch;
+  }
+
+  .freccia {
+    color: var(--signal-ink);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .largo {
+    max-width: 18ch;
+    padding-bottom: clamp(28px, 3.5vw, 48px);
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: clamp(28px, 3.5vw, 48px);
+  }
+
+  .faq {
+    display: grid;
+    border-top: 1px solid var(--ink);
+  }
+
+  .qa {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--sp-3) clamp(16px, 3vw, 48px);
+    padding: var(--sp-5) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .qa dd {
+    margin: 0;
+    max-width: 66ch;
+  }
+
+  @media (max-width: 1023px) {
+    .voci.tre {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .fatti,
+    .voci.tre,
+    .voci.due,
+    .qa {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

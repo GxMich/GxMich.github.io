@@ -1,0 +1,150 @@
+---
+/**
+ * Trino.
+ *
+ * La sede. Prima non aveva una pagina perché «ne parlano già home e
+ * contatti», ma la home ora parla dell'attività e non delle città, e su
+ * «siti web Trino» non c'era nessuna pagina che rispondesse. È anche l'unico
+ * comune dove l'analisi del 16/11/2026 non ha trovato concorrenti.
+ *
+ * Il testo è diverso dalle altre città perché la situazione è diversa: qui ci
+ * si conosce, il passaparola funziona già, e il sito serve a chi arriva da
+ * fuori o cerca la sera dal telefono. Nessun cliente inventato: i lavori sono
+ * il Carnevale (fatto qui) e due clienti a mezz'ora.
+ */
+import { getCollection } from 'astro:content';
+import Guscio from '../layouts/Guscio.astro';
+import Zona from '../components/sezioni/Zona.astro';
+import { SITE } from '../config.js';
+import { ID, domande, briciole } from '../lib/schema.ts';
+
+const citta = 'Trino';
+const percorso = '/siti-web-trino';
+
+const slugVicini = ['carnevale-trino', 'lm-autoservizi', 'la-corte-delle-4-stagioni'];
+
+const progetti = await getCollection('progetti');
+const nature = {
+  cliente: 'Per un cliente',
+  iniziativa: 'Su iniziativa',
+  interno: 'Lavoro interno',
+} as const;
+
+const lavori = slugVicini
+  .map((s) => progetti.find((p) => p.id === s))
+  .filter((p): p is NonNullable<typeof p> => Boolean(p))
+  .map((p) => ({
+    href: `/progetti/${p.id}`,
+    titolo: p.data.titolo,
+    cliente: nature[p.data.natura],
+    riassunto: p.data.riassunto,
+    anno: p.data.anno,
+    immagine: p.data.schermate[0]?.src ?? p.data.anteprima,
+  }));
+
+const perche = [
+  "Trino è dove vivo. Non è una zona che servo da fuori: è il posto dove faccio la spesa, dove passo davanti alle vetrine e dove conosco di vista metà delle persone che hanno un'attività in centro.",
+  "In un paese così il passaparola funziona già, e nessun sito lo sostituisce. Il sito serve per tutti gli altri: chi arriva da Crescentino, da Livorno Ferraris o da Casale, chi si è appena trasferito, chi cerca la sera dal telefono un orario o un numero e non sa a chi chiedere.",
+  "C'è anche un problema tutto trinese: chi cerca «web designer Trino» su Google spesso si vede correggere la ricerca in «Torino». Per farsi trovare qui bisogna scrivere il nome del paese per bene, nel sito e nella scheda Google, e io è la prima cosa che controllo.",
+];
+
+const attivita = [
+  {
+    titolo: 'Bar, ristoranti e pizzerie',
+    testo:
+      "Chi passa per lavoro o viene da fuori cerca dal telefono: cosa c'è, quando sei aperto, come si prenota. Una pagina chiara con il menù e il numero da toccare vale più di un profilo social che si aggiorna a fatica.",
+  },
+  {
+    titolo: 'Negozi e botteghe del centro',
+    testo:
+      "Qui ti conoscono già. Il sito serve a chi non ti conosce ancora e a chi vuole sapere se hai quella cosa prima di uscire di casa: orari, cosa vendi, dove sei, e un modo per scriverti.",
+  },
+  {
+    titolo: 'Artigiani e imprese',
+    testo:
+      "Idraulici, elettricisti, officine, edili: se lavori in tutto il circondario, non solo in paese, il sito deve dire cosa fai, in quali comuni e come si chiede un preventivo, con qualche lavoro fatto da mostrare.",
+  },
+  {
+    titolo: 'Associazioni e manifestazioni',
+    testo:
+      "Pro loco, società sportive, feste ed eventi: siti che devono poter essere aggiornati da volontari che cambiano ogni anno. Il Carnevale di Trino è nato proprio così.",
+  },
+];
+
+const presenza = [
+  {
+    titolo: 'Ci vediamo in dieci minuti',
+    testo:
+      "Vengo io da te, in negozio o dopo la chiusura. Per un sito di un'attività del paese vedere il posto conta: le foto migliori e metà delle idee buone nascono lì.",
+  },
+  {
+    titolo: 'Anche la scheda Google',
+    testo:
+      "Per chi cerca dal telefono la prima cosa che compare è la scheda Google, non il sito. La sistemiamo insieme: nome scritto giusto, orari, foto vere e il link al sito.",
+  },
+  {
+    titolo: 'Dopo, sono qui',
+    testo:
+      "Se una cosa non va o vuoi cambiare un orario, non devi aprire un ticket con un'agenzia di Milano: mi scrivi, e spesso ci incrociamo comunque in paese.",
+  },
+];
+
+const faq = [
+  {
+    d: 'Quanto costa un sito a Trino?',
+    r: "Te lo dico alla prima risposta, con una cifra e non una forbice. Dipende da quante pagine servono, da chi scrive i testi, dalle foto che hai e da quanti servizi vanno collegati. Restano fuori dominio e hosting, circa 50-120 euro l'anno pagati direttamente al fornitore così restano intestati a te. Nessun canone mensile obbligatorio.",
+  },
+  {
+    d: 'Ho già la pagina Facebook: mi serve anche un sito?',
+    r: "Dipende da chi vuoi raggiungere. Facebook lo vede chi ti segue già; il sito e la scheda Google li trova chi ti cerca e non ti conosce. Se vuoi, prima ti faccio l'analisi gratuita di quello che hai oggi e ti dico se il sito ti serve davvero.",
+  },
+  {
+    d: 'Lavori anche nei paesi intorno a Trino?',
+    r: "Sì: Palazzolo Vercellese, Fontanetto Po, Tricerro, Crescentino, Livorno Ferraris, Morano sul Po e i paesi del Monferrato oltre il Po sono tutti a pochi minuti. Di persona copro una sessantina di chilometri, fino a Vercelli, Casale, Novara e Chivasso.",
+  },
+  {
+    d: 'Fai anche siti per associazioni ed eventi?',
+    r: "Sì. Il sito del Carnevale di Trino l'ho fatto io: pagine semplici, veloci, che i volontari possono aggiornare senza chiamarmi ogni volta.",
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: `Realizzazione siti web a ${citta}`,
+    serviceType: 'Progettazione e sviluppo di siti web per attività locali',
+    provider: { '@id': ID.persona },
+    areaServed: {
+      '@type': 'City',
+      name: citta,
+      containedInPlace: { '@type': 'AdministrativeArea', name: 'Provincia di Vercelli' },
+    },
+    url: `${SITE.url}${percorso}`,
+  },
+  domande(faq),
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: `Siti web a ${citta}`, percorso },
+  ]),
+];
+---
+
+<Guscio
+  titolo="Siti web a Trino (VC) su misura, senza canone | Michele Modica"
+  descrizione="Sviluppatore web di Trino: siti su misura per bar, negozi, artigiani e associazioni del paese e dei comuni vicini. Prezzo detto prima, nessun canone."
+  ogImage="/og/home.png"
+  jsonLd={jsonLd}
+>
+  <Zona
+    citta={citta}
+    righe={['Siti web', 'a Trino,', 'fatti da qui.']}
+    intro="Michele Modica è uno sviluppatore web freelance che vive a Trino (VC) e realizza siti su misura per bar, ristoranti, negozi, artigiani e associazioni del paese e dei comuni vicini. Il prezzo lo sai alla prima risposta, dominio e hosting restano intestati a te, non c'è nessun canone obbligatorio e la prima mezz'ora è gratuita."
+    perche={perche}
+    attivita={attivita}
+    presenza={presenza}
+    lavori={lavori}
+    lavoriTitolo="Un lavoro fatto qui, due a mezz'ora"
+    faq={faq}
+  />
+</Guscio>

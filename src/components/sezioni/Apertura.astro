@@ -6,22 +6,37 @@
  * costringeva il titolo in mezza pagina, e un titolo in mezza pagina non apre
  * niente. Le schermate stanno nella vetrina, che è il posto dove si guardano.
  *
- * Il titolo è testo vero nel DOM dal primo disegno: l'otturatore lavora sul
- * ritaglio, non sull'opacità del contenuto, così l'elemento che Google misura
- * non aspetta nessuna animazione.
+ * Niente animazioni d'entrata qui: titolo, sommario e bottoni sono visibili
+ * dal primo disegno. Con l'otturatore e la sfocatura il contenuto principale
+ * arrivava 1,1–1,4 secondi dopo (PageSpeed, 19/11/2026) e chi apriva la pagina
+ * vedeva per un attimo un riquadro vuoto. Le comparse restano dalla seconda
+ * sezione in giù.
+ *
+ * Il bottone principale è l'analisi gratuita: chi arriva qui spesso non è
+ * pronto per un preventivo, ma un parere gratis sul suo sito lo chiede
+ * volentieri (guida 09). Il preventivo resta il secondo bottone.
  */
 import Bottone from '../comuni/Bottone.astro';
 import Icona from '../comuni/Icona.astro';
+import Prove from '../comuni/Prove.astro';
+import { SITE } from '../../config.js';
 ---
 
 <section class="apertura">
   <div class="contenitore dentro">
     <p class="etichetta zona">
       <span class="pulsa" aria-hidden="true"></span>
-      Sviluppatore web — Vercelli · Casale Monferrato · Novara · Chivasso
+      <span>
+        Sviluppatore web —
+        {/* Le città sono link alle loro pagine: la home non compete più con
+            loro sulle ricerche «siti web <città>», le manda avanti. */}
+        {Object.entries(SITE.pagineZona).map(([nome, href], i) => (
+          <>{i > 0 && ' · '}<a href={href}>{nome}</a></>
+        ))}
+      </span>
     </p>
 
-    <h1 class="titolo otturatore" data-anima>
+    <h1 class="titolo">
       <span class="riga"><span>Siti web per</span></span>
       <span class="riga"><span>farti trovare</span></span>
       <span class="riga"><span class="chiaro">da chi cerca</span></span>
@@ -35,17 +50,27 @@ import Icona from '../comuni/Icona.astro';
         Vercelli a Novara e da Casale a Chivasso») e non come un elenco: chi sta
         in un comune in mezzo si sente dentro.
       */}
-      <p class="lede sfoca-entra" data-anima>
-        Ristoranti, negozi, studi e artigiani, da Vercelli a Novara e da Casale a Chivasso:
-        un sito su misura che fa capire in pochi secondi perché scegliere te, e non
-        quello a duecento metri.
+      <p class="lede">
+        Cantine, agriturismi, ristoranti, negozi e artigiani, dalle colline del Monferrato
+        fino a Vercelli e Novara: un sito su misura che fa capire in pochi secondi perché
+        scegliere te, e non quello accanto.
       </p>
 
-      <div class="inviti sfoca-entra" data-anima>
-        <Bottone href="/contatti">Parliamo del tuo progetto</Bottone>
-        <Bottone href="/progetti" variante="fantasma">Guarda i lavori</Bottone>
-        <span class="etichetta gratis">Prima mezz'ora senza impegno</span>
+      <div class="inviti">
+        <Bottone href="/analisi-gratuita">Richiedi l'analisi gratuita</Bottone>
+        <Bottone href="/contatti" variante="fantasma">Parliamo del tuo progetto</Bottone>
       </div>
+    </div>
+
+    {/* I tre fatti che distinguono il servizio, subito sotto i bottoni: prima
+        stavano solo nella descrizione per Google, che il visitatore non vede. */}
+    <div class="garanzie">
+      <p class="fatti testo-sm">
+        <span>Prezzo detto alla prima risposta</span>
+        <span>Dominio intestato a te</span>
+        <span>Nessun canone obbligatorio</span>
+      </p>
+      <Prove />
     </div>
 
     <p class="scendi etichetta" aria-hidden="true">
@@ -153,8 +178,41 @@ import Icona from '../comuni/Icona.astro';
     justify-content: flex-end;
   }
 
-  .gratis {
-    color: var(--ink-3);
+  .zona a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .zona a:hover {
+    color: var(--signal-ink);
+    border-bottom-color: var(--signal-ink);
+  }
+
+  .garanzie {
+    display: grid;
+    gap: var(--sp-3);
+  }
+
+  .fatti {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-5);
+    margin: 0;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .fatti span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .fatti span::before {
+    content: '✓';
+    color: var(--signal-ink);
+    font-weight: 600;
   }
 
   /* Sta sul bordo della piega di proposito: è l'invito a scorrere, e se

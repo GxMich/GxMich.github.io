@@ -92,9 +92,25 @@ const sfogliabile = lavori.length > 1;
       })
     }
   </div>
+  {/* In home la vetrina mostra solo quattro siti: il resto sta su /progetti. */}
+  <p class="contenitore tutti">
+    <a href="/progetti">Tutti i lavori, anche le demo <span aria-hidden="true">→</span></a>
+  </p>
 </section>
 
 <style>
+  .tutti {
+    margin-top: var(--sp-6);
+  }
+
+  .tutti a {
+    color: var(--signal-ink);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 2px;
+  }
+
   .vetrina {
     background: var(--stage);
     color: var(--light);

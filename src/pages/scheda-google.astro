@@ -1,0 +1,114 @@
+---
+/**
+ * Sistemare la scheda Google (Profilo dell'attività).
+ *
+ * Prima era una riga dentro /servizi («Fartelo trovare»). Per un'attività
+ * locale la scheda è spesso la prima cosa che vede chi cerca dal telefono,
+ * prima ancora del sito: merita una pagina che dica cosa si fa e cosa no.
+ *
+ * Nessuna promessa di posizioni: dove compari dipende anche da distanza e
+ * concorrenza, e chi garantisce «primo su Google» sta mentendo.
+ */
+import Guscio from '../layouts/Guscio.astro';
+import PaginaServizio from '../components/sezioni/PaginaServizio.astro';
+import { SITE } from '../config.js';
+import { ID, domande, briciole } from '../lib/schema.ts';
+
+const breve = [
+  { dato: 'Prima di tutto', testo: 'Chi cerca dal telefono vede la scheda prima del sito.' },
+  { dato: 'Dati uguali', testo: 'Nome, telefono e orari identici su scheda, sito e social.' },
+  { dato: 'Niente trucchi', testo: 'Niente recensioni finte né parole chiave nel nome: Google le punisce.' },
+];
+
+const sezioni = [
+  {
+    occhiello: 'Cosa sistemo',
+    titolo: 'Una scheda completa, vera e uguale al sito.',
+    voci: [
+      { titolo: 'Nome e categoria', testo: "Il nome vero dell'attività, senza aggiunte, e la categoria giusta: è da lì che Google capisce per quali ricerche mostrarti." },
+      { titolo: 'Orari e zona', testo: 'Orari reali, chiusure per ferie inserite prima, e la zona servita se lavori a domicilio o da casa, senza mostrare l’indirizzo.' },
+      { titolo: 'Foto vere', testo: "Il posto, le persone, i lavori fatti. Le foto proprie e recenti dicono più di qualsiasi descrizione." },
+      { titolo: 'Servizi e descrizione', testo: 'Cosa fai, scritto come lo cerca la gente, con il link al sito e al numero da chiamare.' },
+      { titolo: 'Recensioni', testo: 'Un link diretto da mandare ai clienti contenti e le risposte, anche alle critiche. Nessuna recensione comprata.' },
+      { titolo: 'Gli altri posti', testo: 'Apple Maps e Bing Places con gli stessi dati, perché anche lì qualcuno ti cerca, e gli assistenti AI leggono anche quelli.' },
+    ],
+  },
+  {
+    occhiello: 'Cosa non faccio',
+    titolo: 'Le scorciatoie che fanno sparire una scheda.',
+    scura: true,
+    voci: [
+      { titolo: 'Parole chiave nel nome', testo: '«Pizzeria Da Mario Vercelli migliore pizza» è contro le regole di Google e prima o poi viene corretto, o sospeso.' },
+      { titolo: 'Recensioni finte', testo: 'Comprate, scambiate o scritte da amici che non sono clienti: Google le toglie e la scheda perde credibilità.' },
+      { titolo: 'Indirizzi inventati', testo: "Una sede dove non sei, per comparire in un'altra città, è la cosa che Google punisce più volentieri." },
+      { titolo: 'Promesse di posizioni', testo: 'Dove compari dipende anche da quanto sei vicino a chi cerca e da chi c’è intorno. Chi ti garantisce il primo posto non sta dicendo la verità.' },
+    ],
+  },
+];
+
+const caso = {
+  etichetta: 'Un caso vero',
+  titolo: 'L.M. Autoservizi: una scheda che raccontava un’altra attività.',
+  testo:
+    "La scheda dell'officina di Frassineto Po parlava di un'area di sosta camper, di un centro revisioni e di una zona sbagliata. L'ho riordinata insieme al sito: ora scheda e sito riportano gli stessi servizi, gli stessi orari e i paesi dove Luca lavora davvero.",
+  href: '/progetti/lm-autoservizi',
+};
+
+const faq = [
+  {
+    d: 'Non ho ancora una scheda Google: si può creare?',
+    r: "Sì. La creiamo insieme e la verifichiamo con il metodo che Google chiede in quel momento: a volte una videochiamata o un video del posto, a volte un codice. La verifica la fai tu, io ti preparo tutto il resto.",
+  },
+  {
+    d: 'Lavoro da casa o vado dai clienti: devo mostrare l’indirizzo?',
+    r: "No. Si imposta la zona servita e l'indirizzo resta nascosto. È anche quello che chiede Google a chi non riceve clienti in sede.",
+  },
+  {
+    d: 'In quanto tempo si vede il risultato?',
+    r: "Le correzioni compaiono di solito in qualche giorno. Salire nelle ricerche è più lento: settimane o mesi, e dipende da recensioni, foto, sito e concorrenti. Non ti prometto posizioni, ti dico cosa fa la differenza e lo facciamo.",
+  },
+  {
+    d: 'Ho una recensione negativa: si può togliere?',
+    r: "Solo se viola le regole di Google (offese, falsa, di chi non è cliente) si può segnalare. Altrimenti si risponde con calma e con i fatti: chi legge giudica anche la risposta.",
+  },
+  {
+    d: 'Quanto costa?',
+    r: "Te lo dico alla prima risposta, con una cifra sola. Se facciamo il sito insieme, collegare la scheda al sito è già compreso; il resto lo trovi scritto nella cifra. Se vuoi solo la scheda, va benissimo lo stesso.",
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: 'Sistemazione della scheda Google (Profilo dell’attività)',
+    serviceType: 'SEO locale',
+    provider: { '@id': ID.persona },
+    areaServed: SITE.areas,
+    url: `${SITE.url}/scheda-google`,
+  },
+  domande(faq),
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: 'Servizi', percorso: '/servizi' },
+    { nome: 'Scheda Google', percorso: '/scheda-google' },
+  ]),
+];
+---
+
+<Guscio
+  titolo="Sistemare la scheda Google della tua attività"
+  descrizione="Nome, orari, foto, servizi e recensioni: la scheda Google sistemata e uguale al sito, senza trucchi che la fanno sospendere. Per attività fra Trino e Vercelli."
+  ogImage="/og/servizi.png"
+  jsonLd={jsonLd}
+>
+  <PaginaServizio
+    occhiello="Servizi · Farsi trovare"
+    righe={['La scheda Google,', 'sistemata per bene.']}
+    lede="Per chi ti cerca dal telefono la scheda Google viene prima del sito: orari, foto, recensioni e il numero da chiamare. La sistemo perché sia completa, vera e uguale al sito, senza le scorciatoie che fanno sospendere una scheda."
+    breve={breve}
+    sezioni={sezioni}
+    caso={caso}
+    faq={faq}
+  />
+</Guscio>

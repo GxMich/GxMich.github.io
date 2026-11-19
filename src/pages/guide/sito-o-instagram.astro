@@ -1,0 +1,95 @@
+---
+import Articolo from '../../components/sezioni/Articolo.astro';
+
+const inBreve = [
+  'Instagram e Facebook li vede soprattutto chi ti segue già. Il sito e la scheda Google li trova chi ti cerca e non ti conosce.',
+  'Se i clienti ti cercano per nome o per categoria («pizzeria Trino», «elettricista Vercelli»), un sito e una scheda Google curata servono più di un profilo social.',
+  'Se vendi soprattutto con le foto a chi ti segue (un negozio di abiti, un estetista), Instagram resta il primo canale: il sito lo completa con orari, servizi e contatti.',
+  'Il profilo social non è tuo: le regole, la visibilità e l’account dipendono dalla piattaforma. Il dominio del sito è intestato a te.',
+];
+
+const faq = [
+  {
+    d: 'Posso usare Instagram come sito, mettendo il link nella scheda Google?',
+    r: 'Si può, ed è meglio di niente. Però chi apre il link senza l’app spesso trova un muro di accesso, e Google non legge i post come legge le pagine di un sito: per le ricerche conta poco.',
+  },
+  {
+    d: 'Mi basta una pagina sola?',
+    r: 'Per molte attività sì: chi sei, cosa fai, dove sei, quando sei aperto, come ti contatto e qualche foto vera. Una pagina fatta bene vale più di cinque pagine vuote.',
+  },
+  {
+    d: 'Se faccio il sito devo smettere con i social?',
+    r: 'No. I social servono a farti ricordare da chi ti conosce, il sito a farti trovare da chi non ti conosce. Il sito può anche mostrare gli ultimi post, così non lo devi aggiornare due volte.',
+  },
+];
+---
+
+<Articolo
+  titolo="Basta Instagram o serve un sito per la tua attività?"
+  titoloPagina="Basta Instagram o serve un sito? Guida per attività locali"
+  descrizione="Instagram, Facebook o un sito: chi vede cosa, quando i social bastano e quando ti fanno perdere clienti. Una guida pratica per bar, negozi e artigiani."
+  percorso="/guide/sito-o-instagram"
+  pubblicata="2026-11-19"
+  inBreve={inBreve}
+  faq={faq}
+>
+  <p>
+    È la domanda che mi fanno più spesso, di solito con un «tanto ho già la pagina». La risposta
+    onesta è: dipende da come ti trovano i clienti. Non da quanto è bello il profilo.
+  </p>
+
+  <h2>Chi vede i tuoi post, e chi no</h2>
+  <p>
+    I post su Instagram e Facebook arrivano soprattutto a chi ti segue già: clienti, amici,
+    persone del paese. È un modo ottimo per farti ricordare. Ma chi non ti conosce non ti cerca su
+    Instagram: apre Google o Maps e scrive quello che gli serve, spesso con il nome del paese.
+  </p>
+  <p>
+    In quel momento compaiono la scheda Google e i siti. Se tu non hai né l’una curata né l’altro,
+    compare chi ce l’ha, anche se lavora peggio di te.
+  </p>
+
+  <h2>Quando i social bastano (per ora)</h2>
+  <ul>
+    <li>Vendi soprattutto a chi ti segue, con le foto: abbigliamento, gioielli, unghie, torte.</li>
+    <li>Hai già la clientela che ti serve e non cerchi persone nuove.</li>
+    <li>La tua scheda Google è completa, con orari, foto e recensioni, e porta già telefonate.</li>
+  </ul>
+  <p>
+    Anche in questi casi la scheda Google va tenuta in ordine: è gratis ed è la prima cosa che
+    vede chi ti cerca dal telefono.
+  </p>
+
+  <h2>Quando ti serve un sito</h2>
+  <ul>
+    <li>I clienti ti cercano per categoria e zona: «idraulico Crescentino», «ristorante Casale».</li>
+    <li>Devi spiegare cosa fai prima che ti chiamino: servizi, zone, tempi, come si prenota.</li>
+    <li>Lavori con persone che vengono da fuori e decidono online prima di muoversi.</li>
+    <li>Vuoi che il nome e i contatti restino tuoi anche se domani chiudono l’account.</li>
+  </ul>
+
+  <h2>Le differenze, una accanto all’altra</h2>
+  <table>
+    <thead>
+      <tr><th>Cosa conta</th><th>Profilo social</th><th>Sito con scheda Google</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Chi ti vede</td><td>Chi ti segue</td><td>Chi ti cerca su Google e Maps</td></tr>
+      <tr><td>Di chi è</td><td>Della piattaforma</td><td>Tuo: dominio intestato a te</td></tr>
+      <tr><td>Si legge senza account</td><td>Spesso no</td><td>Sì</td></tr>
+      <tr><td>Orari, servizi, zona</td><td>Sparsi nei post</td><td>In un posto solo, sempre aggiornati</td></tr>
+      <tr><td>Costo</td><td>Gratis, ma tempo ogni settimana</td><td>Una spesa iniziale, poi dominio e hosting</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Cosa farei io, in ordine</h2>
+  <ol>
+    <li>Sistemare la scheda Google: è gratis e conta più di tutto. Ho scritto <a href="/guide/scheda-google-controlli">i dieci controlli da fare da solo</a>.</li>
+    <li>Fare un sito semplice, anche di una pagina, con contatti che si toccano con un dito.</li>
+    <li>Continuare con i social per chi ti conosce già, collegandoli al sito.</li>
+  </ol>
+  <p>
+    Se non sai da dove partire, mandami il link di quello che hai oggi: ti dico gratis cosa
+    sistemerei per primo, e se il sito ti serve davvero.
+  </p>
+</Articolo>

@@ -25,8 +25,14 @@ const anno = new Date().getFullYear();
   <div class="contenitore dentro">
     <div class="colonna primaria">
       <p class="etichetta">Parliamone</p>
+      {/* Due canali separati: chi tocca il numero vuole chiamare, chi vuole
+          scrivere cerca la parola WhatsApp. Prima il numero apriva solo
+          WhatsApp, e chi voleva telefonare finiva nel posto sbagliato. */}
       <p class="contatto">
-        <a href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>
+        <a href={`tel:${SITE.telefono}`}>Chiama {SITE.whatsappLabel}</a>
+      </p>
+      <p class="contatto">
+        <a href={`https://wa.me/${SITE.whatsapp}`}>Scrivimi su WhatsApp</a>
       </p>
       <p class="contatto">
         <a href={`mailto:${SITE.email}`}>{SITE.email}</a>

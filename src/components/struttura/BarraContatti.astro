@@ -1,0 +1,90 @@
+---
+/**
+ * La barra dei contatti, solo su telefono.
+ *
+ * Sotto i 1024px l'intestazione tiene solo marchio, tema e menu: il bottone
+ * «Parliamone» non ci sta. Senza questa barra, chi legge dal telefono trova
+ * un modo per contattarti solo in cima alla home o in fondo alla pagina, e
+ * la home è lunga più di dieci schermate.
+ *
+ * Due azioni, della stessa larghezza: Chiama e WhatsApp. Sono i due modi in
+ * cui un titolare chiede un preventivo dal telefono. L'email resta nel piè di
+ * pagina e in /contatti.
+ *
+ * Si nasconde quando la fascia del consenso è aperta, perché occupano lo
+ * stesso posto, e quando è aperto il menu a schermo intero.
+ */
+import { SITE } from '../../config.js';
+---
+
+<nav class="barra-contatti" aria-label="Contatti rapidi" data-barra-contatti>
+  <a class="azione" href={`tel:${SITE.telefono}`}>Chiama</a>
+  <a class="azione piena" href={`https://wa.me/${SITE.whatsapp}`}>Scrivimi su WhatsApp</a>
+</nav>
+
+<style>
+  .barra-contatti {
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    .barra-contatti {
+      position: fixed;
+      inset: auto 0 0 0;
+      z-index: var(--z-header);
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      gap: var(--sp-2);
+      padding: var(--sp-2) var(--gutter) calc(var(--sp-2) + env(safe-area-inset-bottom));
+      background: var(--ink);
+      border-top: 1px solid color-mix(in srgb, var(--paper) 18%, transparent);
+    }
+
+    /* Lo spazio sotto il piè di pagina: senza, la barra coprirebbe le
+       ultime righe del sito. */
+    :global(body) {
+      padding-bottom: calc(64px + env(safe-area-inset-bottom));
+    }
+
+    /* La fascia del consenso sta nello stesso punto e ha la precedenza:
+       finché è aperta la barra si toglie di mezzo. */
+    :global(body:has([data-consenso]:not([hidden]))) .barra-contatti,
+    :global(html[data-menu-aperto]) .barra-contatti {
+      display: none;
+    }
+  }
+
+  .azione {
+    display: grid;
+    place-items: center;
+    min-height: 48px;
+    padding: 0 var(--sp-3);
+    border-radius: var(--radius-1);
+    border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent);
+    color: var(--paper);
+    font-family: var(--font-ui);
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .azione.piena {
+    background: var(--signal);
+    border-color: var(--signal);
+    color: var(--signal-on);
+  }
+
+  .azione:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+
+  @media print {
+    .barra-contatti {
+      display: none !important;
+    }
+  }
+</style>

@@ -72,6 +72,11 @@ const PAGINE = [
     righe: ['Un sito su misura,', 'senza sorprese.'],
   },
   {
+    file: 'analisi-gratuita',
+    etichetta: 'Analisi gratuita — sito o scheda Google',
+    righe: ['Le tre cose da sistemare', 'nel tuo sito, gratis.'],
+  },
+  {
     file: 'contatti',
     etichetta: 'Contatti — rispondo io',
     righe: ['Scrivimi.', 'La prima mezz’ora non si paga.'],

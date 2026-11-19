@@ -2,8 +2,9 @@
 /**
  * Home — direzione nuova.
  *
- * Dieci frame: apertura, vetrina, due strade, metodo, differenza, prezzo, chi te lo
- * fa, prova tecnica, domande, invito. La versione precedente resta nella storia
+ * Nove frame: apertura, vetrina, due strade, metodo, differenza, prezzo, chi te lo
+ * fa, domande, invito. I progetti personali (Sistemi) sono usciti dalla home il
+ * 19/11/2026: il sito parla solo di siti web e restano su /progetti. La versione precedente resta nella storia
  * di git e in archive/pre-redesign-v2-2026-08-03/.
  *
  * L'ordine non è casuale ed è la cosa da non toccare a cuor leggero: cosa
@@ -20,7 +21,6 @@ import Metodo from '../components/sezioni/Metodo.astro';
 import Differenza from '../components/sezioni/Differenza.astro';
 import Prezzo from '../components/sezioni/Prezzo.astro';
 import Chi from '../components/sezioni/Chi.astro';
-import Sistemi from '../components/sezioni/Sistemi.astro';
 import Domande from '../components/sezioni/Domande.astro';
 import Invito from '../components/sezioni/Invito.astro';
 import { persona, attivita, sitoWeb } from '../lib/schema.ts';
@@ -29,10 +29,6 @@ const progetti = await getCollection('progetti');
 
 const siti = progetti
   .filter((p) => p.data.tipo === 'sito')
-  .sort((a, b) => a.data.ordine - b.data.ordine);
-
-const sistemi = progetti
-  .filter((p) => p.data.tipo === 'tool')
   .sort((a, b) => a.data.ordine - b.data.ordine);
 
 /**
@@ -55,9 +51,17 @@ const nature = {
    In vetrina il titolo della scheda e' il problema, non il nome del progetto:
    chi guarda i lavori sta cercando qualcuno che risolva il suo, e «Pizzeria
    Moderna · 2026» non gli dice niente. Il nome resta sotto, come nota. */
+/* Solo siti, clienti veri per primi, al massimo quattro (19/11/2026): la
+   home era di 1.600 parole e la vetrina ne pesava quasi 300. Gli strumenti e
+   i progetti personali restano su /progetti, dove li cerca chi è curioso. */
 const lavori = progetti
-  .filter((p) => !p.data.demo)
-  .sort((a, b) => a.data.ordine - b.data.ordine)
+  .filter((p) => !p.data.demo && p.data.tipo === 'sito')
+  .sort(
+    (a, b) =>
+      Number(b.data.natura === 'cliente') - Number(a.data.natura === 'cliente') ||
+      a.data.ordine - b.data.ordine,
+  )
+  .slice(0, 4)
   .map((p) => ({
     href: `/progetti/${p.id}`,
     titolo: p.data.sfida ?? p.data.titolo,
@@ -70,8 +74,8 @@ const jsonLd = [persona, attivita, sitoWeb];
 ---
 
 <Guscio
-  titolo="Siti web a Vercelli, Novara e Casale — Michele Modica"
-  descrizione="Siti su misura per attività fra Vercelli, Casale Monferrato e Novara. Prezzo detto prima, dominio intestato a te, nessun abbonamento obbligatorio."
+  titolo="Michele Modica — siti web su misura per attività locali"
+  descrizione="Siti su misura per cantine, agriturismi e attività locali del Monferrato e dintorni. Prezzo alla prima risposta, dominio intestato a te, nessun canone."
   ogImage="/og/home.png"
   jsonLd={jsonLd}
 >
@@ -96,8 +100,6 @@ const jsonLd = [persona, attivita, sitoWeb];
   <Prezzo />
 
   <Chi />
-
-  {sistemi.length > 0 && <Sistemi sistemi={sistemi} />}
 
   <Domande />
 

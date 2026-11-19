@@ -1,0 +1,120 @@
+---
+/**
+ * Rifare o sistemare il sito che hai.
+ *
+ * Prima era la sezione 02 di /servizi. Ha una pagina sua perché chi ha già un
+ * sito cerca parole diverse («rifare sito», «sito vecchio», «sito lento») e
+ * ha dubbi diversi: soprattutto perdere Google e l'indirizzo che la gente
+ * conosce.
+ */
+import Guscio from '../layouts/Guscio.astro';
+import PaginaServizio from '../components/sezioni/PaginaServizio.astro';
+import { SITE } from '../config.js';
+import { ID, domande, briciole } from '../lib/schema.ts';
+
+const breve = [
+  { dato: 'Prima lo guardo', testo: "Gratis: ti dico cosa non va e se conviene rifarlo o sistemarlo." },
+  { dato: 'Stesso indirizzo', testo: 'Il dominio resta quello, e le pagine vecchie portano alle nuove.' },
+  { dato: 'Una cifra sola', testo: 'Il prezzo lo sai alla prima risposta, prima di iniziare.' },
+];
+
+const sezioni = [
+  {
+    occhiello: 'Quando è il momento',
+    titolo: 'I segnali che il sito ti sta facendo perdere clienti.',
+    voci: [
+      { titolo: 'Dal telefono è lento', testo: "Se ci mette più di tre secondi ad aprirsi, molti chiudono prima di vederlo. E da telefono arriva la maggior parte delle visite." },
+      { titolo: 'Non si legge', testo: 'Testo minuscolo, bottoni troppo vicini, pagine da allargare con le dita: chi cerca un numero di telefono non ha pazienza.' },
+      { titolo: 'Le informazioni sono vecchie', testo: 'Orari, prezzi, foto o servizi che non ci sono più. Chi trova un dato sbagliato smette di fidarsi anche del resto.' },
+      { titolo: 'Le richieste non arrivano', testo: "Moduli che finiscono in una casella che nessuno legge, o che non partono proprio. Lo scopri solo quando un cliente te lo dice." },
+      { titolo: 'Su Google non ci sei', testo: 'Cercando il tuo lavoro e il tuo paese compaiono gli altri. Spesso è un problema di titoli, testi e scheda Google, non di grafica.' },
+      { titolo: 'Non sai più chi ha le chiavi', testo: "Dominio intestato a chi l'ha fatto anni fa, password perse, un canone che paghi senza sapere per cosa. Si può sistemare." },
+    ],
+  },
+  {
+    occhiello: 'Due strade',
+    titolo: 'Rifarlo da capo, o sistemarlo dov’è.',
+    intro: "Te lo dico dopo averlo guardato, con la cifra. A volte bastano tre interventi; a volte rattoppare costa più che ripartire.",
+    scura: true,
+    voci: [
+      { titolo: 'Rifarlo da capo', testo: "Quando è vecchio, lento sul telefono o non sembra più la tua attività. Si riparte dai contenuti che funzionano e si butta il resto, senza perdere l'indirizzo che la gente conosce." },
+      { titolo: "Sistemarlo dov'è", testo: 'Quando la base regge ma qualcosa non va: orari sbagliati, foto vecchie, un modulo che non arriva, pagine che non si aprono. Ti dico prima cosa conviene toccare e cosa no.' },
+    ],
+  },
+  {
+    occhiello: 'Cosa non perdi',
+    titolo: 'Il passaggio al sito nuovo, senza buchi.',
+    voci: [
+      { titolo: "L'indirizzo", testo: 'Il dominio resta il tuo. Se oggi è intestato a qualcun altro, ti spiego come riportarlo a te.' },
+      { titolo: 'Le pagine che Google conosce', testo: 'Ogni indirizzo vecchio porta alla pagina nuova giusta, uno per uno. Così chi ha un vecchio link e Google non trovano un errore.' },
+      { titolo: 'I contenuti buoni', testo: 'Articoli, foto e testi che funzionano si recuperano e si sistemano, invece di riscriverli da zero.' },
+    ],
+  },
+];
+
+const caso = {
+  etichetta: 'Un caso vero',
+  titolo: 'Ronin Karate Vigevano: dal vecchio blog al sito nuovo, senza perdere niente.',
+  testo:
+    "Il sito di prima era un blog WordPress con 98 articoli scritti dal 2016, e i genitori faticavano a trovare il corso giusto per i figli. Nel sito nuovo il corso si sceglie in base all'età, il messaggio WhatsApp è già scritto, e tutti i 98 articoli sono stati recuperati.",
+  href: '/progetti/ronin-karate-vigevano',
+};
+
+const faq = [
+  {
+    d: 'Quanto costa rifare un sito?',
+    r: "Te lo dico alla prima risposta, con una cifra sola. Dipende da quante pagine ci sono, da quanti contenuti vanno recuperati e da cosa deve collegarsi. Se basta sistemarlo, costa meno e te lo dico. Dominio e hosting restano a parte, intestati a te.",
+  },
+  {
+    d: 'Perdo le posizioni su Google?',
+    r: "Non se il passaggio è fatto bene: ogni pagina vecchia porta alla nuova con un reindirizzamento permanente, e dopo la messa online controllo in Search Console che Google abbia visto tutto. Nelle prime settimane qualche oscillazione è normale.",
+  },
+  {
+    d: 'Il dominio non è intestato a me: cosa faccio?',
+    r: "Succede spesso. Si chiede il trasferimento a chi lo ha registrato, con il codice di autorizzazione, e da lì in poi lo paghi tu direttamente al fornitore. Ti seguo passo per passo.",
+  },
+  {
+    d: 'Posso tenere il sistema che uso oggi?',
+    r: "Se regge e ti trovi bene sì: lo sistemiamo dov'è. Se invece è lento, insicuro o ti costa un canone che non serve, ti propongo la soluzione più semplice da tenere e da aggiornare da solo.",
+  },
+  {
+    d: 'Quanto ci vuole?',
+    r: "Per sistemarlo, di solito pochi giorni. Per rifarlo, tre o quattro settimane come per un sito nuovo, più il tempo di recuperare i contenuti se sono tanti.",
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: 'Rifacimento e miglioramento di siti web',
+    serviceType: 'Rifacimento di siti web',
+    provider: { '@id': ID.persona },
+    areaServed: SITE.areas,
+    url: `${SITE.url}/rifare-sito`,
+  },
+  domande(faq),
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: 'Servizi', percorso: '/servizi' },
+    { nome: 'Rifare il sito', percorso: '/rifare-sito' },
+  ]),
+];
+---
+
+<Guscio
+  titolo="Rifare o sistemare il sito della tua attività"
+  descrizione="Sito vecchio, lento o che non porta richieste? Prima lo guardo gratis, poi ti dico se conviene rifarlo o sistemarlo. Stesso indirizzo, nessuna pagina persa."
+  ogImage="/og/servizi.png"
+  jsonLd={jsonLd}
+>
+  <PaginaServizio
+    occhiello="Servizi · Hai già un sito"
+    righe={['Rifare o sistemare', 'il sito che hai.']}
+    lede="Se il sito è vecchio, lento sul telefono o non ti porta richieste, prima lo guardo e ti dico cosa non va. Poi decidiamo insieme se rifarlo o sistemarlo, con una cifra sola e senza perdere l'indirizzo che la gente conosce."
+    breve={breve}
+    sezioni={sezioni}
+    caso={caso}
+    faq={faq}
+  />
+</Guscio>

@@ -1,0 +1,121 @@
+---
+/**
+ * Le guide: poche, scritte per i titolari, aggiornate quando cambia qualcosa.
+ * L'elenco è a mano: sono tre, e l'ordine è una scelta, non una data.
+ */
+import Guscio from '../../layouts/Guscio.astro';
+import { SITE } from '../../config.js';
+import { briciole } from '../../lib/schema.ts';
+
+const guide = [
+  {
+    href: '/guide/sito-o-instagram',
+    titolo: 'Basta Instagram o serve un sito per la tua attività?',
+    sunto: 'Chi vede i post, chi trova il sito, e quando i social bastano davvero.',
+  },
+  {
+    href: '/guide/scheda-google-controlli',
+    titolo: 'Scheda Google: dieci controlli da fare da solo in mezz’ora',
+    sunto: 'Nome, categoria, orari, foto, recensioni: cosa controllare e cosa non fare.',
+  },
+  {
+    href: '/guide/sito-attivita-obblighi',
+    titolo: 'Cosa deve avere per legge il sito di un’attività',
+    sunto: 'Partita IVA in home, dati delle società, privacy e banner dei cookie, spiegati semplici.',
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Guide per attività locali',
+    url: `${SITE.url}/guide`,
+    hasPart: guide.map((g) => ({ '@type': 'Article', headline: g.titolo, url: `${SITE.url}${g.href}` })),
+  },
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: 'Guide', percorso: '/guide' },
+  ]),
+];
+---
+
+<Guscio
+  titolo="Guide per attività locali: sito, scheda Google, regole"
+  descrizione="Guide pratiche per titolari di bar, negozi, studi e artigiani: sito o social, scheda Google, cosa deve avere per legge un sito. Scritte da Michele Modica."
+  ogImage="/og/home.png"
+  jsonLd={jsonLd}
+>
+  <header class="testata contenitore">
+    <p class="etichetta">Guide</p>
+    <h1 class="display">Guide per chi ha un’attività.</h1>
+    <p class="lede">
+      Le domande che mi fanno più spesso, con risposte che puoi usare anche senza di me.
+    </p>
+  </header>
+
+  <section class="contenitore elenco" aria-label="Elenco delle guide">
+    <ul>
+      {
+        guide.map((g, i) => (
+          <li>
+            <a href={g.href}>
+              <span class="dato indice">{String(i + 1).padStart(2, '0')}</span>
+              <span class="h3 titolo">{g.titolo}</span>
+              <span class="testo-sm sunto">{g.sunto}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Guscio>
+
+<style>
+  .testata {
+    padding-block: clamp(40px, 6vw, 88px) clamp(24px, 3vw, 40px);
+  }
+
+  .testata .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(24px, 3vw, 40px);
+  }
+
+  .testata .lede {
+    margin-top: clamp(18px, 2.4vw, 28px);
+    max-width: 52ch;
+  }
+
+  .elenco {
+    padding-bottom: var(--section);
+  }
+
+  .elenco ul {
+    display: grid;
+    border-top: 1px solid var(--ink);
+  }
+
+  .elenco a {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    gap: var(--sp-2) var(--sp-4);
+    padding: var(--sp-5) 0;
+    border-bottom: 1px solid var(--rule);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .elenco a:hover .titolo {
+    color: var(--signal-ink);
+  }
+
+  .indice {
+    grid-row: span 2;
+    color: var(--ink-3);
+  }
+
+  .sunto {
+    color: var(--ink-2);
+  }
+</style>

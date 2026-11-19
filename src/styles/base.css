@@ -366,3 +366,33 @@ ol {
     scroll-behavior: auto !important;
   }
 }
+
+/* -------------------------- bersagli toccabili -------------------------- */
+/* WCAG 2.5.8: chi tocca col dito ha bisogno di almeno 24px. Sui link in riga
+   basta il padding verticale: su un elemento inline allarga la zona che
+   risponde al tocco senza spostare di un pixel il testo intorno. */
+.piede .elenco a,
+.piede .legami a,
+.piede .legami button,
+.indietro a,
+.freccia,
+.zona a,
+.testata .etichetta a,
+.firma a,
+.informativa a,
+.testo-sm > a {
+  padding-block: 4px;
+}
+
+.piede .legami button {
+  display: inline-block;
+  margin-block: -4px;
+}
+
+.diretti a.h3 {
+  padding-block: 2px;
+}
+
+.testata .etichetta a {
+  padding-block: 5px;
+}

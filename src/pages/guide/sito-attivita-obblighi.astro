@@ -1,0 +1,118 @@
+---
+import Articolo from '../../components/sezioni/Articolo.astro';
+
+const inBreve = [
+  'Se hai la partita IVA, va scritta nella home page del sito (art. 35 del DPR 633/1972).',
+  'Le società devono indicare anche sede, numero di iscrizione al Registro delle imprese e, per le società di capitali, il capitale sociale (art. 2250 del Codice civile).',
+  'Se il sito raccoglie dati (modulo, email, statistiche), serve un’informativa privacy che dica cosa raccogli e perché.',
+  'Cookie e strumenti di terze parti che non sono tecnici partono solo dopo il consenso, con un banner che permette di rifiutare con la stessa facilità con cui si accetta.',
+  'Questa guida è un’introduzione, non una consulenza legale: per il tuo caso senti il commercialista o un consulente privacy.',
+];
+
+const faq = [
+  {
+    d: 'Se ho solo una pagina vetrina, devo avere la privacy policy?',
+    r: 'Se la pagina non raccoglie nessun dato e non usa strumenti esterni (statistiche, mappe, video incorporati, font caricati da altri server), gli obblighi sono minimi. Appena c’è un modulo, un’email da cliccare o uno strumento di misura, serve l’informativa. In pratica quasi tutti i siti ne hanno bisogno.',
+  },
+  {
+    d: 'Posso copiare la privacy policy da un altro sito?',
+    r: 'No: l’informativa deve descrivere il tuo sito, i tuoi strumenti e i tuoi tempi di conservazione. Una copiata quasi sempre dice cose false, ed è peggio di una breve ma vera.',
+  },
+  {
+    d: 'Il banner dei cookie serve sempre?',
+    r: 'Serve se usi cookie o strumenti non tecnici, come Google Analytics nella configurazione normale, pixel pubblicitari o video incorporati che tracciano. Un sito che usa solo strumenti tecnici o statistiche anonime configurate come dice il Garante può farne a meno.',
+  },
+];
+---
+
+<Articolo
+  titolo="Cosa deve avere per legge il sito di un’attività"
+  titoloPagina="Cosa deve avere per legge il sito di un’attività"
+  descrizione="Partita IVA in home, dati delle società, privacy, cookie, negozi online: cosa deve avere il sito di un’attività in Italia, spiegato in modo semplice."
+  percorso="/guide/sito-attivita-obblighi"
+  pubblicata="2026-11-19"
+  inBreve={inBreve}
+  faq={faq}
+>
+  <p>
+    Quando guardo il sito di un’attività, le mancanze più comuni non sono grafiche: sono la partita
+    IVA che non c’è, un banner dei cookie che non lascia rifiutare, una privacy policy copiata da
+    un altro sito. Sono cose che si sistemano in fretta, se si sa cosa cercare.
+  </p>
+
+  <h2>La partita IVA nella home page</h2>
+  <p>
+    Chi ha la partita IVA deve indicarla nella home page del sito: lo prevede l’articolo 35 del DPR
+    633/1972 sull’IVA. Di solito si mette nel piè di pagina, che compare in tutte le pagine, insieme
+    al nome o alla ragione sociale.
+  </p>
+
+  <h2>I dati delle società</h2>
+  <p>
+    Per le società l’articolo 2250 del Codice civile chiede di indicare anche sul sito la sede, il
+    registro delle imprese in cui sono iscritte e il numero di iscrizione. Le società di capitali
+    aggiungono il capitale sociale effettivamente versato, e se c’è un socio unico va detto.
+  </p>
+
+  <h2>L’informativa privacy</h2>
+  <p>
+    Se il sito raccoglie dati personali, anche solo un nome e un numero in un modulo, il regolamento
+    europeo (GDPR, articolo 13) chiede di dire a chi scrive:
+  </p>
+  <ul>
+    <li>chi è il titolare e come contattarlo;</li>
+    <li>quali dati raccogli e per cosa li usi;</li>
+    <li>su quale base lo fai (per esempio rispondere a una richiesta);</li>
+    <li>a chi li passi (hosting, servizio email, WhatsApp, strumenti di statistica) e se escono dall’Unione europea;</li>
+    <li>per quanto tempo li tieni;</li>
+    <li>quali diritti ha la persona e come esercitarli.</li>
+  </ul>
+  <p>
+    L’informativa deve descrivere il sito vero. Se aggiungi uno strumento, si aggiorna anche lei.
+  </p>
+
+  <h2>Il banner dei cookie</h2>
+  <p>
+    Le linee guida del Garante privacy del 10 giugno 2021 dicono, in sostanza:
+  </p>
+  <ul>
+    <li>i cookie tecnici non chiedono consenso;</li>
+    <li>tutto il resto (pubblicità, profilazione, molte statistiche) parte solo dopo un sì;</li>
+    <li>rifiutare deve essere facile come accettare: chiudere il banner con la X vale come rifiuto;</li>
+    <li>niente consenso «scorrendo la pagina» e niente caselle già spuntate;</li>
+    <li>la scelta si deve poter cambiare in ogni momento, con un link sempre raggiungibile.</li>
+  </ul>
+  <p>
+    L’errore più comune che vedo: il pulsante «Accetta» colorato e grande, e il rifiuto nascosto in
+    un secondo livello o scritto in grigio chiaro.
+  </p>
+
+  <h2>Se vendi online</h2>
+  <p>
+    Un negozio online ha obblighi in più: condizioni di vendita, informazioni sul diritto di recesso
+    per i consumatori, prezzi chiari con le spese di spedizione, e i dati dell’azienda ben visibili.
+    Dal 28 giugno 2025 molti servizi di commercio elettronico devono anche essere accessibili, cioè
+    usabili da chi ha disabilità; le microimprese che forniscono servizi sono escluse da questo
+    obbligo. Qui conviene farsi seguire da chi si occupa di e-commerce.
+  </p>
+
+  <h2>Una lista da controllare oggi</h2>
+  <table>
+    <thead>
+      <tr><th>Cosa</th><th>Dove</th><th>Chi riguarda</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Partita IVA</td><td>Home page, di solito nel piè di pagina</td><td>Chi ha la partita IVA</td></tr>
+      <tr><td>Sede, registro imprese, REA, capitale</td><td>Piè di pagina o pagina dei dati</td><td>Le società</td></tr>
+      <tr><td>Informativa privacy</td><td>Link in tutte le pagine e vicino ai moduli</td><td>Quasi tutti</td></tr>
+      <tr><td>Banner con rifiuto facile</td><td>Alla prima visita</td><td>Chi usa strumenti non tecnici</td></tr>
+      <tr><td>Condizioni di vendita e recesso</td><td>Pagine dedicate, prima dell’acquisto</td><td>Chi vende online</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    Se vuoi, nell’analisi gratuita controllo anche questi punti sul tuo sito e ti dico cosa manca.
+    Per i dubbi sul tuo caso specifico, però, la parola finale è del commercialista o di un
+    consulente privacy.
+  </p>
+</Articolo>

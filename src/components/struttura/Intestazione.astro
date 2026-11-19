@@ -120,7 +120,8 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
     </nav>
 
     <div class="menu-piede" style={`--i:${NAVIGAZIONE.length + 1}`}>
-      <p class="riga"><a href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a></p>
+      <p class="riga"><a href={`tel:${SITE.telefono}`}>Chiama {SITE.whatsappLabel}</a></p>
+      <p class="riga"><a href={`https://wa.me/${SITE.whatsapp}`}>Scrivimi su WhatsApp</a></p>
       <p class="riga"><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
       <p class="riga etichetta">{SITE.city} · {SITE.provincia} — Vercelli, Novara, Casale</p>
     </div>
@@ -564,9 +565,24 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
 
   /* --------------------------- sotto i 1024px ----------------------------- */
   @media (max-width: 1023px) {
-    .voci,
-    .invito {
+    .voci {
       display: none;
+    }
+
+    /* Su telefono l'invito resta: è il pulsante che chi sta decidendo cerca
+       in alto, e la barra in fondo copre chiamata e WhatsApp, non la pagina
+       dei contatti. Più compatto, perché divide la riga con tema e menu. */
+    .invito {
+      padding: 8px 6px 8px 14px;
+    }
+
+    .invito-segno {
+      width: 24px;
+      height: 24px;
+    }
+
+    .coda {
+      gap: var(--sp-2);
     }
 
     .apri {
@@ -586,6 +602,20 @@ const principali = NAVIGAZIONE.filter((v) => v.principale);
 
     .marchio {
       gap: 0;
+    }
+  }
+
+  /* Sui telefoni più stretti (320px) la freccia e il filetto non ci stanno:
+     resta la parola, che è quella che conta. */
+  @media (max-width: 359px) {
+    .invito,
+    .intestazione[data-scorsa] .invito {
+      padding: 8px 14px;
+    }
+
+    .invito-segno,
+    .coda::before {
+      display: none;
     }
   }
 

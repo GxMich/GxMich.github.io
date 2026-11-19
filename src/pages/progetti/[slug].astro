@@ -112,17 +112,17 @@ const jsonLd = [
           {d.stato && <span>{d.stato}</span>}
         </p>
 
-        <h1 class="display otturatore" data-anima>
+        <h1 class="display">
           <span class="riga"><span>{d.titolo}</span></span>
         </h1>
 
         {/* Il corsivo serif è riservato alle frasi sue: qui è una riga sola e
             grande, che è la misura in cui quel carattere funziona davvero. */}
-        <p class="citazione sunto sfoca-entra" data-anima>{d.riassunto}</p>
+        <p class="citazione sunto">{d.riassunto}</p>
 
         {
           (d.link || d.codice) && (
-            <p class="link-progetto sfoca-entra" data-anima>
+            <p class="link-progetto">
               {d.link && (
                 <Bottone href={d.link} variante="pieno">
                   Vedi il sito <span aria-hidden="true">↗</span>

@@ -1,0 +1,105 @@
+---
+/**
+ * Le prove, in una riga: cosa ho consegnato e dove verificarlo.
+ *
+ * Solo fatti controllabili. Il numero dei siti per clienti si conta dai
+ * progetti con `natura: cliente`, quindi si aggiorna da solo quando ne
+ * aggiungi uno. Il punteggio PageSpeed è quello scritto nel caso studio di
+ * L.M. Autoservizi, con la data del controllo. Le recensioni non hanno un
+ * numero scritto qui: si leggono sulla scheda Google, dove restano vere
+ * anche quando aumentano.
+ *
+ * Sta vicino ai bottoni (apertura, modulo), perché è lì che si decide.
+ */
+import { getCollection } from 'astro:content';
+import { SITE } from '../../config.js';
+
+interface Props {
+  class?: string;
+}
+
+const { class: classe } = Astro.props;
+
+const progetti = await getCollection('progetti');
+const clienti = progetti.filter((p) => p.data.natura === 'cliente' && p.data.tipo === 'sito' && !p.data.demo);
+const anni = [...new Set(clienti.map((p) => p.data.anno))].sort();
+const periodo = anni.length > 1 ? `dal ${anni[0]}` : `nel ${anni[0]}`;
+---
+
+<ul class:list={['prove', classe]} aria-label="Cosa ho fatto finora">
+  {
+    clienti.length > 0 && (
+      <li>
+        <a href="/progetti">
+          <strong>{clienti.length} siti</strong> consegnati a clienti {periodo}
+        </a>
+      </li>
+    )
+  }
+  <li>
+    <a href="/progetti/lm-autoservizi">
+      <strong>100/100</strong> su PageSpeed per L.M. Autoservizi
+    </a>
+  </li>
+  {
+    SITE.google && (
+      <li>
+        <a href={SITE.google} rel="me noopener" target="_blank">
+          <strong>Recensioni</strong> sulla scheda Google
+        </a>
+      </li>
+    )
+  }
+</ul>
+
+<style>
+  .prove {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-5);
+    font-size: var(--t-body-sm);
+    color: var(--ink-2);
+  }
+
+  .prove li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .prove li + li::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--ink-3);
+    margin-right: var(--sp-3);
+  }
+
+  .prove a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    padding-block: 4px 2px;
+  }
+
+  .prove a:hover {
+    border-bottom-color: var(--signal-ink);
+  }
+
+  .prove strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    .prove {
+      flex-direction: column;
+      gap: var(--sp-2);
+    }
+
+    .prove li + li::before {
+      display: none;
+    }
+  }
+</style>

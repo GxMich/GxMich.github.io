@@ -58,10 +58,10 @@ const jsonLd = [
   <header class="testata">
     <div class="contenitore">
       <p class="etichetta">Contatti</p>
-      <h1 class="display otturatore" data-anima>
+      <h1 class="display">
         <span class="riga"><span>Scrivimi.</span></span>
       </h1>
-      <p class="lede sfoca-entra" data-anima>
+      <p class="lede">
         Non serve preparare un brief o sapere già che sito vuoi. Dimmi cosa fai, cosa non
         funziona oggi e cosa vorresti ottenere.
       </p>
@@ -72,8 +72,14 @@ const jsonLd = [
           <a class="h3" href={`mailto:${SITE.email}`}>{SITE.email}</a>
         </li>
         <li>
+          <span class="etichetta">Telefono</span>
+          <a class="h3" href={`tel:${SITE.telefono}`}>{SITE.whatsappLabel}</a>
+          <span class="testo-sm sotto">Se non rispondo, ti richiamo la sera.</span>
+        </li>
+        <li>
           <span class="etichetta">WhatsApp</span>
-          <a class="h3" href={`https://wa.me/${SITE.whatsapp}`}>{SITE.whatsappLabel}</a>
+          <a class="h3" href={`https://wa.me/${SITE.whatsapp}`}>Scrivimi</a>
+          <span class="testo-sm sotto">Stesso numero, anche per foto e link.</span>
         </li>
         <li>
           <span class="etichetta">Dove sono</span>
@@ -82,8 +88,13 @@ const jsonLd = [
           <address class="h3 dove">{SITE.city} ({SITE.provincia}), {SITE.cap}</address>
         </li>
         <li>
-          <span class="etichetta">Quando rispondo</span>
+          {/* Lo stesso orario della scheda Google e dei dati strutturati
+              (SITE.orari): è quando puoi scrivermi o chiamarmi. La risposta
+              arriva di solito la sera, ed è detto qui sotto e nelle altre
+              pagine: così le due informazioni non si contraddicono. */}
+          <span class="etichetta">Quando contattarmi</span>
           <span class="h3">Tutti i giorni, 8–22</span>
+          <span class="testo-sm sotto">Rispondo entro un giorno, di solito la sera o nel fine settimana.</span>
         </li>
       </ul>
 
@@ -135,8 +146,8 @@ const jsonLd = [
 
   .diretti {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--sp-5) var(--col-gap);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--sp-6) var(--col-gap);
     margin-top: clamp(36px, 5vw, 64px);
     padding-top: var(--sp-5);
     border-top: 1px solid var(--ink);
@@ -162,6 +173,11 @@ const jsonLd = [
     font-style: normal;
   }
 
+  .sotto {
+    color: var(--ink-2);
+    max-width: 30ch;
+  }
+
   .scheda {
     margin-top: clamp(24px, 3vw, 36px);
     max-width: 62ch;
@@ -179,7 +195,7 @@ const jsonLd = [
   }
 
 
-  /* Quattro colonne finché l'indirizzo email ci sta su una riga sola. */
+  /* Tre colonne finché l'indirizzo email ci sta su una riga sola. */
   @media (max-width: 1100px) {
     .diretti {
       grid-template-columns: repeat(2, minmax(0, 1fr));

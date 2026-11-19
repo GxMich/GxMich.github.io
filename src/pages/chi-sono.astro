@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 /**
  * Chi sono.
  *
@@ -100,6 +101,13 @@ const jsonLd = [
     { nome: 'Chi sono', percorso: '/chi-sono' },
   ]),
 ];
+
+/* Chi è, cosa fa, dove e con quali numeri, nella prima riga (audit GEO-11):
+   è la frase che gli assistenti AI riprendono quando qualcuno chiede di te.
+   Il numero si conta dai progetti, così resta vero. */
+const siteClienti = (await getCollection('progetti')).filter(
+  (p) => p.data.natura === 'cliente' && p.data.tipo === 'sito' && !p.data.demo,
+).length;
 ---
 
 <Guscio
@@ -112,15 +120,16 @@ const jsonLd = [
     <div class="contenitore dentro">
       <div class="apertura">
         <p class="etichetta">Chi sono</p>
-        <h1 class="display otturatore" data-anima>
+        <h1 class="display">
           <span class="riga"><span>Risolvo problemi in magazzino.</span></span>
           <span class="riga"><span>Poi li risolvo di nuovo, in codice.</span></span>
         </h1>
-        <div class="intro sfoca-entra" data-anima>
+        <div class="intro">
           <p class="testo">
-            Mi chiamo {SITE.name} e faccio siti web su misura per attività locali. Sto a
-            {SITE.city} e lavoro di persona fra Vercelli, Casale Monferrato, Novara e
-            Chivasso.
+            Mi chiamo {SITE.name}, sviluppatore web freelance di {SITE.city}, in provincia di
+            Vercelli. Faccio siti web su misura per attività locali: nel 2026 ne ho consegnati
+            {siteClienti} a clienti, fra il Monferrato e la Lomellina, e lavoro di persona fra
+            Vercelli, Casale Monferrato, Novara e Chivasso.
           </p>
           <p class="testo">
             <strong>Uso l'IA come strumento, non come sostituto del mio lavoro.</strong> Mi

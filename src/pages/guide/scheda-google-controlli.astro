@@ -1,0 +1,114 @@
+---
+import Articolo from '../../components/sezioni/Articolo.astro';
+
+const inBreve = [
+  'La scheda Google è la prima cosa che vede chi ti cerca dal telefono: spesso prima del sito.',
+  'Dieci controlli che puoi fare da solo in mezz’ora, dal nome alle recensioni.',
+  'La regola d’oro: nome, telefono e orari scritti uguali su scheda, sito e social.',
+  'Niente scorciatoie: parole chiave nel nome e recensioni finte portano a correzioni o sospensioni.',
+];
+
+const faq = [
+  {
+    d: 'Dove si modifica la scheda?',
+    r: 'Da Google cercando il nome della tua attività mentre sei collegato con l’account che la gestisce, oppure dall’app Google Maps. Compare il pannello per modificare profilo, foto e orari.',
+  },
+  {
+    d: 'Quanto ci mette Google a mostrare le modifiche?',
+    r: 'Di solito da qualche ora a qualche giorno. Alcune modifiche, come il nome o la categoria, possono essere controllate prima di comparire.',
+  },
+  {
+    d: 'Non trovo la mia scheda, o la gestisce qualcun altro.',
+    r: 'Si può richiedere la proprietà da Google: la procedura avvisa chi la gestisce oggi e, se non risponde, la passa a te. Non crearne una seconda: le doppie si fanno concorrenza e una delle due viene tolta.',
+  },
+];
+---
+
+<Articolo
+  titolo="Scheda Google: dieci controlli da fare da solo in mezz’ora"
+  titoloPagina="Scheda Google: 10 controlli da fare da solo"
+  descrizione="Nome, categoria, orari, foto, recensioni: i dieci controlli sulla scheda Google della tua attività che puoi fare da solo, e gli errori che la fanno sospendere."
+  percorso="/guide/scheda-google-controlli"
+  pubblicata="2026-11-19"
+  inBreve={inBreve}
+  faq={faq}
+>
+  <p>
+    Prendi il telefono, scollegati dall’account Google (o apri una finestra in incognito) e cerca il
+    nome della tua attività. Quello che vedi è quello che vede un cliente nuovo. Poi fai questi dieci
+    controlli.
+  </p>
+
+  <h2>1. Il nome è quello vero</h2>
+  <p>
+    Il nome della scheda deve essere quello dell’insegna, senza aggiunte. «Bar Centrale» va bene,
+    «Bar Centrale Trino colazioni aperitivi» no: è contro le regole di Google e prima o poi viene
+    corretto, a volte con la sospensione.
+  </p>
+
+  <h2>2. La categoria principale è giusta</h2>
+  <p>
+    È la scelta che conta di più per le ricerche: «Idraulico», «Pizzeria», «Estetista». Scegli
+    quella più precisa per quello che fai di più. Le altre si aggiungono come secondarie.
+  </p>
+
+  <h2>3. Orari veri, e quelli delle feste</h2>
+  <p>
+    Gli orari devono essere quelli in cui rispondi davvero. Inserisci in anticipo chiusure per ferie e
+    giorni festivi: niente fa perdere fiducia come trovare chiuso dove Google diceva «Aperto».
+  </p>
+
+  <h2>4. Il telefono risponde</h2>
+  <p>
+    Toccalo dalla scheda: chiama il numero giusto? Se di giorno non puoi rispondere, aggiungi anche
+    WhatsApp o il sito, e scrivi negli orari quando ti si trova.
+  </p>
+
+  <h2>5. Il sito è collegato</h2>
+  <p>
+    Il link al sito deve portare alla pagina giusta e funzionare dal telefono. Se non hai un sito,
+    meglio un profilo social aggiornato che niente.
+  </p>
+
+  <h2>6. Le foto sono tue e recenti</h2>
+  <p>
+    Il posto da fuori e da dentro, le persone, i lavori fatti, i prodotti. Almeno una decina, e poi una
+    nuova ogni tanto. Le foto di repertorio e i loghi soltanto non dicono niente a chi deve scegliere.
+  </p>
+
+  <h2>7. La descrizione dice cosa fai e dove</h2>
+  <p>
+    Poche righe semplici: cosa fai, per chi, in quali paesi, cosa ti distingue. Scritte come parleresti
+    a un cliente, non come un elenco di parole chiave.
+  </p>
+
+  <h2>8. Servizi o prodotti compilati</h2>
+  <p>
+    L’elenco dei servizi aiuta Google a capire per quali ricerche mostrarti, e aiuta il cliente a
+    capire se fai proprio la cosa che gli serve.
+  </p>
+
+  <h2>9. Le recensioni arrivano, e hanno risposta</h2>
+  <p>
+    Dal pannello della scheda prendi il link diretto per le recensioni e mandalo ai clienti contenti,
+    a lavoro finito. Rispondi a tutte, anche alle critiche, con calma e con i fatti: chi legge giudica
+    anche la risposta. Mai recensioni comprate o scritte da amici: Google le toglie.
+  </p>
+
+  <h2>10. I dati sono uguali ovunque</h2>
+  <p>
+    Nome, telefono e indirizzo (o zona) devono essere scritti allo stesso modo su scheda, sito, Facebook,
+    Instagram e directory. Se in un posto c’è ancora il numero vecchio, Google e gli assistenti AI
+    non sanno a quale credere, e a volte scelgono quello sbagliato.
+  </p>
+
+  <h2>Se lavori da casa</h2>
+  <p>
+    Se non ricevi clienti in sede, imposta la zona servita e nascondi l’indirizzo. Non inventare una
+    sede in un’altra città per comparire lì: è la cosa che Google punisce più volentieri.
+  </p>
+
+  <p>
+    Se preferisci che la sistemi io, qui trovi <a href="/scheda-google">come lavoro sulla scheda Google</a>.
+  </p>
+</Articolo>

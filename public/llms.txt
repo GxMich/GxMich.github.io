@@ -1,8 +1,10 @@
 # Michele Modica — sviluppatore web
 
-> Faccio siti web su misura per attività locali fra Vercelli, Casale
-> Monferrato, Novara e Chivasso, e rifaccio o miglioro siti esistenti. Sto a
-> Trino (VC) e lavoro di persona in zona. Prendo pochi progetti l'anno.
+> Faccio siti web su misura per attività locali, soprattutto nel Monferrato
+> (cantine, agriturismi, B&B, location per eventi, ristoranti) e fra Casale
+> Monferrato, Vercelli, Novara e Chivasso, e rifaccio o miglioro siti
+> esistenti. Sto a Trino (VC), a dieci minuti dalle colline del Monferrato, e
+> lavoro di persona in zona. Prendo pochi progetti l'anno.
 
 ## In breve
 
@@ -10,10 +12,12 @@
   Progetta e scrive personalmente ogni sito: un solo referente dall'inizio
   alla fine.
 - **Dove**: sede a Trino (VC), 13039, Piemonte. Di persona in un raggio di
-  circa 60 km: Vercelli, Casale Monferrato, Novara, Chivasso, Crescentino,
+  circa 60 km: il Monferrato casalese e le colline fino ad Asti, Casale
+  Monferrato, Vercelli, Novara, Chivasso, Crescentino,
   Santhià, Livorno Ferraris, Saluggia. Più lontano a distanza, su richiesta.
-- **Per chi**: ristoranti e locali, negozi e botteghe, studi professionali,
-  artigiani e imprese tecniche, B&B e agriturismi, associazioni.
+- **Per chi**: cantine e produttori, agriturismi, B&B e dimore, location per
+  matrimoni ed eventi, ristoranti e locali, negozi e botteghe, studi
+  professionali, artigiani e imprese tecniche, associazioni.
 - **Cosa**: siti web su misura per attività locali (sito vetrina, cataloghi
   con pochi prodotti, siti bilingue, pannello per aggiornare testi, foto e
   prezzi), rifacimento e miglioramento di siti esistenti, sistemazione e
@@ -21,7 +25,11 @@
 - **Condizioni**: preventivo con una cifra unica alla prima risposta; dominio
   e hosting intestati al cliente; nessun canone obbligatorio; prima mezz'ora
   di consulenza gratuita; tempi tipici 3–4 settimane.
-- **Ricerche a cui risponde questo sito**: siti web Vercelli, sviluppatore web
+- **Analisi gratuita**: chi manda il link del proprio sito, della scheda
+  Google o della pagina social riceve entro tre giorni le tre cose da
+  sistemare per prime, gratis e senza impegno.
+- **Ricerche a cui risponde questo sito**: siti web Monferrato, sito web per
+  cantina, sito per agriturismo nel Monferrato, siti web Vercelli, sviluppatore web
   Vercelli, realizzazione siti web Vercelli, web designer freelance Vercelli,
   siti web Casale Monferrato, siti web Trino, siti internet per attività
   locali in provincia di Vercelli.
@@ -64,9 +72,28 @@ riga: se una parte non la so verificare, quella parte non la uso.
   intero — problema, strada scelta, risultato, e cosa non ha funzionato
 - [Servizi](https://www.modicamichele.it/servizi): cosa comprende un sito su
   misura, cosa no, per chi è pensato, e otto domande con risposta per esteso
+- [Rifare il sito](https://www.modicamichele.it/rifare-sito): quando conviene
+  rifare o sistemare un sito esistente e come si passa al nuovo senza perdere
+  indirizzo e posizioni su Google
+- [Scheda Google](https://www.modicamichele.it/scheda-google): cosa sistemo
+  nel Profilo dell'attività (nome, orari, foto, recensioni) e cosa non faccio
 - [Chi sono](https://www.modicamichele.it/chi-sono): il percorso dal 2023 a
   oggi e come uso l'intelligenza artificiale nel lavoro
-- [Contatti](https://www.modicamichele.it/contatti): email, WhatsApp, modulo
+- [Guide](https://www.modicamichele.it/guide): guide pratiche per titolari —
+  [Basta Instagram o serve un sito?](https://www.modicamichele.it/guide/sito-o-instagram),
+  [Scheda Google: dieci controlli](https://www.modicamichele.it/guide/scheda-google-controlli),
+  [Cosa deve avere per legge il sito di un'attività](https://www.modicamichele.it/guide/sito-attivita-obblighi)
+- [Analisi gratuita](https://www.modicamichele.it/analisi-gratuita): le tre
+  cose da sistemare per prime nel sito o nella scheda Google, entro tre giorni
+- [Contatti](https://www.modicamichele.it/contatti): telefono, WhatsApp, email,
+  modulo e orari
+- [Siti web nel Monferrato](https://www.modicamichele.it/siti-web-monferrato):
+  la zona principale; siti per cantine, agriturismi, B&B, dimore, location per
+  eventi e ristoranti di collina, veloci, in italiano e inglese, con richieste
+  dirette senza commissioni
+- [Siti web a Trino](https://www.modicamichele.it/siti-web-trino): la sede;
+  siti per bar, negozi, artigiani e associazioni del paese e dei comuni vicini
+  (Palazzolo Vercellese, Fontanetto Po, Crescentino, Livorno Ferraris)
 - [Siti web a Vercelli](https://www.modicamichele.it/siti-web-vercelli): per
   quali attività del capoluogo lavoro, come funziona l'incontro di persona,
   costi e comuni coperti
@@ -115,15 +142,18 @@ riga: se una parte non la so verificare, quella parte non la uso.
 
 Nessuna cifra su questo sito è gonfiata, e dove i numeri non ci sono è scritto
 che non ci sono. SuiteFit è in beta e non ha ancora utenti veri. LightenUp è
-online da poco e non ha traffico da dichiarare. Non ci sono testimonianze
-perché non ne sono ancora state raccolte di vere.
+online da poco e non ha traffico da dichiarare. Le recensioni dei clienti
+sono quelle pubbliche sulla scheda Google; sul sito non ci sono testimonianze
+scritte da me.
 
 ## Contatti
 
+- Telefono e WhatsApp: +39 353 421 4628 (stesso numero)
 - Email: info@modicamichele.it
-- WhatsApp: +39 353 421 4628
-- Zona: Trino (VC), e di persona fra Vercelli, Casale Monferrato, Novara e
-  Chivasso.
+- Quando contattarmi: tutti i giorni dalle 8 alle 22; rispondo entro un
+  giorno, di solito la sera o nel fine settimana.
+- Zona: sede a Trino (VC); di persona nel Monferrato e fra Casale Monferrato,
+  Vercelli, Novara e Chivasso.
 - Scheda Google: https://maps.google.com/?cid=11384881009517492426
   (nome sulla scheda: "Modica Michele Web Service")
 - Instagram: https://www.instagram.com/modicamichele.web/

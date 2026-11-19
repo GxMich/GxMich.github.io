@@ -17,6 +17,12 @@ export const SITE = {
   /** Solo cifre, con prefisso internazionale: serve per il link wa.me */
   whatsapp: '393534214628',
   whatsappLabel: '+39 353 421 4628',
+  /**
+   * Lo stesso numero, da chiamare. Il sito promette ai clienti un «telefono
+   * che si chiama con un tocco»: il link tel: separato da WhatsApp è il minimo
+   * per farlo anche qui. Formato E.164, senza spazi.
+   */
+  telefono: '+393534214628',
 
   /**
    * Niente partita IVA: il lavoro va come prestazione occasionale, quindi in
@@ -32,7 +38,9 @@ export const SITE = {
    * sei è la cosa che Google penalizza più volentieri sulle attività locali.
    *
    * Trino ha circa 7.000 abitanti, quindi da sola porta pochissime ricerche.
-   * Il traffico arriva dal raggio: Vercelli, Casale, Novara, Chivasso.
+   * Il traffico arriva dal raggio. Dal 19/11/2026 la zona su cui si punta è
+   * il Monferrato: colline piene di cantine, agriturismi, B&B e location, cioè
+   * le attività per cui un sito vale di più. Per questo sta prima di tutto.
    */
   city: 'Trino',
   region: 'Piemonte',
@@ -40,9 +48,10 @@ export const SITE = {
   provincia: 'VC',
   cap: '13039',
   areas: [
+    'Monferrato',
     'Trino',
-    'Vercelli',
     'Casale Monferrato',
+    'Vercelli',
     'Novara',
     'Chivasso',
     'Tutta Italia da remoto',
@@ -54,12 +63,17 @@ export const SITE = {
    * Solo dove c'è davvero qualcosa di diverso da dire: una pagina per ogni
    * comune del raggio, con lo stesso testo e il nome sostituito, è contenuto
    * duplicato — Google la riconosce e indebolisce anche le pagine buone.
-   * Trino non ce l'ha perché è la sede e ne parlano già home e contatti.
    * Novara e Chivasso aggiunte a novembre 2026, ciascuna con testi suoi.
+   * Trino aggiunta il 19/11/2026: la home non nomina più le città nel title,
+   * e su «siti web Trino» serviva una pagina che rispondesse.
+   * Monferrato aggiunto lo stesso giorno, e messo per primo: è la zona su cui
+   * punta il sito. Casale resta a parte: lì si parla della città.
    */
   pagineZona: {
-    Vercelli: '/siti-web-vercelli',
+    Monferrato: '/siti-web-monferrato',
+    Trino: '/siti-web-trino',
     'Casale Monferrato': '/siti-web-casale-monferrato',
+    Vercelli: '/siti-web-vercelli',
     Novara: '/siti-web-novara',
     Chivasso: '/siti-web-chivasso',
   },
@@ -197,4 +211,6 @@ export const NAVIGAZIONE = [
   { href: '/servizi', etichetta: 'Servizi', principale: true },
   { href: '/chi-sono', etichetta: 'Chi sono', principale: true },
   { href: '/contatti', etichetta: 'Contatti', principale: false },
+  { href: '/guide', etichetta: 'Guide', principale: false },
+  { href: '/analisi-gratuita', etichetta: 'Analisi gratuita', principale: false },
 ];

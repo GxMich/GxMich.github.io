@@ -11,6 +11,7 @@ import { ClientRouter } from 'astro:transitions';
 import Intestazione from '../components/struttura/Intestazione.astro';
 import Piede from '../components/struttura/Piede.astro';
 import Consenso from '../components/comuni/Consenso.astro';
+import BarraContatti from '../components/struttura/BarraContatti.astro';
 import Marchio from '../components/comuni/Marchio.astro';
 import { SITE } from '../config.js';
 
@@ -170,14 +171,18 @@ const passaggio = {
 
     <Piede transition:animate="none" />
 
+    {!senzaMisure && <BarraContatti transition:persist />}
+
     {!senzaMisure && <Consenso />}
 
     <script>
       // Le comparse valgono per ogni pagina: montarle qui evita che ogni
       // sezione si porti dietro il proprio osservatore.
       import { montaComparse } from '../lib/movimento.ts';
+      import { montaMisureContatti } from '../lib/misure-contatti.ts';
 
       montaComparse();
+      montaMisureContatti();
       document.addEventListener('astro:page-load', () => montaComparse());
     </script>
   </body>

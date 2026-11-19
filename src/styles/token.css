@@ -106,9 +106,12 @@
   --t-h4: 17px;
   --t-lede: clamp(16.5px, 1.4vw, 19px);
   --t-body: 16.5px;
-  --t-body-sm: 14.5px;
+  /* 16px: sotto, i paragrafi da telefono si leggono a fatica (audit 19/11/2026,
+     DES-19). Era 14,5px e lo usava quasi tutto il testo corrente. */
+  --t-body-sm: 16px;
   --t-quote: clamp(21px, 2.6vw, 32px);
-  --t-label: 10.5px;
+  /* Le etichette in maiuscolo mono: 12px è il minimo leggibile. Era 10,5px. */
+  --t-label: 12px;
   --t-data: 12px;
 
   /* --------------------------------------------------------------------------

@@ -1,0 +1,263 @@
+---
+/**
+ * L'impaginazione di una guida.
+ *
+ * Poche guide fatte bene invece di un blog (guida 24: tre approfondimenti
+ * curati valgono più di venti articoli abbandonati). Ognuna risponde a una
+ * domanda che un titolare si fa davvero, apre con «In breve» perché gli
+ * assistenti AI e chi ha fretta trovino subito la risposta, dice chi l'ha
+ * scritta e quando, e chiude con l'analisi gratuita.
+ *
+ * Il testo arriva dallo slot come HTML semplice (h2, p, ul, ol, table).
+ */
+import Guscio from '../../layouts/Guscio.astro';
+import Bottone from '../comuni/Bottone.astro';
+import { SITE } from '../../config.js';
+import { ID, domande, briciole } from '../../lib/schema.ts';
+
+interface Props {
+  titolo: string;
+  /** Il title della pagina, se diverso dal titolo in pagina. */
+  titoloPagina?: string;
+  descrizione: string;
+  percorso: string;
+  /** Data ISO, es. 2026-11-19. */
+  pubblicata: string;
+  aggiornata?: string;
+  inBreve: string[];
+  faq?: { d: string; r: string }[];
+}
+
+const { titolo, titoloPagina, descrizione, percorso, pubblicata, aggiornata, inBreve, faq = [] } = Astro.props;
+
+const data = new Date(aggiornata ?? pubblicata).toLocaleDateString('it-IT', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: titolo,
+    description: descrizione,
+    url: `${SITE.url}${percorso}`,
+    datePublished: pubblicata,
+    dateModified: aggiornata ?? pubblicata,
+    inLanguage: 'it-IT',
+    author: { '@id': ID.persona },
+    publisher: { '@id': ID.persona },
+    image: `${SITE.url}/og/home.png`,
+  },
+  ...(faq.length ? [domande(faq)] : []),
+  briciole([
+    { nome: 'Home', percorso: '/' },
+    { nome: 'Guide', percorso: '/guide' },
+    { nome: titolo, percorso },
+  ]),
+];
+---
+
+<Guscio titolo={titoloPagina ?? titolo} descrizione={descrizione} ogImage="/og/home.png" jsonLd={jsonLd}>
+  <article class="articolo">
+    <header class="testata contenitore">
+      <p class="etichetta"><a href="/guide">Guide</a></p>
+      <h1 class="display">{titolo}</h1>
+      <p class="firma testo-sm">
+        Di <a href="/chi-sono">{SITE.name}</a>, sviluppatore web a {SITE.city} ({SITE.provincia}) ·
+        {aggiornata ? 'aggiornata il' : 'pubblicata il'} <time datetime={aggiornata ?? pubblicata}>{data}</time>
+      </p>
+    </header>
+
+    <div class="contenitore corpo">
+      <aside class="breve" aria-labelledby="in-breve">
+        <h2 id="in-breve" class="etichetta">In breve</h2>
+        <ul>
+          {inBreve.map((r) => <li>{r}</li>)}
+        </ul>
+      </aside>
+
+      <div class="testo">
+        <slot />
+      </div>
+
+      {
+        faq.length > 0 && (
+          <section class="domande" aria-labelledby="domande-guida">
+            <h2 id="domande-guida">Domande frequenti</h2>
+            <dl>
+              {faq.map((q) => (
+                <div class="qa">
+                  <dt class="h4">{q.d}</dt>
+                  <dd>{q.r}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )
+      }
+
+      <aside class="chiusura su-palco" aria-labelledby="chiusura-titolo">
+        <p class="etichetta">Vuoi un parere sul tuo?</p>
+        <h2 id="chiusura-titolo" class="h3">Mandami il link: ti dico le tre cose da sistemare per prime.</h2>
+        <p class="testo-sm">Gratis, entro tre giorni, senza impegno. Vale per il sito, la scheda Google o la pagina social.</p>
+        <p class="inviti">
+          <Bottone href="/analisi-gratuita">Richiedi l'analisi gratuita</Bottone>
+        </p>
+      </aside>
+    </div>
+  </article>
+</Guscio>
+
+<style>
+  .testata {
+    padding-block: clamp(40px, 6vw, 88px) clamp(24px, 3vw, 40px);
+  }
+
+  .testata .etichetta {
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(24px, 3vw, 40px);
+  }
+
+  .testata .etichetta a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .testata .display {
+    max-width: 20ch;
+  }
+
+  .firma {
+    margin-top: var(--sp-5);
+    color: var(--ink-2);
+  }
+
+  .firma a {
+    color: var(--signal-ink);
+    text-underline-offset: 3px;
+  }
+
+  .corpo {
+    display: grid;
+    gap: clamp(32px, 4vw, 56px);
+    padding-bottom: var(--section);
+    max-width: calc(72ch + 2 * var(--gutter));
+    margin-inline: 0;
+  }
+
+  .breve {
+    padding: var(--sp-5);
+    background: var(--paper-sunk);
+    border-left: 3px solid var(--signal);
+  }
+
+  .breve .etichetta {
+    margin: 0 0 var(--sp-3);
+  }
+
+  .breve ul {
+    display: grid;
+    gap: var(--sp-2);
+    padding-left: 1.1em;
+    list-style: disc;
+  }
+
+  .testo {
+    display: grid;
+    gap: var(--sp-4);
+    font-size: var(--t-body);
+    line-height: 1.65;
+  }
+
+  .testo :global(h2),
+  .domande h2 {
+    font-size: var(--t-h3);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-top: var(--sp-5);
+  }
+
+  .testo :global(h3) {
+    font-size: var(--t-h4);
+    margin-top: var(--sp-3);
+  }
+
+  .testo :global(ul),
+  .testo :global(ol) {
+    display: grid;
+    gap: var(--sp-2);
+    padding-left: 1.2em;
+  }
+
+  .testo :global(ul) {
+    list-style: disc;
+  }
+
+  .testo :global(ol) {
+    list-style: decimal;
+  }
+
+  .testo :global(a) {
+    color: var(--signal-ink);
+    text-underline-offset: 3px;
+  }
+
+  .testo :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-body-sm);
+  }
+
+  .testo :global(th),
+  .testo :global(td) {
+    text-align: left;
+    vertical-align: top;
+    padding: var(--sp-3) var(--sp-3) var(--sp-3) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .testo :global(th) {
+    font-weight: 600;
+  }
+
+  .domande dl {
+    display: grid;
+    border-top: 1px solid var(--ink);
+    margin-top: var(--sp-4);
+  }
+
+  .qa {
+    display: grid;
+    gap: var(--sp-2);
+    padding: var(--sp-4) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .qa dd {
+    margin: 0;
+  }
+
+  .chiusura {
+    display: grid;
+    gap: var(--sp-3);
+    padding: clamp(24px, 4vw, 48px);
+  }
+
+  .chiusura .h3 {
+    max-width: 30ch;
+  }
+
+  .inviti {
+    margin-top: var(--sp-2);
+  }
+
+  @media (max-width: 600px) {
+    .testo :global(table) {
+      display: block;
+      overflow-x: auto;
+    }
+  }
+</style>
