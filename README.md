@@ -232,7 +232,6 @@ Cinque pagine che non raggiunge nessun collegamento del sito: sono fuori dalla s
 | `/incontro-cliente` | solo a me | appunti dell'incontro, richiesta, calcolo del prezzo, stampa. **Con password** |
 | `/incontro-cliente-v2` | solo a me | la versione nuova: questionario di scoperta, microfono con audio su ogni domanda, calcolo del prezzo con la suddivisione dei soldi. **Con password**, stessa del listino |
 | `/preventivo-proposta#…` | il cliente, dopo la demo | il preventivo: versione di prova, pacchetti, extra, totale che si aggiorna, pulsanti per rispondere |
-| `/preventivo-casa-di-nonna` | quel cliente | la versione già fatta per Casa di Nonna |
 
 Le domande stanno in **`src/data/richiesta.js`**, una volta sola: il cliente le compila nella
 sua pagina, io le riempio all'incontro nella mia, e il messaggio che il cliente manda si
