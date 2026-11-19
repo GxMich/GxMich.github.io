@@ -1,6 +1,7 @@
 ---
 import { SITE } from '../../config.js';
 import Prove from '../comuni/Prove.astro';
+import Testimonianze from './Testimonianze.astro';
 ---
 
 <section class="invito" aria-labelledby="invito-titolo">
@@ -17,6 +18,7 @@ import Prove from '../comuni/Prove.astro';
       <p class="testo-sm rassicura">
         Non sai ancora se ti serve un sito nuovo? <a href="/analisi-gratuita">Chiedi l'analisi gratuita</a>: entro tre giorni ti dico le tre cose da sistemare per prime.
       </p>
+      <Testimonianze forma="breve" />
       <Prove class="prove-invito" />
       <p class="testo-sm diretti">
         Preferisci parlarne a voce? <a href={`tel:${SITE.telefono}`}>Chiamami al {SITE.whatsappLabel}</a>.

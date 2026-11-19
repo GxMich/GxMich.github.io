@@ -193,8 +193,28 @@ export const SITE = {
    *     attivita: 'Nome attività',
    *     luogo: 'Vercelli',
    *   }
+   *
+   * 19/11/2026: Luca Miglietta e Nicola Romano hanno dato il permesso di
+   * pubblicare le loro recensioni Google, e anche quelle future. I testi sono
+   * le loro parole, con la sola punteggiatura sistemata («!!!» → «!», spazio
+   * prima della virgola). La prima dell'elenco compare anche accanto al
+   * modulo di contatto: tenere lì la più breve.
    */
-  testimonianze: [],
+  testimonianze: [
+    {
+      testo:
+        'Grande professionista, attento alle richieste del cliente, sa consigliare al meglio e trovare soluzioni tempestive ed efficaci, prezzi onesti e vantaggiosi! Super consigliato a tutti!',
+      autore: 'Luca Miglietta',
+      ruolo: 'Titolare',
+      attivita: 'L.M. Autoservizi',
+      luogo: 'Frassineto Po',
+    },
+    {
+      testo:
+        'Ho avuto un’ottima esperienza: preciso, disponibile e attento alle esigenze del cliente. Ha dimostrato competenza tecnica, cura dei dettagli e grande professionalità, realizzando un lavoro di qualità e rispettando le richieste concordate. Consiglio vivamente a chiunque cerchi uno sviluppatore web affidabile, capace di trasformare le idee in un progetto concreto.',
+      autore: 'Nicola Romano',
+    },
+  ],
 
 };
 

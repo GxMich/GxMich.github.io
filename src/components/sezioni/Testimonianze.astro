@@ -1,0 +1,156 @@
+---
+/**
+ * Le recensioni dei clienti, con le loro parole.
+ *
+ * Vengono da SITE.testimonianze: frasi prese dalle recensioni pubbliche sulla
+ * scheda Google, pubblicate con il permesso di chi le ha scritte (i clienti
+ * l'hanno dato il 19/11/2026, anche per le recensioni future). Se l'elenco è
+ * vuoto il componente non disegna niente.
+ *
+ * Due forme:
+ *  - `sezione` (home): tutte, con titolo e link alla scheda;
+ *  - `breve` (accanto al modulo di contatto): la prima soltanto, perché lì
+ *    serve una voce sola, vicina al momento in cui si decide.
+ *
+ * Niente dati strutturati di tipo Review: Google non mostra le stelle per le
+ * recensioni che un'attività pubblica su se stessa, e marcarle così rischia
+ * solo un'azione manuale.
+ */
+import { SITE } from '../../config.js';
+
+interface Props {
+  forma?: 'sezione' | 'breve';
+}
+
+const { forma = 'sezione' } = Astro.props;
+const tutte = SITE.testimonianze ?? [];
+const voci = forma === 'breve' ? tutte.slice(0, 1) : tutte;
+
+const firma = (t: (typeof tutte)[number]) =>
+  [t.ruolo && t.attivita ? `${t.ruolo}, ${t.attivita}` : t.attivita, t.luogo].filter(Boolean).join(' · ');
+---
+
+{
+  voci.length > 0 && forma === 'sezione' && (
+    <section class="testimonianze" aria-labelledby="testimonianze-titolo">
+      <div class="contenitore">
+        <p class="etichetta">Recensioni su Google</p>
+        <h2 id="testimonianze-titolo" class="h2 sfoca-entra" data-anima>
+          Cosa dice chi ha lavorato con me.
+        </h2>
+        <div class="griglia">
+          {voci.map((t) => (
+            <figure class="voce">
+              <blockquote>
+                <p>«{t.testo}»</p>
+              </blockquote>
+              <figcaption>
+                <strong>{t.autore}</strong>
+                {firma(t) && <span class="testo-sm">{firma(t)}</span>}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        {SITE.google && (
+          <p class="tutte testo-sm">
+            <a href={SITE.google} rel="noopener" target="_blank">
+              Leggi tutte le recensioni sulla scheda Google
+            </a>
+          </p>
+        )}
+      </div>
+    </section>
+  )
+}
+
+{
+  voci.length > 0 && forma === 'breve' && (
+    <figure class="breve">
+      <blockquote>
+        <p>«{voci[0].testo}»</p>
+      </blockquote>
+      <figcaption class="testo-sm">
+        <strong>{voci[0].autore}</strong>
+        {firma(voci[0]) && <> · {firma(voci[0])}</>}
+      </figcaption>
+    </figure>
+  )
+}
+
+<style>
+  .testimonianze {
+    padding-block: var(--section);
+    border-top: 1px solid var(--rule);
+  }
+
+  .etichetta {
+    margin-bottom: var(--sp-4);
+  }
+
+  .griglia {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: var(--col-gap);
+    margin-top: clamp(28px, 4vw, 48px);
+  }
+
+  .voce {
+    display: grid;
+    gap: var(--sp-4);
+    align-content: start;
+    margin: 0;
+    padding: var(--sp-6);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-1);
+    background: var(--paper-sunk);
+  }
+
+  .voce blockquote,
+  .breve blockquote {
+    margin: 0;
+  }
+
+  .voce blockquote p {
+    font-size: var(--t-body);
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  figcaption {
+    display: grid;
+    gap: 2px;
+  }
+
+  figcaption span {
+    color: var(--ink-2);
+  }
+
+  .tutte {
+    margin-top: var(--sp-5);
+  }
+
+  .tutte a {
+    color: var(--signal-ink);
+    text-underline-offset: 3px;
+  }
+
+  .breve {
+    margin: 0;
+    padding-left: var(--sp-4);
+    border-left: 2px solid var(--signal);
+    display: grid;
+    gap: var(--sp-2);
+    max-width: 46ch;
+  }
+
+  .breve blockquote p {
+    font-size: var(--t-body-sm);
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  .breve figcaption {
+    display: block;
+    color: var(--ink-2);
+  }
+</style>
