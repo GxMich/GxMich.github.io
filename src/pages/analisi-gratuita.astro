@@ -126,7 +126,7 @@ const jsonLd = [
         </p>
       </div>
 
-      <form class="modulo" data-analisi data-whatsapp={SITE.whatsapp} data-email={SITE.email}>
+      <form class="modulo" data-clarity-mask="true" data-analisi data-whatsapp={SITE.whatsapp} data-email={SITE.email}>
         <p class="campo">
           <label for="analisi-attivita">Nome dell'attività</label>
           <input id="analisi-attivita" name="attivita" type="text" required maxlength="120" autocomplete="organization" />
@@ -436,7 +436,7 @@ const jsonLd = [
 </style>
 
 <script>
-  import { segnaContatto } from '../lib/misure-contatti.ts';
+  import { segnaContatto, rigaProvenienza } from '../lib/misure-contatti.ts';
 
   function montaAnalisi() {
     document.querySelectorAll<HTMLFormElement>('form[data-analisi]').forEach((form) => {
@@ -460,6 +460,7 @@ const jsonLd = [
           `Link: ${link}`,
         ];
         if (cosa) righe.push('', `Cosa vorrei migliorare: ${cosa}`);
+        righe.push('', rigaProvenienza());
         const testo = righe.join('\n');
 
         segnaContatto(canale === 'email' ? 'contatto_email' : 'contatto_whatsapp', { modulo: 'analisi' });

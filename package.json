@@ -15,7 +15,8 @@
     "peso": "node scripts/peso-js.mjs",
     "caratteri": "node scripts/caratteri.mjs",
     "verifica": "node scripts/verifica.mjs",
-    "controlli": "npm run contrasti && npm run peso && npm run verifica"
+    "controlli": "npm run contrasti && npm run peso && npm run verifica",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",

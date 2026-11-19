@@ -23,7 +23,7 @@ import Prove from '../comuni/Prove.astro';
       </p>
     </div>
 
-    <form class="modulo" data-whatsapp={SITE.whatsapp}>
+    <form class="modulo" data-clarity-mask="true" data-whatsapp={SITE.whatsapp}>
       <p class="campo">
         <label for="richiesta-servizio">Di cosa hai bisogno?</label>
         <select id="richiesta-servizio" name="servizio" required>
@@ -86,7 +86,7 @@ import Prove from '../comuni/Prove.astro';
 </style>
 
 <script>
-  import { segnaContatto } from '../../lib/misure-contatti.ts';
+  import { segnaContatto, rigaProvenienza } from '../../lib/misure-contatti.ts';
 
   function montaRichiestaWhatsApp() {
     document.querySelectorAll<HTMLFormElement>('.modulo[data-whatsapp]').forEach((form) => {
@@ -101,6 +101,7 @@ import Prove from '../comuni/Prove.astro';
         const dettagli = String(dati.get('dettagli') || '').trim();
         const righe = ['Ciao Michele, ti contatto dal sito.', '', `Mi serve: ${servizio}`, `Situazione: ${situazione}`];
         if (dettagli) righe.push('', `Qualche dettaglio: ${dettagli}`);
+        righe.push('', rigaProvenienza());
         const link = `https://wa.me/${form.dataset.whatsapp}?text=${encodeURIComponent(righe.join('\n'))}`;
         segnaContatto('contatto_whatsapp', { modulo: 'progetto', servizio });
         window.open(link, '_blank', 'noopener,noreferrer');

@@ -5,7 +5,7 @@ import { SITE } from '../config.js';
 
 <Guscio
   titolo="Informativa privacy — Michele"
-  descrizione="Come tratto i dati che mi lasci scrivendomi dal sito: cosa raccolgo, perché, per quanto tempo e come farli cancellare."
+  descrizione="Come tratto i dati di chi visita il sito e di chi mi scrive: cosa raccolgo, quali strumenti di misura uso, per quanto tempo e come farli cancellare."
   noindex={true}
 >
   <section class="pagina">
@@ -21,6 +21,8 @@ import { SITE } from '../config.js';
       </div>
 
       <div class="testo">
+        <p class="aggiornata testo-sm">Aggiornata il 19 novembre 2026.</p>
+
         <h2 class="h4">Chi tratta i dati</h2>
         <p>
           Il titolare del trattamento è {SITE.name}, con sede in {SITE.city}, contattabile
@@ -29,69 +31,167 @@ import { SITE } from '../config.js';
         </p>
 
         <h2 class="h4">Quali dati raccolgo</h2>
-        <p>
-          Le scelte effettuate nel modulo guidato restano nel browser: il sito non le invia
-          a un server e non le salva. Se scegli di proseguire, si apre WhatsApp con un
-          messaggio già preparato: il testo viene passato a WhatsApp per creare la bozza.
-          Solo se premi «Invia» il messaggio viene spedito a me. Puoi modificarlo o
-          cancellarlo prima dell'invio.
-        </p>
+        <ul class="elenco">
+          <li>
+            <strong>Se usi un modulo.</strong> Le scelte che fai nel modulo restano nel
+            browser: il sito non le invia a un server e non le salva. Se prosegui, si apre
+            WhatsApp o il tuo programma di posta con un messaggio già preparato, che in fondo
+            riporta la pagina da cui scrivi e, se si sa, da dove sei arrivato (per esempio
+            «Google» o «scheda Google»). Solo se premi «Invia» il messaggio arriva a me, e
+            prima puoi modificarlo o cancellarlo. Lo stesso saluto, con la pagina, compare
+            quando tocchi un pulsante WhatsApp.
+          </li>
+          <li>
+            <strong>Se mi scrivi o mi chiami.</strong> Ricevo il tuo indirizzo email o il tuo
+            numero e quello che mi scrivi o mi dici, e li uso per risponderti.
+          </li>
+          <li>
+            <strong>Mentre navighi.</strong> Come ogni sito, il server registra dati tecnici
+            delle richieste (indirizzo IP, pagina richiesta, data e ora, tipo di browser) per
+            funzionare e difendersi dagli abusi. Lo fa l'hosting, Aruba, e io non li uso per
+            altro.
+          </li>
+          <li>
+            <strong>La tua scelta sulle misure.</strong> Quando rispondi alla fascia in fondo
+            allo schermo salvo nel registro dei consensi la data e l'ora, la scelta, gli
+            strumenti a cui si riferisce, la pagina e un numero a caso generato dal browser.
+            Non salvo l'indirizzo IP né altri dati che dicano chi sei: il registro serve solo a
+            dimostrare che il consenso è stato chiesto e dato.
+          </li>
+        </ul>
 
         <h2 class="h4">Le misure di traffico, e come si spengono</h2>
         <p>
-          Google Analytics 4 misura le visite e le pagine visualizzate, oltre a informazioni
-          tecniche sul browser e sul dispositivo. Il suo codice viene
-          caricato solo dopo che premi «Va bene» sulla fascia in fondo allo schermo. Se
-          rifiuti o non scegli, Analytics non viene caricato. Il consenso è facoltativo e
-          puoi ritirarlo in qualsiasi momento dal pulsante «riapri la scelta» qui sotto.
+          Google Analytics 4 misura le visite, le pagine visualizzate e i contatti (clic su
+          telefono, email e WhatsApp), oltre a informazioni tecniche sul browser e sul
+          dispositivo. È configurato con i segnali pubblicitari spenti e senza nessun uso a
+          fini di pubblicità.
+        </p>
+        {
+          SITE.misure.clarity && (
+            <p>
+              Microsoft Clarity mostra in forma aggregata dove si clicca e fin dove si scorre
+              una pagina, e registra in modo anonimo i movimenti durante la visita. I campi
+              dei moduli e quello che ci scrivi vengono nascosti prima di lasciare il browser.
+              Lo uso per capire cosa non è chiaro nel sito, non per sapere chi sei.
+            </p>
+          )
+        }
+        <p>
+          Il codice di {SITE.misure.clarity ? 'questi strumenti' : 'Analytics'} viene caricato
+          solo dopo che premi «Va bene» sulla fascia. Se rifiuti o non scegli, non viene
+          caricato e il browser non contatta {SITE.misure.clarity ? 'né Google né Microsoft' : 'Google'}.
+          Il consenso è facoltativo, vale un anno e poi te lo richiedo; te lo richiedo prima
+          solo se cambiano gli strumenti.
         </p>
         <p>
-          Per Analytics la base giuridica è il tuo consenso. Puoi cambiare idea quando vuoi:
+          Puoi cambiare idea quando vuoi:
           <button class="collegamento come-link" type="button" data-cambia-consenso
-          >riapri la scelta</button> e rifiuta. In quel momento cancello i cookie Analytics
-          raggiungibili dal sito e ricarico la pagina senza caricare il tag. Rifiutare non
+          >riapri la scelta</button> e rifiuta. In quel momento cancello i cookie di misura
+          raggiungibili dal sito e ricarico la pagina senza gli strumenti. Rifiutare non
           cambia quello che vedi e come funziona il sito.
         </p>
 
-        <h2 class="h4">Cookie e memoria della scelta</h2>
-        <p>
-          Il sito salva la tua scelta nel deposito locale del browser, con la voce
-          <code>misure-consenso</code>, così non deve chiedertela a ogni pagina. Questa
-          memoria tecnica non serve a misurare la navigazione. Se accetti Google Analytics,
-          Google può impostare i cookie <code>_ga</code> e
-          <code>_ga_DWTF8YGDKG</code> per distinguere le visite e mantenere la sessione; la
-          durata predefinita è fino a due anni, ma alcuni browser la riducono. Se rifiuti,
-          questi cookie non vengono creati dal tag del sito.
-        </p>
+        <h2 class="h4">Cookie e memoria del browser</h2>
+        <ul class="elenco">
+          <li>
+            <code>misure-consenso</code> (memoria del browser, un anno): la tua scelta, con
+            data, strumenti e il numero a caso del registro. Serve a non chiedertela a ogni
+            pagina.
+          </li>
+          <li>
+            <code>arrivo-da</code> (memoria della scheda, si cancella chiudendola): da dove sei
+            arrivato, solo per scriverlo nel messaggio che prepari.
+          </li>
+          <li>
+            Solo dopo il consenso, Google Analytics: <code>_ga</code> e
+            <code>_ga_DWTF8YGDKG</code>, per distinguere le visite e mantenere la sessione,
+            fino a due anni (alcuni browser li accorciano).
+          </li>
+          {
+            SITE.misure.clarity && (
+              <li>
+                Solo dopo il consenso, Microsoft Clarity: <code>_clck</code> (un anno) e
+                <code>_clsk</code> (un giorno) sul sito, per legare le pagine della stessa
+                visita, più alcuni cookie sul dominio di Clarity.
+              </li>
+            )
+          }
+        </ul>
 
         <h2 class="h4">Perché li tratto</h2>
-        <p>
-          Per rispondere alla tua richiesta tratto i dati perché hai chiesto informazioni o
-          un preventivo. Se avviamo un lavoro, li tratto per eseguire gli accordi e rispettare
-          gli obblighi di legge. Per Analytics la base giuridica è il consenso, che puoi
-          revocare senza conseguenze sul sito. Non li uso per mandarti comunicazioni
-          commerciali non richieste.
-        </p>
+        <ul class="elenco">
+          <li>
+            <strong>Rispondere e preparare un preventivo:</strong> perché me l'hai chiesto tu.
+            Se avviamo un lavoro, per eseguire gli accordi e rispettare gli obblighi di legge.
+          </li>
+          <li>
+            <strong>Misure di traffico:</strong> il tuo consenso, che puoi ritirare quando vuoi.
+          </li>
+          <li>
+            <strong>Registro dei consensi:</strong> l'obbligo di poter dimostrare il consenso.
+          </li>
+          <li>
+            <strong>Dati tecnici del server:</strong> l'interesse a tenere il sito funzionante e
+            sicuro.
+          </li>
+        </ul>
+        <p>Non uso i tuoi dati per mandarti comunicazioni commerciali che non hai chiesto.</p>
 
         <h2 class="h4">A chi vengono comunicati</h2>
+        <ul class="elenco">
+          <li>
+            <strong>Aruba S.p.A.</strong> (Italia): ospita il sito, il registro dei consensi e
+            la posta del dominio.
+          </li>
+          <li>
+            <strong>WhatsApp/Meta</strong>, se mi scrivi su WhatsApp: vedi
+            l'<a class="collegamento" href="https://www.whatsapp.com/legal/privacy-policy" rel="noreferrer">informativa di WhatsApp</a>.
+          </li>
+          <li>
+            <strong>Google</strong>, solo dopo il consenso, per Google Analytics.
+          </li>
+          {
+            SITE.misure.clarity && (
+              <li>
+                <strong>Microsoft</strong>, solo dopo il consenso, per Clarity: vedi
+                l'<a class="collegamento" href="https://www.microsoft.com/privacy/privacystatement" rel="noreferrer">informativa di Microsoft</a>.
+              </li>
+            )
+          }
+        </ul>
         <p>
-          Se invii il messaggio, i dati sono comunicati a WhatsApp/Meta e al titolare.
-          Consulta l'<a class="collegamento" href="https://www.whatsapp.com/legal/privacy-policy" rel="noreferrer">informativa privacy di WhatsApp</a>.
-          I dati di visita sono comunicati a Google solo dopo il consenso. Per Google, le
-          informazioni sui trasferimenti e le
-          garanzie applicabili sono nella
-          <a class="collegamento" href="https://business.safety.google/adsdatatransfers/"
-          rel="noreferrer">documentazione sui trasferimenti dei dati</a>.
+          Google, Meta{SITE.misure.clarity ? ' e Microsoft' : ''} possono trasferire i dati
+          negli Stati Uniti. Aderiscono all'EU-US Data Privacy Framework, riconosciuto
+          adeguato dalla Commissione europea il 10 luglio 2023, e usano le clausole
+          contrattuali standard approvate dalla Commissione.
         </p>
 
         <h2 class="h4">Per quanto tempo li tengo</h2>
-        <p>
-          Il sito non conserva le bozze preparate dal modulo. Dopo l'invio, WhatsApp tratta i
-          messaggi secondo i propri tempi e le proprie regole. Per i progetti avviati valgono
-          i termini di legge sui documenti fiscali. I dati Analytics sono
-          conservati da Google secondo l'impostazione della proprietà, modificabile tra due e
-          quattordici mesi per i dati utente ed evento.
-        </p>
+        <ul class="elenco">
+          <li>
+            <strong>Richieste che non diventano un lavoro:</strong> 12 mesi dall'ultimo
+            messaggio, poi le cancello.
+          </li>
+          <li>
+            <strong>Lavori avviati:</strong> per il tempo previsto dalla legge per i documenti
+            fiscali e contabili (dieci anni).
+          </li>
+          <li><strong>Google Analytics:</strong> 14 mesi, poi Google li cancella.</li>
+          {
+            SITE.misure.clarity && (
+              <li>
+                <strong>Microsoft Clarity:</strong> le registrazioni 30 giorni, i dati
+                aggregati fino a 13 mesi.
+              </li>
+            )
+          }
+          <li><strong>Registro dei consensi:</strong> 24 mesi.</li>
+          <li>
+            <strong>Dati tecnici del server:</strong> per il tempo stabilito da Aruba per la
+            sicurezza del servizio.
+          </li>
+        </ul>
 
         <h2 class="h4">I tuoi diritti</h2>
         <p>
@@ -143,6 +243,9 @@ import { SITE } from '../config.js';
   }
   .testo h2 {
     margin-top: var(--sp-6);
+  }
+  .aggiornata {
+    color: var(--ink-3);
   }
   .testo p {
     color: var(--ink-2);

@@ -149,9 +149,22 @@ export const SITE = {
     'https://www.linkedin.com/company/modica-michele-web-service',
   ],
 
-  /** ID di misurazione GA4. Il tag viene caricato solo dopo il consenso. */
+  /**
+   * Strumenti di misura. Partono solo dopo il sì nella fascia del consenso
+   * (Consenso.astro), e solo sul dominio vero: in sviluppo e nelle anteprime
+   * non parte niente, così i dati non si sporcano.
+   *
+   * `clarity` è l'ID del progetto Microsoft Clarity (Impostazioni → Panoramica
+   * → ID progetto). Finché è null, Clarity non c'è e la fascia non lo nomina.
+   *
+   * Aggiungere o togliere uno strumento cambia la versione del consenso
+   * (es. «ga4+clarity»), e chi aveva già risposto se lo vede richiedere:
+   * un sì dato a Google Analytics non vale per uno strumento che non c'era.
+   */
   misure: {
     ga4: 'G-DWTF8YGDKG',
+    clarity: 'zg6q7c2ujw',
+    dominio: 'modicamichele.it',
   },
 
   /**

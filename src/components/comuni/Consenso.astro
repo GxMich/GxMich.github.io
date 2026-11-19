@@ -2,8 +2,9 @@
 /**
  * La fascia del consenso alle misure di traffico.
  *
- * Google Analytics non sta nel documento iniziale: lo script viene caricato
- * solo dopo un sì. Prima del consenso il browser non contatta Google.
+ * Gli strumenti (Google Analytics, e Microsoft Clarity se c'è l'ID) non
+ * stanno nel documento iniziale: gli script vengono caricati solo dopo un sì.
+ * Prima del consenso il browser non contatta né Google né Microsoft.
  *
  * Due bottoni identici per forma, colore e numero di clic. Il rifiuto è il primo
  * che si incontra leggendo. Fare il no più piccolo, più chiaro o più lontano
@@ -11,13 +12,22 @@
  * galateo, è che il consenso raccolto così non vale e i dati raccolti con
  * quello nemmeno.
  *
- * La fascia parte nascosta e si mostra da sola se la scelta non c'è ancora:
- * chi ha già risposto non se la vede più comparire a ogni pagina.
+ * La fascia parte nascosta e si mostra da sola se la scelta non c'è ancora,
+ * se è più vecchia di un anno o se nel frattempo è cambiato l'elenco degli
+ * strumenti: chi ha già risposto non se la vede ricomparire a ogni pagina.
  */
 import { SITE } from '../../config.js';
 
-const { ga4 } = SITE.misure;
-const attiva = Boolean(ga4);
+const { ga4, clarity, dominio } = SITE.misure;
+const attiva = Boolean(ga4 || clarity);
+
+/* La versione è l'elenco degli strumenti: cambia da sola quando se ne
+   aggiunge o toglie uno, e con lei la richiesta del consenso. */
+const versione = [ga4 && 'ga4', clarity && 'clarity'].filter(Boolean).join('+');
+
+const strumenti = clarity
+  ? 'Google Analytics, e vedere in forma anonima come si usa il sito con Microsoft Clarity'
+  : 'Google Analytics';
 ---
 
 {
@@ -26,6 +36,9 @@ const attiva = Boolean(ga4);
       class="fascia su-palco"
       data-consenso
       data-ga4={ga4 ?? ''}
+      data-clarity={clarity ?? ''}
+      data-dominio={dominio}
+      data-versione={versione}
       hidden
       role="region"
       aria-labelledby="consenso-titolo"
@@ -35,8 +48,8 @@ const attiva = Boolean(ga4);
         <div class="testo">
           <p class="etichetta" id="consenso-titolo">Misure di traffico</p>
           <p class="testo-sm">
-            Posso contare visite e pagine lette con Google Analytics? Si attiva solo se dici
-            di sì; se rifiuti, il sito funziona uguale.{' '}
+            Posso contare visite e pagine lette con {strumenti}? Si attiva solo se dici di sì;
+            se rifiuti, il sito funziona uguale.{' '}
             <a href="/privacy">Dettagli</a>
           </p>
         </div>
@@ -147,20 +160,34 @@ const attiva = Boolean(ga4);
 
 <script>
   /**
-   * Tre stati salvati, come per il tema: «si», «no», o niente.
+   * La scelta si salva nel browser come { scelta, versione, data, id }.
    *
-   * Niente non vuol dire no — vuol dire che non gliel'ho ancora chiesto, e
-   * finché è così la fascia si mostra. Distinguere i due casi è tutta la
-   * differenza fra chiedere una volta e chiedere a ogni visita.
+   *  - Niente salvato vuol dire «non gliel'ho ancora chiesto», non «no».
+   *  - Una scelta più vecchia di un anno, o data quando gli strumenti erano
+   *    altri, vale come non data: si richiede. Prima di un anno no, se nulla
+   *    è cambiato: richiedere a ogni visita è un modo di sfinire, non di
+   *    chiedere.
+   *  - `id` è un numero a caso, generato qui, che non dice chi sei: serve
+   *    solo a far corrispondere la riga del registro alla scelta salvata.
+   *
+   * Ogni scelta va anche nel registro sul server (consenso.php): data, scelta,
+   * versione, pagina e quell'id. Niente indirizzo IP, niente browser. È la
+   * prova che il consenso è stato chiesto e dato, che il titolare deve poter
+   * mostrare.
    */
   const CHIAVE = 'misure-consenso';
+  const ESCLUSO = 'misure-escluso';
+  const UN_ANNO = 365 * 24 * 60 * 60 * 1000;
 
-  /* Cookie GA4 sul dominio del sito. */
-  const COOKIE_MISURE = ['_ga', '_ga_DWTF8YGDKG', '_gid'];
+  /* Cookie che gli strumenti lasciano sul dominio del sito. Quelli sui domini
+     di Google e Microsoft non sono raggiungibili da qui. */
+  const COOKIE_MISURE = /^(_ga|_ga_.+|_gid|_gat.*|_clck|_clsk)$/;
 
-  function leggiScelta() {
+  type Scelta = { scelta: 'si' | 'no'; versione: string; data: number; id: string };
+
+  function leggi(chiave: string) {
     try {
-      return localStorage.getItem(CHIAVE);
+      return localStorage.getItem(chiave);
     } catch {
       /* navigazione privata: la fascia ricompare, ed è il comportamento
          giusto — senza memoria non posso sapere cosa mi ha già detto. */
@@ -168,19 +195,79 @@ const attiva = Boolean(ga4);
     }
   }
 
-  function salvaScelta(valore: string) {
+  function scrivi(chiave: string, valore: string | null) {
     try {
-      localStorage.setItem(CHIAVE, valore);
+      if (valore === null) localStorage.removeItem(chiave);
+      else localStorage.setItem(chiave, valore);
     } catch {
       /* la scelta vale per questa visita e basta */
     }
   }
 
-  function caricaMisure(ga4: string) {
-    const w = window as any;
-    if (!ga4 || w.__misureAvviate) return;
-    w.__misureAvviate = true;
+  /** La scelta ancora valida, o null se va chiesta (di nuovo). */
+  function sceltaValida(versione: string): Scelta | null {
+    const grezza = leggi(CHIAVE);
+    if (!grezza) return null;
+    try {
+      const s = JSON.parse(grezza) as Scelta;
+      if (!s || typeof s !== 'object') return null;
+      if (s.versione !== versione) return null;
+      if (!s.data || Date.now() - s.data > UN_ANNO) return null;
+      if (s.scelta !== 'si' && s.scelta !== 'no') return null;
+      return s;
+    } catch {
+      /* il vecchio formato («si» o «no» e basta): era per GA4 da solo,
+         senza data. Si richiede una volta, con gli strumenti di oggi. */
+      return null;
+    }
+  }
 
+  function nuovoId() {
+    const byte = new Uint8Array(8);
+    crypto.getRandomValues(byte);
+    return Array.from(byte, (b) => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  /** Il sito vero, non lo sviluppo, le anteprime o una copia altrove. */
+  function sulDominio(dominio: string) {
+    const h = location.hostname;
+    return Boolean(dominio) && (h === dominio || h.endsWith('.' + dominio));
+  }
+
+  /**
+   * Le visite del titolare non vanno contate: con `?misure=off` nell'indirizzo
+   * questo browser smette di caricare gli strumenti (e la fascia non compare),
+   * con `?misure=on` torna normale. Si fa una volta per ogni browser e telefono.
+   */
+  function leggiEsclusione() {
+    const param = new URLSearchParams(location.search).get('misure');
+    if (param === 'off') scrivi(ESCLUSO, 'si');
+    if (param === 'on') scrivi(ESCLUSO, null);
+    return leggi(ESCLUSO) === 'si';
+  }
+
+  function registra(s: Scelta) {
+    const corpo = JSON.stringify({
+      id: s.id,
+      scelta: s.scelta,
+      versione: s.versione,
+      pagina: location.pathname,
+    });
+    try {
+      const inviato = navigator.sendBeacon?.(
+        '/consenso.php',
+        new Blob([corpo], { type: 'application/json' })
+      );
+      if (!inviato) {
+        fetch('/consenso.php', { method: 'POST', body: corpo, keepalive: true }).catch(() => {});
+      }
+    } catch {
+      /* il registro non deve mai bloccare la scelta */
+    }
+  }
+
+  function caricaGA4(ga4: string) {
+    const w = window as any;
     w.dataLayer = w.dataLayer || [];
     w.gtag = w.gtag || function () { w.dataLayer.push(arguments); };
     w.gtag('consent', 'default', {
@@ -196,14 +283,35 @@ const attiva = Boolean(ga4);
       ad_personalization: 'denied',
     });
     w.gtag('js', new Date());
-    w.gtag('config', ga4, {
-      allow_google_signals: false,
-    });
+    w.gtag('config', ga4, { allow_google_signals: false });
 
     const s = document.createElement('script');
     s.async = true;
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ga4);
     document.head.appendChild(s);
+  }
+
+  function caricaClarity(id: string) {
+    const w = window as any;
+    w.clarity = w.clarity || function () { (w.clarity.q = w.clarity.q || []).push(arguments); };
+    /* Il consenso va detto anche a Clarity: senza, nell'Unione europea non
+       usa i cookie e non lega le pagine della stessa visita. La pubblicità
+       resta negata come per Google. */
+    w.clarity('consentv2', { ad_Storage: 'denied', analytics_Storage: 'granted' });
+
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.clarity.ms/tag/' + encodeURIComponent(id);
+    document.head.appendChild(s);
+  }
+
+  function caricaMisure(fascia: HTMLElement) {
+    const w = window as any;
+    if (w.__misureAvviate) return;
+    w.__misureAvviate = true;
+    const { ga4, clarity } = fascia.dataset;
+    if (ga4) caricaGA4(ga4);
+    if (clarity) caricaClarity(clarity);
   }
 
   /**
@@ -216,8 +324,12 @@ const attiva = Boolean(ga4);
   function dimenticaMisure() {
     const host = location.hostname;
     const domini = ['', host, '.' + host, '.' + host.split('.').slice(-2).join('.')];
+    const nomi = document.cookie
+      .split(';')
+      .map((c) => c.split('=')[0].trim())
+      .filter((n) => COOKIE_MISURE.test(n));
 
-    for (const nome of COOKIE_MISURE) {
+    for (const nome of nomi) {
       for (const dominio of domini) {
         document.cookie =
           nome +
@@ -231,11 +343,15 @@ const attiva = Boolean(ga4);
     const fascia = document.querySelector<HTMLElement>('[data-consenso]');
     if (!fascia) return;
 
-    const ga4 = fascia.dataset.ga4 ?? '';
+    const versione = fascia.dataset.versione ?? '';
+    const vero = sulDominio(fascia.dataset.dominio ?? '');
+    const escluso = leggiEsclusione();
+    const valida = sceltaValida(versione);
 
     /* Prima di ogni altra cosa: se il sì c'è già, gli strumenti partono
-       subito, anche su una pagina raggiunta navigando. */
-    if (leggiScelta() === 'si') caricaMisure(ga4);
+       subito, anche su una pagina raggiunta navigando. In sviluppo e per il
+       titolare escluso, mai. */
+    if (valida?.scelta === 'si' && vero && !escluso) caricaMisure(fascia);
 
     if (fascia.dataset.montato !== undefined) return;
     fascia.dataset.montato = 'si';
@@ -249,27 +365,32 @@ const attiva = Boolean(ga4);
       fascia.hidden = true;
     };
 
-    fascia.querySelector('[data-consenso-si]')?.addEventListener('click', () => {
-      salvaScelta('si');
+    const decidi = (scelta: 'si' | 'no') => {
+      const prima = sceltaValida(versione);
+      const s: Scelta = { scelta, versione, data: Date.now(), id: prima?.id ?? nuovoId() };
+      scrivi(CHIAVE, JSON.stringify(s));
       nascondi();
-      caricaMisure(ga4);
+      if (vero && !escluso) registra(s);
+      return prima;
+    };
+
+    fascia.querySelector('[data-consenso-si]')?.addEventListener('click', () => {
+      decidi('si');
+      if (vero && !escluso) caricaMisure(fascia);
     });
 
     fascia.querySelector('[data-consenso-no]')?.addEventListener('click', () => {
-      const eraSi = leggiScelta() === 'si';
-      salvaScelta('no');
-      nascondi();
-
-      if (eraSi) {
+      const prima = decidi('no');
+      if (prima?.scelta === 'si' || (window as any).__misureAvviate) {
         dimenticaMisure();
         location.reload();
       }
     });
 
-    /* La scelta si può cambiare: qualsiasi cosa con questo attributo — oggi
-       il bottone nella pagina privacy — riapre la fascia. Il consenso che non
-       si può ritirare con la stessa facilità con cui si è dato non è
-       consenso. */
+    /* La scelta si può cambiare: qualsiasi cosa con questo attributo — il
+       bottone nella pagina privacy e quello nel piè di pagina — riapre la
+       fascia. Il consenso che non si può ritirare con la stessa facilità con
+       cui si è dato non è consenso. */
     document.querySelectorAll('[data-cambia-consenso]').forEach((elemento) => {
       elemento.addEventListener('click', (e) => {
         e.preventDefault();
@@ -277,7 +398,7 @@ const attiva = Boolean(ga4);
       });
     });
 
-    if (leggiScelta() === null) mostra(false);
+    if (!valida && !escluso) mostra(false);
   }
 
   montaConsenso();
