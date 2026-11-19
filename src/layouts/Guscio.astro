@@ -118,7 +118,24 @@ const passaggio = {
         // Senza questa riga, un errore di JavaScript lascia la pagina bianca.
         if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           document.documentElement.classList.add('puo-animare');
+          sorvegliaComparse();
         }
+      }
+
+      // Rete di sicurezza per le comparse. Il testo parte nascosto e lo
+      // rivela lo script del guscio (montaComparse, che segna
+      // `data-comparse` su <html>). Se quello script non parte — un file
+      // mancante sul server, un errore, una rete lentissima — dopo tre
+      // secondi si toglie `puo-animare` e il testo compare fermo, senza
+      // animazione. È successo il 19/11/2026: un file non caricato ha
+      // lasciato invisibili metà delle sezioni del sito.
+      function sorvegliaComparse() {
+        var radice = document.documentElement;
+        window.setTimeout(function () {
+          if (radice.classList.contains('puo-animare') && !radice.dataset.comparse) {
+            radice.classList.remove('puo-animare');
+          }
+        }, 3000);
       }
 
       vestiRadice();

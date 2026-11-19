@@ -24,6 +24,12 @@ export const movimentoConcesso = () =>
  * installa un secondo osservatore sugli stessi nodi.
  */
 export function montaComparse(radice: ParentNode = document) {
+  /* Il segno per la rete di sicurezza nel <head> del guscio: dice «lo
+     script delle comparse è partito», anche se in questa pagina non c'è
+     niente da rivelare. Va rimesso a ogni pagina, perché il ClientRouter
+     riporta gli attributi di <html> a quelli del documento nuovo. */
+  document.documentElement.dataset.comparse = 'si';
+
   const bersagli = Array.from(
     radice.querySelectorAll<HTMLElement>('[data-anima]:not([data-anima-montato])')
   );
